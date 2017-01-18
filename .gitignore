@@ -28,7 +28,7 @@
 *.out
 *.app
 
-# tup
 .tup/
 gmb
 test
+*.swp

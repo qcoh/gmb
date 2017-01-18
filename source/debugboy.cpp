@@ -1,5 +1,6 @@
 #include <dlfcn.h>
 #include <iostream>
+#include <sstream>
 
 #include "cpu.h"
 #include "debugboy.h"
@@ -20,11 +21,33 @@ void DebugBoy::Run() {
 	for (;;) {
 		if (signaled != 0) {
 			reloadCPU();
+			std::cout << "Reloading CPU...\n";
 			signaled = 0;
 		}
+		if (m_mode == Mode::WAIT) {
+			std::string input{};
+			std::cout << "> ";
+			std::getline(std::cin, input);
+			parseCommands(input);
+		} else {
+			m_cpu->Step();
+		}
+	}
+}
+
+void DebugBoy::parseCommands(std::string& input) {
+	std::stringstream stream{input};
+	std::string cmd{};
+	stream >> cmd;
+	std::cout << "Cmd: " << cmd << '\n';
+	if (cmd == "continue") {
+		m_mode = Mode::RUN;
+	} else if (cmd == "next") {
 		m_cpu->Step();
-		std::cin.get();
-		std::cout << signaled << '\n';
+	} else if (cmd == "break") {
+		// set breakpoints
+	} else if (cmd == "trace") {
+		// set tracepoints
 	}
 }
 
