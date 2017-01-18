@@ -1,0 +1,22 @@
+SOURCE_DIR = source
+INCLUDE_DIR = include
+TEST_SOURCE_DIR = tests/source
+TEST_INCLUDE_DIR = tests/include
+
+SOURCES = $(SOURCE_DIR)/*.cpp
+TEST_SOURCES = $(TEST_SOURCE_DIR)/*.cpp
+
+CC = clang++-3.8
+
+CFLAGS = -g -Wall -Wextra -Werror -Wshadow -Wnon-virtual-dtor -Wcast-align -Wunused -Wconversion -Wsign-conversion -pedantic -Wno-return-type-c-linkage -std=c++14 -I $(INCLUDE_DIR)
+LFLAGS = -lSDL2 -ldl
+
+: foreach $(SOURCES) |> |> {nongmb}
+: foreach {nongmb} |> $(CC) -c $(CFLAGS) %f -o %o |> %B.o {nongmbo}
+: $(SOURCE_DIR)/gmb/gmb.cpp |> $(CC) -c $(CFLAGS) %f -o %o |> %B.o {gmbo}
+: {nongmbo} {gmbo} |> $(CC) $(LFLAGS) %f -o %o |> gmb
+
+: $(SOURCE_DIR)/cpu.cpp |> $(CC) -shared -fPIC $(CFLAGS) %f -o %o |> cpu.so
+
+: foreach $(TEST_SOURCES) |> $(CC) -c $(CFLAGS) -I $(TEST_INCLUDE_DIR) %f -o %o |> %B.o {testo}
+: {nongmbo} {testo} |> $(CC) $(LFLAGS) %f -o %o |> test
