@@ -19,15 +19,14 @@ DebugBoy::~DebugBoy() {
 
 void DebugBoy::Run() {
 	for (;;) {
-		if (signaled != 0) {
-			reloadCPU();
-			std::cout << "Reloading CPU...\n";
-			signaled = 0;
-		}
 		if (m_mode == Mode::WAIT) {
 			std::string input{};
 			std::cout << "> ";
 			std::getline(std::cin, input);
+			if (signaled != 0) {
+				reloadCPU();
+				signaled = 0;
+			}
 			parseCommands(input);
 		} else {
 			m_cpu->Step();
