@@ -57,6 +57,14 @@ void DebugBoy::parseCommands(std::string& input) {
 		m_cpu->Step();
 	} else if (cmd == "continue") {
 		m_mode = Mode::RUN;
+	} else if (cmd == "print") {
+		u16 addr;
+		if (stream >> std::hex >> addr) {
+			u8 v = m_mmu->read8(addr);
+			std::cout << "(0x" << std::hex << std::setfill('0')
+				  << std::setw(4) << +addr << ") == 0x"
+				  << std::setw(2) << v << '\n';
+		}
 	} else if (cmd == "break") {
 		// set breakpoints
 	} else if (cmd == "trace") {
