@@ -1,4 +1,5 @@
 #include <dlfcn.h>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 
@@ -24,8 +25,8 @@ void DebugBoy::Run() {
 	for (;;) {
 		if (m_mode == Mode::WAIT) {
 			std::cout << m_cpuData << '\n';
-			std::cout << "(pc == 0x" << std::hex << +m_cpuData.pc
-				  << ") == "
+			std::cout << "(0x" << std::hex << std::setfill('0')
+				  << std::setw(4) << +m_cpuData.pc << ") == "
 				  << CPU::s_instructions[m_cpuData.op].mnemonic
 				  << '\n';
 			std::string input{};
@@ -46,11 +47,10 @@ void DebugBoy::parseCommands(std::string& input) {
 	std::stringstream stream{input};
 	std::string cmd{};
 	stream >> cmd;
-	std::cout << "Cmd: " << cmd << '\n';
-	if (cmd == "continue") {
-		m_mode = Mode::RUN;
-	} else if (cmd == "next") {
+	if (cmd == "next" || cmd == "") {
 		m_cpu->Step();
+	} else if (cmd == "continue") {
+		m_mode = Mode::RUN;
 	} else if (cmd == "break") {
 		// set breakpoints
 	} else if (cmd == "trace") {
