@@ -33,7 +33,25 @@ std::ostream& operator<<(std::ostream& os, const ICPU::Data& data) {
 	return os;
 }
 
-u8& ICPU::Data::read8(u8 addr) { return registers[addr]; }
+u8& ICPU::Data::read8(u8 addr) {
+	switch (addr) {
+	case 0x0:
+		return b;
+	case 0x1:
+		return c;
+	case 0x2:
+		return d;
+	case 0x3:
+		return e;
+	case 0x4:
+		return h;
+	case 0x5:
+		return l;
+	case 0x6: /* err */
+	default:
+		return a;
+	}
+}
 
 u16& ICPU::Data::read16(u8 addr) {
 	switch (addr) {

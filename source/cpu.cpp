@@ -7,13 +7,57 @@ CPU::CPU(ICPU::Data& data, IMMU* mmu) : ICPU{}, m_data{data}, m_mmu{mmu} {
 }
 
 void CPU::Step() {
+	fetch();
+	exec();
+}
+
+void CPU::fetch() {
 	m_data.op = m_mmu->read8(m_data.pc);
+	m_data.nn = m_mmu->read16(m_data.pc + 1);
 	m_data.pc += s_instructions[m_data.op].offset;
+}
+
+void CPU::exec() {
+	switch (m_data.op) {
+	case 0x0:
+		// NOP
+		break;
+	case 0x01:
+	case 0x11:
+	case 0x21:
+	case 0x31:
+		// LD __, nn
+		LD(m_data.read16((m_data.op >> 4) & 0x3), m_data.nn);
+		break;
+	case 0xa8:
+	case 0xa9:
+	case 0xaa:
+	case 0xab:
+	case 0xac:
+	case 0xad:
+	case 0xae:
+	case 0xaf:
+		// XOR A, _
+		XOR(m_data.read8(m_data.op & 0x7));
+		break;
+	default:
+		// causes segfault if dynamically loaded
+		// (I want to crash anyway)
+		throw std::runtime_error{"Instruction not implemented"};
+	}
 }
 
 extern "C" std::unique_ptr<ICPU> loadCPU(CPU::Data& data, IMMU* mmu) {
 	std::cout << "Reloading CPU...\n";
 	return std::make_unique<CPU>(data, mmu);
+}
+
+void CPU::XOR(const u8& source) {
+	m_data.a ^= source;
+	m_data.zeroFlag = (m_data.a == 0);
+	m_data.negFlag = false;
+	m_data.halfFlag = false;
+	m_data.carryFlag = false;
 }
 
 const std::array<Instruction, 256> CPU::s_instructions = {{

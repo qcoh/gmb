@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 
+#include "bitref.h"
 #include "types.h"
 
 class ICPU {
@@ -22,6 +23,11 @@ public:
 		u8& e = static_cast<u8*>(static_cast<void*>(registers))[4];
 		u8& h = static_cast<u8*>(static_cast<void*>(registers))[7];
 		u8& l = static_cast<u8*>(static_cast<void*>(registers))[6];
+
+		BitRef<u8> zeroFlag{f, 7};
+		BitRef<u8> negFlag{f, 6};
+		BitRef<u8> halfFlag{f, 5};
+		BitRef<u8> carryFlag{f, 4};
 
 		u16 pc = 0;
 		u16 sp = 0;
