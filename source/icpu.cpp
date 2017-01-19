@@ -9,16 +9,16 @@ std::ostream& operator<<(std::ostream& os, const ICPU::Data& data) {
 	   << std::bitset<8>{data.f} << "]\n";
 
 	os << "bc = 0x" << std::hex << std::setfill('0') << std::setw(4)
-	   << +data.bc << " [b = 0b" << std::bitset<8>{data.a} << "][c = 0b"
-	   << std::bitset<8>{data.f} << "]\n";
+	   << +data.bc << " [b = 0b" << std::bitset<8>{data.b} << "][c = 0b"
+	   << std::bitset<8>{data.c} << "]\n";
 
 	os << "de = 0x" << std::hex << std::setfill('0') << std::setw(4)
-	   << +data.de << " [d = 0b" << std::bitset<8>{data.a} << "][e = 0b"
-	   << std::bitset<8>{data.f} << "]\n";
+	   << +data.de << " [d = 0b" << std::bitset<8>{data.d} << "][e = 0b"
+	   << std::bitset<8>{data.e} << "]\n";
 
 	os << "hl = 0x" << std::hex << std::setfill('0') << std::setw(4)
-	   << +data.hl << " [h = 0b" << std::bitset<8>{data.a} << "][l = 0b"
-	   << std::bitset<8>{data.f} << "]\n";
+	   << +data.hl << " [h = 0b" << std::bitset<8>{data.h} << "][l = 0b"
+	   << std::bitset<8>{data.l} << "]\n";
 
 	os << "pc = 0x" << std::hex << std::setfill('0') << std::setw(4)
 	   << +data.pc << '\n';

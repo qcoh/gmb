@@ -9,20 +9,19 @@
 class ICPU {
 public:
 	struct Data {
-		u8 registers[8] = {0};
-		u16& af = static_cast<u16*>(static_cast<void*>(registers))[0];
-		u16& bc = static_cast<u16*>(static_cast<void*>(registers))[1];
-		u16& de = static_cast<u16*>(static_cast<void*>(registers))[2];
-		u16& hl = static_cast<u16*>(static_cast<void*>(registers))[3];
+		u16 af = 0;
+		u16 bc = 0;
+		u16 de = 0;
+		u16 hl = 0;
 
-		u8& a = static_cast<u8*>(static_cast<void*>(registers))[1];
-		u8& f = static_cast<u8*>(static_cast<void*>(registers))[0];
-		u8& b = static_cast<u8*>(static_cast<void*>(registers))[3];
-		u8& c = static_cast<u8*>(static_cast<void*>(registers))[2];
-		u8& d = static_cast<u8*>(static_cast<void*>(registers))[5];
-		u8& e = static_cast<u8*>(static_cast<void*>(registers))[4];
-		u8& h = static_cast<u8*>(static_cast<void*>(registers))[7];
-		u8& l = static_cast<u8*>(static_cast<void*>(registers))[6];
+		u8& a{*(static_cast<u8*>(static_cast<void*>(&af)) + 1)};
+		u8& f{*(static_cast<u8*>(static_cast<void*>(&af)))};
+		u8& b{*(static_cast<u8*>(static_cast<void*>(&bc)) + 1)};
+		u8& c{*(static_cast<u8*>(static_cast<void*>(&bc)))};
+		u8& d{*(static_cast<u8*>(static_cast<void*>(&de)) + 1)};
+		u8& e{*(static_cast<u8*>(static_cast<void*>(&de)))};
+		u8& h{*(static_cast<u8*>(static_cast<void*>(&hl)) + 1)};
+		u8& l{*(static_cast<u8*>(static_cast<void*>(&hl)))};
 
 		BitRef<u8> zeroFlag{f, 7};
 		BitRef<u8> negFlag{f, 6};
