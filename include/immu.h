@@ -1,17 +1,23 @@
 #pragma once
 
 #include <array>
+#include <memory>
+#include <string>
+
+#include "bios.h"
+#include "icartridge.h"
 #include "types.h"
 
 class IMMU {
 public:
 	struct Data {
-		std::array<u8, 256> bios;
+		BIOS bios;
+		std::unique_ptr<ICartridge> cart;
 		std::array<u8, 127> hram;
 		std::array<u8, 4096> wram0;
 		std::array<u8, 4096> wram1;
 
-		// mapper, etc.
+		Data(const std::string&, const std::string&);
 	};
 	IMMU() = default;
 	IMMU(const IMMU&) = delete;

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "bios.h"
-#include "icartridge.h"
 #include "icpu.h"
+#include "immu.h"
 
 class GameBoy {
 public:
@@ -12,8 +11,9 @@ public:
 
 protected:
 	// cpu, mapper, mmu, display, ...
+	IMMU::Data m_mmuData;
+	std::unique_ptr<IMMU> m_mmu;
+
 	ICPU::Data m_cpuData;
 	std::unique_ptr<ICPU> m_cpu;
-	BIOS m_bios;
-	std::unique_ptr<ICartridge> m_cart;
 };
