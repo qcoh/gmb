@@ -69,7 +69,7 @@ void DebugBoy::reloadCPU() {
 		throw std::runtime_error{dlerror()};
 	}
 
-	using Fn = std::unique_ptr<CPU> (*)(ICPU::Data&);
+	using Fn = std::unique_ptr<CPU> (*)(ICPU::Data&, IMMU*);
 
 	dlerror();
 	Fn f = reinterpret_cast<Fn>(dlsym(m_handle, "loadCPU"));
@@ -79,5 +79,5 @@ void DebugBoy::reloadCPU() {
 		throw std::runtime_error{dlsym_err};
 	}
 
-	m_cpu = f(m_cpuData);
+	m_cpu = f(m_cpuData, m_mmu.get());
 }
