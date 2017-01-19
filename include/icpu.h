@@ -30,6 +30,9 @@ public:
 		u8& n = static_cast<u8*>(static_cast<void*>(&nn))[0];
 
 		u8 op = 0;
+
+		u8& read8(u8);
+		u16& read16(u8);
 	};
 
 	ICPU() = default;
