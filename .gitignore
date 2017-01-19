@@ -33,3 +33,5 @@ gmb
 test
 *.swp
 *.gb
+*.to
+bios.bin
