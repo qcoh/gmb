@@ -4,7 +4,9 @@
 #include "romonly.h"
 
 RomOnly::RomOnly(const std::string& path) {
-	std::ifstream f{path, std::ios::binary};
+	std::ifstream f{};
+	f.exceptions(std::ifstream::failbit);
+	f.open(path, std::ios::binary);
 	std::copy_n(std::istreambuf_iterator<char>{f}, 0x10000,
 		    std::begin(m_data));
 }
