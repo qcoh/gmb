@@ -24,11 +24,17 @@ DebugBoy::~DebugBoy() {
 void DebugBoy::Run() {
 	for (;;) {
 		if (m_mode == Mode::WAIT) {
+			m_cpuData.nn = m_mmu->read16(m_cpuData.pc + 1);
 			std::cout << m_cpuData << '\n';
+
+			u8 op = m_mmu->read8(m_cpuData.pc);
+
 			std::cout << "(0x" << std::hex << std::setfill('0')
-				  << std::setw(4) << +m_cpuData.pc << ") == "
-				  << CPU::s_instructions[m_cpuData.op].mnemonic
+				  << std::setw(4) << +m_cpuData.pc << ") == 0x"
+				  << +op
+				  << " == " << CPU::s_instructions[op].mnemonic
 				  << '\n';
+
 			std::string input{};
 			std::cout << "> ";
 			std::getline(std::cin, input);
@@ -69,7 +75,7 @@ void DebugBoy::reloadCPU() {
 		m_handle = nullptr;
 	}
 
-	m_handle = dlopen("./cpu.so", RTLD_NOW);
+	m_handle = dlopen("./cpu.so", RTLD_LAZY | RTLD_GLOBAL);
 	if (m_handle == nullptr) {
 		throw std::runtime_error{dlerror()};
 	}
