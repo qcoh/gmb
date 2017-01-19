@@ -1,3 +1,4 @@
+#include <iostream>
 #include <stdexcept>
 
 #include "mmu.h"
@@ -17,9 +18,13 @@ u8 MMU::read8(u16 addr) {
 		if (m_data.biosMode && addr < 0x100) {
 			return m_data.bios.read8(addr);
 		} else {
-			return m_data.cart->read(addr);
+			return m_data.cart->read8(addr);
 		}
+	case 0x8000:
+	case 0x9000:
+		return m_data.gpu->read8(addr);
 	default:
+		std::cout << "Address: 0x" << std::hex << +addr << '\n';
 		throw std::runtime_error{"Read from unknown address"};
 	}
 }
@@ -34,8 +39,14 @@ void MMU::write8(u16 addr, u8 v) {
 	case 0x5000:
 	case 0x6000:
 	case 0x7000:
-		m_data.cart->write(addr, v);
+		m_data.cart->write8(addr, v);
+		break;
+	case 0x8000:
+	case 0x9000:
+		m_data.gpu->write8(addr, v);
+		break;
 	default:
+		std::cout << "Address: 0x" << std::hex << +addr << '\n';
 		throw std::runtime_error{"Write to unknown address"};
 	}
 }

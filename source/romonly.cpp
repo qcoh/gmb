@@ -11,6 +11,6 @@ RomOnly::RomOnly(const std::string& path) {
 		    std::begin(m_data));
 }
 
-u8 RomOnly::read(u16 addr) { return m_data[addr]; }
+u8 RomOnly::read8(u16 addr) { return m_data[addr]; }
 
-void RomOnly::write(u16, u8) { return; }
+void RomOnly::write8(u16, u8) { return; }

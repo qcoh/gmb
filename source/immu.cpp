@@ -1,8 +1,8 @@
 #include "immu.h"
 #include "romonly.h"
 
-IMMU::Data::Data(const std::string& romPath, const std::string& biosPath)
-    : bios{biosPath}, cart{std::make_unique<RomOnly>(romPath)} {}
+IMMU::Data::Data(const std::string& biosPath, ICartridge* cart_, IGPU* gpu_)
+    : bios{biosPath}, cart{cart_}, gpu{gpu_} {}
 
 u16 IMMU::read16(u16 addr) {
 	return static_cast<u16>(read8(addr) | (read8(addr + 1) << 8));

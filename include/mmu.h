@@ -14,8 +14,6 @@ public:
 
 private:
 	IMMU::Data& m_data;
-	std::unique_ptr<ICartridge> m_cart;
 };
 
-extern "C" std::unique_ptr<IMMU> loadMMU(IMMU::Data&,
-					 std::shared_ptr<ICartridge>);
+extern "C" std::unique_ptr<IMMU> loadMMU(IMMU::Data&);

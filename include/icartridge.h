@@ -11,6 +11,6 @@ public:
 	ICartridge& operator=(ICartridge&&) = delete;
 	virtual ~ICartridge() = default;
 
-	virtual u8 read(u16) = 0;
-	virtual void write(u16, u8) = 0;
+	virtual u8 read8(u16) = 0;
+	virtual void write8(u16, u8) = 0;
 };

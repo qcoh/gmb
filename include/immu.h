@@ -6,6 +6,7 @@
 
 #include "bios.h"
 #include "icartridge.h"
+#include "igpu.h"
 #include "types.h"
 
 class IMMU {
@@ -13,12 +14,13 @@ public:
 	struct Data {
 		bool biosMode = true;
 		BIOS bios;
-		std::unique_ptr<ICartridge> cart;
+		ICartridge* cart;
+		IGPU* gpu;
 		std::array<u8, 127> hram = {{0}};
 		std::array<u8, 4096> wram0 = {{0}};
 		std::array<u8, 4096> wram1 = {{0}};
 
-		Data(const std::string&, const std::string&);
+		Data(const std::string&, ICartridge*, IGPU*);
 	};
 	IMMU() = default;
 	IMMU(const IMMU&) = delete;

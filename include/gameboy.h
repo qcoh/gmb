@@ -1,6 +1,7 @@
 #pragma once
 
 #include "icpu.h"
+#include "igpu.h"
 #include "immu.h"
 
 class GameBoy {
@@ -11,6 +12,11 @@ public:
 
 protected:
 	// cpu, mapper, mmu, display, ...
+	std::unique_ptr<ICartridge> m_cart;
+
+	IGPU::Data m_gpuData;
+	std::unique_ptr<IGPU> m_gpu;
+
 	IMMU::Data m_mmuData;
 	std::unique_ptr<IMMU> m_mmu;
 
