@@ -11,11 +11,12 @@
 class IMMU {
 public:
 	struct Data {
+		bool biosMode = true;
 		BIOS bios;
 		std::unique_ptr<ICartridge> cart;
-		std::array<u8, 127> hram;
-		std::array<u8, 4096> wram0;
-		std::array<u8, 4096> wram1;
+		std::array<u8, 127> hram = {{0}};
+		std::array<u8, 4096> wram0 = {{0}};
+		std::array<u8, 4096> wram1 = {{0}};
 
 		Data(const std::string&, const std::string&);
 	};
@@ -26,5 +27,9 @@ public:
 	IMMU& operator=(IMMU&&) = delete;
 	virtual ~IMMU() = default;
 
-	virtual u8 read(u16) = 0;
+	virtual u8 read8(u16) = 0;
+	virtual void write8(u16, u8) = 0;
+
+	u16 read16(u16);
+	void write16(u16, u16);
 };

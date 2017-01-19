@@ -9,7 +9,8 @@ public:
 	MMU(IMMU::Data&);
 	virtual ~MMU() = default;
 
-	virtual u8 read(u16) override;
+	virtual u8 read8(u16) override;
+	virtual void write8(u16, u8) override;
 
 private:
 	IMMU::Data& m_data;
