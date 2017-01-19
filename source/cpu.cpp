@@ -6,7 +6,10 @@ CPU::CPU(ICPU::Data& data, IMMU* mmu) : ICPU{}, m_data{data}, m_mmu{mmu} {
 	(void)m_mmu;
 }
 
-void CPU::Step() { std::cout << "tup is love, tup is life\n"; }
+void CPU::Step() {
+	m_data.op = m_mmu->read8(m_data.pc);
+	m_data.pc += s_instructions[m_data.op].offset;
+}
 
 extern "C" std::unique_ptr<ICPU> loadCPU(CPU::Data& data, IMMU* mmu) {
 	std::cout << "Reloading CPU...\n";

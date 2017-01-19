@@ -23,6 +23,11 @@ DebugBoy::~DebugBoy() {
 void DebugBoy::Run() {
 	for (;;) {
 		if (m_mode == Mode::WAIT) {
+			std::cout << m_cpuData << '\n';
+			std::cout << "(pc == 0x" << std::hex << +m_cpuData.pc
+				  << ") == "
+				  << CPU::s_instructions[m_cpuData.op].mnemonic
+				  << '\n';
 			std::string input{};
 			std::cout << "> ";
 			std::getline(std::cin, input);

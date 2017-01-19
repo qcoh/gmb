@@ -11,10 +11,11 @@ public:
 
 	virtual void Step() override;
 
+	static const std::array<Instruction, 256> s_instructions;
+
 private:
 	ICPU::Data& m_data;
 	IMMU* m_mmu;
-	static const std::array<Instruction, 256> s_instructions;
 };
 
 extern "C" std::unique_ptr<ICPU> loadCPU(ICPU::Data&, IMMU*);
