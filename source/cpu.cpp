@@ -21,15 +21,25 @@ void CPU::fetch() {
 
 void CPU::exec() {
 	switch (m_data.op) {
-	case 0x0:
-		// NOP
+	case 0x0:  // NOP
 		break;
 	case 0x01:
 	case 0x11:
 	case 0x21:
-	case 0x31:
-		// LD __, nn
+	case 0x31:  // LD __, nn
 		LD(m_data.read16((m_data.op >> 4) & 0x3), m_data.nn);
+		break;
+	case 0x22:  // LDI (HL+), A
+		LDI(MemRef{m_data.hl, m_mmu}, m_data.a);
+		break;
+	case 0x2a:  // LDI A, (HL+)
+		LDI(m_data.a, MemRef{m_data.hl, m_mmu});
+		break;
+	case 0x32:  // LDD (HL-), A
+		LDD(MemRef{m_data.hl, m_mmu}, m_data.a);
+		break;
+	case 0x3a:  // LDD A, (HL-)
+		LDD(m_data.a, MemRef{m_data.hl, m_mmu});
 		break;
 	case 0xa8:
 	case 0xa9:

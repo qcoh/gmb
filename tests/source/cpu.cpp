@@ -47,5 +47,49 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.carryFlag == false);
 			}
 		}
+		WHEN("LDD (HL-), A") {
+			data.a = 0x77;
+			data.hl = 0x100;
+			data.op = 0x32;
+			cpu.exec();
+
+			THEN("arr[0x100] == 0x77, data.hl == 0xff") {
+				REQUIRE(arr[0x100] == 0x77);
+				REQUIRE(data.hl == 0xff);
+			}
+		}
+		WHEN("LDD A, (HL-)") {
+			arr[0x100] = 0x25;
+			data.hl = 0x100;
+			data.op = 0x3a;
+			cpu.exec();
+
+			THEN("a == 0x25, data.hl == 0xff") {
+				REQUIRE(data.a == 0x25);
+				REQUIRE(data.hl == 0xff);
+			}
+		}
+		WHEN("LDI (HL+), A") {
+			data.a = 0x77;
+			data.hl = 0x100;
+			data.op = 0x22;
+			cpu.exec();
+
+			THEN("arr[0x100] == 0x77, data.hl == 0x101") {
+				REQUIRE(arr[0x100] == 0x77);
+				REQUIRE(data.hl == 0x101);
+			}
+		}
+		WHEN("LDI A, (HL+)") {
+			arr[0x100] = 0x25;
+			data.hl = 0x100;
+			data.op = 0x2a;
+			cpu.exec();
+
+			THEN("a == 0x25, data.hl == 0x101") {
+				REQUIRE(data.a == 0x25);
+				REQUIRE(data.hl == 0x101);
+			}
+		}
 	}
 }

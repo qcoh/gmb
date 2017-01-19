@@ -20,10 +20,25 @@ private:
 	ICPU::Data& m_data;
 	IMMU* m_mmu;
 
+	// LD
 	template <typename T>
 	void LD(T& target, const T& source) {
 		target = source;
 	}
+
+	template <typename T, typename S>
+	void LDD(T&& target, const S& source) {
+		target = source;
+		m_data.hl--;
+	}
+
+	template <typename T, typename S>
+	void LDI(T&& target, const S& source) {
+		target = source;
+		m_data.hl++;
+	}
+
+	// 8bit arithmetic and logic
 	template <typename T>
 	void XOR(const T& source) {
 		m_data.a ^= source;
