@@ -24,7 +24,14 @@ private:
 	void LD(T& target, const T& source) {
 		target = source;
 	}
-	void XOR(const u8&);
+	template <typename T>
+	void XOR(const T& source) {
+		m_data.a ^= source;
+		m_data.zeroFlag = (m_data.a == 0);
+		m_data.negFlag = false;
+		m_data.halfFlag = false;
+		m_data.carryFlag = false;
+	}
 };
 
 extern "C" std::unique_ptr<ICPU> loadCPU(ICPU::Data&, IMMU*);

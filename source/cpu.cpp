@@ -1,5 +1,7 @@
-#include "cpu.h"
 #include <iostream>
+
+#include "cpu.h"
+#include "memref.h"
 
 CPU::CPU(ICPU::Data& data, IMMU* mmu) : ICPU{}, m_data{data}, m_mmu{mmu} {
 	(void)m_data;
@@ -35,11 +37,13 @@ void CPU::exec() {
 	case 0xab:
 	case 0xac:
 	case 0xad:
-	case 0xae:
 	case 0xaf:
 		// XOR A, _
 		XOR(m_data.read8(m_data.op & 0x7));
 		break;
+	case 0xae:
+		// XOR A, (HL)
+		XOR(MemRef{m_data.hl, m_mmu});
 	default:
 		// causes segfault if dynamically loaded
 		// (I want to crash anyway)
@@ -50,14 +54,6 @@ void CPU::exec() {
 extern "C" std::unique_ptr<ICPU> loadCPU(CPU::Data& data, IMMU* mmu) {
 	std::cout << "Reloading CPU...\n";
 	return std::make_unique<CPU>(data, mmu);
-}
-
-void CPU::XOR(const u8& source) {
-	m_data.a ^= source;
-	m_data.zeroFlag = (m_data.a == 0);
-	m_data.negFlag = false;
-	m_data.halfFlag = false;
-	m_data.carryFlag = false;
 }
 
 const std::array<Instruction, 256> CPU::s_instructions = {{
