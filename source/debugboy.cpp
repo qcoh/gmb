@@ -9,7 +9,10 @@ void sigHandle(int signal) { DebugBoy::signaled = signal; }
 
 volatile sig_atomic_t DebugBoy::signaled = 0;
 
-DebugBoy::DebugBoy() : GameBoy{} { std::signal(SIGUSR1, sigHandle); }
+DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
+    : GameBoy{romPath, biosPath} {
+	std::signal(SIGUSR1, sigHandle);
+}
 
 DebugBoy::~DebugBoy() {
 	if (m_handle != nullptr) {

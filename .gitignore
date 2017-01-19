@@ -35,3 +35,4 @@ test
 *.gb
 *.to
 bios.bin
+exp/

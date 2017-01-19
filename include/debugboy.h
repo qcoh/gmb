@@ -7,7 +7,7 @@
 
 class DebugBoy : public GameBoy {
 public:
-	DebugBoy();
+	DebugBoy(const std::string&, const std::string&);
 	virtual void Run() override;
 	virtual ~DebugBoy();
 
