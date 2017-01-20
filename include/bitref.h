@@ -6,6 +6,7 @@ template <typename T>
 class BitRef {
 public:
 	BitRef(T& ref, int i) : m_ref{ref}, m_i{i} {}
+	BitRef(T&& ref, int i) : m_ref{ref}, m_i{i} {}
 	BitRef(const BitRef&) = default;
 	BitRef& operator=(const BitRef&) = default;
 	BitRef(BitRef&&) = delete;

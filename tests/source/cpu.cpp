@@ -93,3 +93,57 @@ SCENARIO("Testing instructions", "[CPU]") {
 		}
 	}
 }
+
+SCENARIO("Testing extended instructions", "[CPU]") {
+	GIVEN("TestCPU, ICPU::Data, TestMMU") {
+		std::array<u8, 0x10000> arr = {{0}};
+		TestMMU mmu{arr};
+		ICPU::Data data;
+		CPU cpu{data, &mmu};
+
+		WHEN("Calling BIT on registers") {
+			data.b = 0b10000000;
+			data.n = 0x78;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "data.zeroFlag == false, data.negFlag == false, "
+			    "data.halfFlag == true") {
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
+		WHEN("Calling BIT on (hl) (1)") {
+			data.hl = 0x100;
+			arr[data.hl] = 0b00010000;
+			data.n = 0x66;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "data.zeroFlag == false, data.negFlag == false, "
+			    "data.halfFlag == true") {
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
+		WHEN("Calling BIT on (hl) (2)") {
+			data.hl = 0x100;
+			arr[data.hl] = 0b11101111;
+			data.n = 0x66;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "data.zeroFlag == true, data.negFlag == false, "
+			    "data.halfFlag == true") {
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
+	}
+}

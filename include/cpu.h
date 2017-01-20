@@ -21,9 +21,6 @@ private:
 	ICPU::Data& m_data;
 	IMMU* m_mmu;
 
-	// misc
-	void CB();
-
 	// LD
 	template <typename T>
 	void LD(T& target, const T& source) {
@@ -50,6 +47,16 @@ private:
 		m_data.negFlag = false;
 		m_data.halfFlag = false;
 		m_data.carryFlag = false;
+	}
+
+	// extended instruction set
+	void CB();
+
+	template <typename T>
+	void BIT(const T& source) {
+		m_data.zeroFlag = !source;
+		m_data.negFlag = false;
+		m_data.halfFlag = true;
 	}
 };
 
