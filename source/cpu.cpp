@@ -133,8 +133,12 @@ void CPU::CB() {
 	case 0x23:
 	case 0x24:
 	case 0x25:
-	case 0x26:
+	// case 0x26:
 	case 0x27:  // SLA _
+		SLA(m_data.read8(m_data.n & 0x7));
+		break;
+	case 0x26:  // SLA (HL)
+		SLA(mhl);
 		break;
 	case 0x28:
 	case 0x29:

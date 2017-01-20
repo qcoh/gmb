@@ -339,6 +339,56 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 				REQUIRE(data.halfFlag == false);
 			}
 		}
+		WHEN("Calling SLA on register (1)") {
+			data.b = 0b11111111;
+			data.n = 0x20;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "b == 0b11111110, carryFlag == true, zeroFlag == "
+			    "false, negFlag == false, halfFlag == false") {
+				REQUIRE(data.b == 0b11111110);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling SLA on register (2)") {
+			data.a = 0b10000000;
+			data.n = 0x27;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, carryFlag == true, zeroFlag == true, "
+			    "negFlag == false, halfFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling SLA on (HL)") {
+			data.hl = 0x826a;
+			arr[data.hl] = 0x0f;
+			data.n = 0x26;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0b00011110, carryFlag == false, "
+			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "false") {
+				REQUIRE(arr[data.hl] == 0b00011110);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
 
 		WHEN("Calling BIT on registers") {
 			data.b = 0b10000000;
