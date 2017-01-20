@@ -145,5 +145,24 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 				REQUIRE(data.halfFlag == true);
 			}
 		}
+		WHEN("Calling RES on register") {
+			data.b = 0xff;
+			data.n = 0x80;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN("data.b = 0xfe") { REQUIRE(data.b == 0xfe); }
+		}
+		WHEN("Calling RES on (hl)") {
+			data.hl = 0x200;
+			arr[data.hl] = 0xff;
+			data.n = 0x86;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN("arr[data.hl] == 0xfe") {
+				REQUIRE(arr[data.hl] == 0xfe);
+			}
+		}
 	}
 }

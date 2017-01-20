@@ -58,6 +58,11 @@ private:
 		m_data.negFlag = false;
 		m_data.halfFlag = true;
 	}
+
+	template <typename T>
+	void RES(T&& target) {
+		target = false;
+	}
 };
 
 extern "C" std::unique_ptr<ICPU> loadCPU(ICPU::Data&, IMMU*);

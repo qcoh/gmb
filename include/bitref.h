@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include "types.h"
 
 template <typename T>
@@ -9,7 +10,7 @@ public:
 	BitRef(T&& ref, int i) : m_ref{ref}, m_i{i} {}
 	BitRef(const BitRef&) = default;
 	BitRef& operator=(const BitRef&) = default;
-	BitRef(BitRef&&) = delete;
+	BitRef(BitRef&&) = default;
 	BitRef& operator=(BitRef&&) = delete;
 
 	operator bool() const { return ((m_ref >> m_i) & 1) != 0; };

@@ -69,6 +69,8 @@ extern "C" std::unique_ptr<ICPU> loadCPU(CPU::Data& data, IMMU* mmu) {
 }
 
 void CPU::CB() {
+	MemRef mhl{m_data.hl, m_mmu};
+
 	switch (m_data.n) {
 	case 0x00:
 	case 0x01:
@@ -220,8 +222,7 @@ void CPU::CB() {
 	case 0x6e:
 	case 0x76:
 	case 0x7e:  // BIT (HL), _
-		BIT(BitRef<MemRef>{MemRef{m_data.hl, m_mmu},
-				   (m_data.nn >> 3) & 0x7});
+		BIT(BitRef<MemRef>{mhl, (m_data.nn >> 3) & 0x7});
 		break;
 
 	case 0x80:
@@ -230,7 +231,7 @@ void CPU::CB() {
 	case 0x83:
 	case 0x84:
 	case 0x85:
-	case 0x86:
+	// case 0x86:
 	case 0x87:
 	case 0x88:
 	case 0x89:
@@ -238,7 +239,7 @@ void CPU::CB() {
 	case 0x8b:
 	case 0x8c:
 	case 0x8d:
-	case 0x8e:
+	// case 0x8e:
 	case 0x8f:
 	case 0x90:
 	case 0x91:
@@ -246,7 +247,7 @@ void CPU::CB() {
 	case 0x93:
 	case 0x94:
 	case 0x95:
-	case 0x96:
+	// case 0x96:
 	case 0x97:
 	case 0x98:
 	case 0x99:
@@ -254,7 +255,7 @@ void CPU::CB() {
 	case 0x9b:
 	case 0x9c:
 	case 0x9d:
-	case 0x9e:
+	// case 0x9e:
 	case 0x9f:
 	case 0xa0:
 	case 0xa1:
@@ -262,7 +263,7 @@ void CPU::CB() {
 	case 0xa3:
 	case 0xa4:
 	case 0xa5:
-	case 0xa6:
+	// case 0xa6:
 	case 0xa7:
 	case 0xa8:
 	case 0xa9:
@@ -270,7 +271,7 @@ void CPU::CB() {
 	case 0xab:
 	case 0xac:
 	case 0xad:
-	case 0xae:
+	// case 0xae:
 	case 0xaf:
 	case 0xb0:
 	case 0xb1:
@@ -278,7 +279,7 @@ void CPU::CB() {
 	case 0xb3:
 	case 0xb4:
 	case 0xb5:
-	case 0xb6:
+	// case 0xb6:
 	case 0xb7:
 	case 0xb8:
 	case 0xb9:
@@ -286,8 +287,20 @@ void CPU::CB() {
 	case 0xbb:
 	case 0xbc:
 	case 0xbd:
-	case 0xbe:
+	// case 0xbe:
 	case 0xbf:  // RES _, _
+		RES(BitRef<u8>{m_data.read8(m_data.nn & 0x7),
+			       (m_data.nn >> 3) & 0x7});
+		break;
+	case 0x86:
+	case 0x8e:
+	case 0x96:
+	case 0x9e:
+	case 0xa6:
+	case 0xae:
+	case 0xb6:
+	case 0xbe:  // RES (HL), _
+		RES(BitRef<MemRef>{mhl, (m_data.nn >> 3) & 0x7});
 		break;
 
 	case 0xc0:
