@@ -21,6 +21,8 @@ void CPU::fetch() {
 }
 
 void CPU::exec() {
+	MemRef mhl{m_data.hl, m_mmu};
+
 	switch (m_data.op) {
 	case 0x0:  // NOP
 		break;
@@ -29,6 +31,20 @@ void CPU::exec() {
 	case 0x21:
 	case 0x31:  // LD __, nn
 		LD(m_data.read16((m_data.op >> 4) & 0x3), m_data.nn);
+		break;
+
+	case 0x06:
+	case 0x0e:
+	case 0x16:
+	case 0x1e:
+	case 0x26:
+	case 0x2e:
+	// case 0x36:
+	case 0x3e:  // LD _, n
+		LD(m_data.read8((m_data.op >> 3) & 0x7), m_data.n);
+		break;
+	case 0x36:  // LD (HL), n
+		LD(mhl, m_data.n);
 		break;
 
 	case 0x18:  // JR n

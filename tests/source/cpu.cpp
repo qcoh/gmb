@@ -153,6 +153,30 @@ SCENARIO("Testing instructions", "[CPU]") {
 
 			THEN("data.pc == 12") { REQUIRE(data.pc == 12); }
 		}
+		WHEN("Calling LD _, n on register (1)") {
+			data.n = 0x25;
+			data.op = 0x6;
+			cpu.exec();
+
+			THEN("b == 0x25") { REQUIRE(data.b == 0x25); }
+		}
+		WHEN("Calling LD _, n on register (2)") {
+			data.n = 0x26;
+			data.op = 0x2e;
+			cpu.exec();
+
+			THEN("l == 0x26") { REQUIRE(data.l == 0x26); }
+		}
+		WHEN("Calling LD (HL), n") {
+			data.hl = 0x1234;
+			data.op = 0x36;
+			data.n = 0xff;
+			cpu.exec();
+
+			THEN("arr[data.hl] == 0xff") {
+				REQUIRE(arr[data.hl] == 0xff);
+			}
+		}
 	}
 }
 
