@@ -106,8 +106,12 @@ void CPU::CB() {
 	case 0x13:
 	case 0x14:
 	case 0x15:
-	case 0x16:
+	// case 0x16:
 	case 0x17:  // RL _
+		RL(m_data.read8(m_data.n & 0x7));
+		break;
+	case 0x16:  // RL (HL)
+		RL(mhl);
 		break;
 	case 0x18:
 	case 0x19:

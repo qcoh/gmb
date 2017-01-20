@@ -233,6 +233,60 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 				REQUIRE(data.negFlag == false);
 			}
 		}
+		WHEN("Calling RL on register (1)") {
+			data.b = 0;
+			data.carryFlag = true;
+			data.n = 0x10;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "b == 1, carryFlag == false, zeroFlag == false, "
+			    "negFlag == false, halfFlag == false") {
+				REQUIRE(data.b == 1);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling RL on register (2)") {
+			data.a = 0b10000000;
+			data.carryFlag = false;
+			data.n = 0x17;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "data.a == 0, data.carryFlag == true, "
+			    "data.zeroFlag == true, data.halfFlag == false, "
+			    "data.negFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling RL on (HL)") {
+			data.hl = 0x11;
+			arr[data.hl] = 0xff;
+			data.carryFlag = false;
+			data.n = 0x16;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0xfe, data.CarryFlag == true, "
+			    "data.zeroFlag == false, data.negFlag == false, "
+			    "data.halfFlag") {
+				REQUIRE(arr[data.hl] == 0xfe);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
 
 		WHEN("Calling BIT on registers") {
 			data.b = 0b10000000;
