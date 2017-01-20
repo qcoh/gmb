@@ -89,6 +89,19 @@ void CPU::exec() {
 		// CB
 		CB();
 		break;
+	case 0xe2:  // LD (C + 0xff00), A
+	{
+		MemRef mc{m_data.c + 0xff00, m_mmu};
+		LD(mc, m_data.a);
+		break;
+	}
+	case 0xf2:  // LD A, (C + 0xff00)
+	{
+		MemRef mc{m_data.c + 0xff00, m_mmu};
+		LD(m_data.a, mc);
+		break;
+	}
+
 	default:
 		// causes segfault if dynamically loaded
 		// (I want to crash anyway)

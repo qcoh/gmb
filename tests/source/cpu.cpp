@@ -177,6 +177,24 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(arr[data.hl] == 0xff);
 			}
 		}
+		WHEN("Calling LD (C + 0xff00), A") {
+			data.c = 0x25;
+			data.a = 0x11;
+			data.op = 0xe2;
+			cpu.exec();
+
+			THEN("arr[data.c + 0xff00] == 0x11") {
+				REQUIRE(arr[data.c + 0xff00] == 0x11);
+			}
+		}
+		WHEN("Calling LD A, (C + 0xff00)") {
+			data.c = 0xbb;
+			arr[data.c + 0xff00] = 0x43;
+			data.op = 0xf2;
+			cpu.exec();
+
+			THEN("a == 0x43") { REQUIRE(data.a == 0x43); }
+		}
 	}
 }
 
