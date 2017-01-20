@@ -162,6 +162,77 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 				REQUIRE(data.zeroFlag == true);
 			}
 		}
+		WHEN("Calling RRC on registers (1)") {
+			data.h = 0b10101010;
+			data.carryFlag = true;
+			data.n = 0xc;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "h == 0b01010101, carryFlag == false, zeroFlag == "
+			    "false, negFlag == false, halfFlag == false") {
+				REQUIRE(data.h == 0b01010101);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling RRC on registers (2)") {
+			data.e = 0b01010101;
+			data.carryFlag = false;
+			data.n = 0xb;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "e == 0b10101010, carryFlag == true, zeroFlag == "
+			    "false, negFlag == false, halfFlag == false") {
+				REQUIRE(data.e == 0b10101010);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling RRC on (HL) (1)") {
+			data.hl = 0x123;
+			arr[data.hl] = 0;
+			data.carryFlag = true;
+			data.n = 0xe;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0, carryFlag == false, zeroFlag "
+			    "== true, negFlag == false, halfFlag == false") {
+				REQUIRE(arr[data.hl] == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling RRC on (HL) (2)") {
+			data.hl = 0x456;
+			arr[data.hl] = 0b00001111;
+			data.carryFlag = false;
+			data.n = 0xe;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0b10000111, carryFlag == true, "
+			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "false") {
+				REQUIRE(arr[data.hl] == 0b10000111);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
 
 		WHEN("Calling BIT on registers") {
 			data.b = 0b10000000;

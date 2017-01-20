@@ -55,7 +55,16 @@ private:
 	template <typename T>
 	void RLC(T& target) {
 		m_data.carryFlag = ((target & 0b10000000) != 0);
-		target = static_cast<u8>(target << 1 | m_data.carryFlag);
+		target = static_cast<u8>(target << 1 | target >> 7);
+		m_data.zeroFlag = (target == 0);
+		m_data.halfFlag = false;
+		m_data.negFlag = false;
+	}
+
+	template <typename T>
+	void RRC(T& target) {
+		m_data.carryFlag = ((target & 1) != 0);
+		target = static_cast<u8>(target >> 1 | target << 7);
 		m_data.zeroFlag = (target == 0);
 		m_data.halfFlag = false;
 		m_data.negFlag = false;
