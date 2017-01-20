@@ -3,6 +3,8 @@
 #include <dlfcn.h>
 #include <csignal>
 #include <string>
+#include <unordered_set>
+
 #include "gameboy.h"
 
 class DebugBoy : public GameBoy {
@@ -19,6 +21,8 @@ private:
 
 	static volatile sig_atomic_t signaled;
 	void* m_handle = nullptr;
+
+	std::unordered_set<u16> m_breakPoints{};
 
 	void reloadCPU();
 	void parseCommands(std::string&);

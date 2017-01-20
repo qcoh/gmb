@@ -1,6 +1,7 @@
 #include <dlfcn.h>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 
 #include "cpu.h"
@@ -52,7 +53,12 @@ void DebugBoy::Run() {
 			}
 			parseCommands(input);
 		} else {
-			m_cpu->Step();
+			if (m_breakPoints.find(m_cpuData.pc) ==
+			    m_breakPoints.end()) {
+				m_cpu->Step();
+			} else {
+				m_mode = Mode::WAIT;
+			}
 		}
 	}
 }
@@ -66,7 +72,7 @@ void DebugBoy::parseCommands(std::string& input) {
 	} else if (cmd == "continue") {
 		m_mode = Mode::RUN;
 	} else if (cmd == "print") {
-		u16 addr;
+		u16 addr = 0;
 		if (stream >> std::hex >> addr) {
 			u8 v = m_mmu->read8(addr);
 			std::cout << "(0x" << std::hex << std::setfill('0')
@@ -74,7 +80,15 @@ void DebugBoy::parseCommands(std::string& input) {
 				  << std::setw(2) << v << '\n';
 		}
 	} else if (cmd == "break") {
-		// set breakpoints
+		u16 addr = 0;
+		if (stream >> std::hex >> addr) {
+			m_breakPoints.insert(addr);
+		}
+	} else if (cmd == "breakpoints") {
+		std::cout << "Breakpoints: ";
+		std::copy(std::begin(m_breakPoints), std::end(m_breakPoints),
+			  std::ostream_iterator<int>(std::cout, ", "));
+		std::cout << '\n';
 	} else if (cmd == "trace") {
 		// set tracepoints
 	}

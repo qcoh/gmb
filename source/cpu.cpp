@@ -76,6 +76,8 @@ void CPU::exec() {
 	default:
 		// causes segfault if dynamically loaded
 		// (I want to crash anyway)
+		std::cout << "Instruction 0x" << std::hex << +m_data.op
+			  << " not implemented\n";
 		throw std::runtime_error{"Instruction not implemented"};
 	}
 }
