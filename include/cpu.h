@@ -109,6 +109,15 @@ private:
 	}
 
 	template <typename T>
+	void SWAP(T& target) {
+		target = static_cast<u8>(target >> 4 | target << 4);
+		m_data.zeroFlag = (target == 0);
+		m_data.carryFlag = false;
+		m_data.halfFlag = false;
+		m_data.negFlag = false;
+	}
+
+	template <typename T>
 	void BIT(const T& source) {
 		m_data.zeroFlag = !source;
 		m_data.negFlag = false;

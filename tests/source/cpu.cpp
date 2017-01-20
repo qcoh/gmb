@@ -438,6 +438,56 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 				REQUIRE(data.halfFlag == false);
 			}
 		}
+		WHEN("Calling SWAP on register (1)") {
+			data.b = 0xf0;
+			data.n = 0x30;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "b == 0x0f, carryFlag == false, zeroFlag == false, "
+			    "negFlag == false, halfFlag == false") {
+				REQUIRE(data.b == 0x0f);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling SWAP on register (2)") {
+			data.a = 0x00;
+			data.n = 0x37;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == true, carryFlag == false, "
+			    "negFlag == false, halfFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling SWAP on (HL)") {
+			data.hl = 0xbf11;
+			arr[data.hl] = 0b10010000;
+			data.n = 0x36;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0b00001001, carryFlag == false, "
+			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "false") {
+				REQUIRE(arr[data.hl] == 0b00001001);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
 
 		WHEN("Calling BIT on registers") {
 			data.b = 0b10000000;

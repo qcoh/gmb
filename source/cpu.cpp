@@ -160,9 +160,14 @@ void CPU::CB() {
 	case 0x33:
 	case 0x34:
 	case 0x35:
-	case 0x36:
+	// case 0x36:
 	case 0x37:  // SWAP _
+		SWAP(m_data.read8(m_data.n & 0x7));
 		break;
+	case 0x36:
+		SWAP(mhl);
+		break;
+
 	case 0x38:
 	case 0x39:
 	case 0x3a:
