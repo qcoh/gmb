@@ -164,5 +164,26 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 				REQUIRE(arr[data.hl] == 0xfe);
 			}
 		}
+		WHEN("Calling SET on register") {
+			data.b = 0x00;
+			data.n = 0xf0;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN("data.b = 0b01000000") {
+				REQUIRE(data.b == 0b01000000);
+			}
+		}
+		WHEN("Calling SET on (hl)") {
+			data.hl = 0x200;
+			arr[data.hl] = 0x0;
+			data.n = 0xc6;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN("arr[data.hl] == 1") {
+				REQUIRE(arr[data.hl] == 1);
+			}
+		}
 	}
 }

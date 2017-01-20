@@ -63,6 +63,11 @@ private:
 	void RES(T&& target) {
 		target = false;
 	}
+
+	template <typename T>
+	void SET(T&& target) {
+		target = true;
+	}
 };
 
 extern "C" std::unique_ptr<ICPU> loadCPU(ICPU::Data&, IMMU*);
