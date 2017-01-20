@@ -23,10 +23,41 @@ u8 MMU::read8(u16 addr) {
 	case 0x8000:
 	case 0x9000:
 		return m_data.gpu->read8(addr);
+	case 0xd000:
+		// wram
+		break;
+	case 0xe000:
+	case 0xf000:
+		if (addr < 0xfe00) {
+			// mirror of wram
+			break;
+		}
+		if (addr < 0xfea0) {
+			// oam
+			break;
+		}
+		if (addr < 0xff00) {
+			// unused
+			break;
+		}
+		if (addr < 0xff80) {
+			// io registers
+			break;
+		}
+		if (addr < 0xffff) {
+			// hram
+			break;
+		}
+		if (addr == 0xffff) {
+			// interrupt enable
+			break;
+		}
 	default:
-		std::cout << "Address: 0x" << std::hex << +addr << '\n';
-		throw std::runtime_error{"Read from unknown address"};
+		break;
 	}
+
+	std::cout << "Address: 0x" << std::hex << +addr << '\n';
+	throw std::runtime_error{"Read from unknown address"};
 }
 
 void MMU::write8(u16 addr, u8 v) {
@@ -40,13 +71,45 @@ void MMU::write8(u16 addr, u8 v) {
 	case 0x6000:
 	case 0x7000:
 		m_data.cart->write8(addr, v);
-		break;
+		return;
 	case 0x8000:
 	case 0x9000:
 		m_data.gpu->write8(addr, v);
+		return;
+
+	case 0xd000:
+		// wram
 		break;
+	case 0xe000:
+	case 0xf000:
+		if (addr < 0xfe00) {
+			// mirror of wram
+			break;
+		}
+		if (addr < 0xfea0) {
+			// oam
+			break;
+		}
+		if (addr < 0xff00) {
+			// unused
+			break;
+		}
+		if (addr < 0xff80) {
+			// io registers
+			// ignore for now
+			return;
+		}
+		if (addr < 0xffff) {
+			// hram
+			break;
+		}
+		if (addr == 0xffff) {
+			// interrupt enable
+			break;
+		}
 	default:
-		std::cout << "Address: 0x" << std::hex << +addr << '\n';
-		throw std::runtime_error{"Write to unknown address"};
+		break;
 	}
+	std::cout << "Address: 0x" << std::hex << +addr << '\n';
+	throw std::runtime_error{"Write to unknown address"};
 }
