@@ -22,6 +22,5 @@ private:
 
 	void reloadCPU();
 	void parseCommands(std::string&);
+	void printCurrentInstruction();
 };
-
-void sigHandle(int);

@@ -21,19 +21,27 @@ DebugBoy::~DebugBoy() {
 	}
 }
 
+void DebugBoy::printCurrentInstruction() {
+	u8 op = m_mmu->read8(m_cpuData.pc);
+
+	std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(4)
+		  << +m_cpuData.pc << ") == 0x" << +op
+		  << " == " << CPU::s_instructions[op].mnemonic;
+
+	if (op == 0xcb) {
+		std::cout << " " << CPU::s_extended[m_cpuData.n].mnemonic
+			  << '\n';
+	} else {
+		std::cout << '\n';
+	}
+}
+
 void DebugBoy::Run() {
 	for (;;) {
 		if (m_mode == Mode::WAIT) {
 			m_cpuData.nn = m_mmu->read16(m_cpuData.pc + 1);
 			std::cout << m_cpuData << '\n';
-
-			u8 op = m_mmu->read8(m_cpuData.pc);
-
-			std::cout << "(0x" << std::hex << std::setfill('0')
-				  << std::setw(4) << +m_cpuData.pc << ") == 0x"
-				  << +op
-				  << " == " << CPU::s_instructions[op].mnemonic
-				  << '\n';
+			printCurrentInstruction();
 
 			std::string input{};
 			std::cout << "> ";
