@@ -64,6 +64,14 @@ private:
 		m_data.carryFlag = false;
 	}
 
+	template <typename T>
+	void INC(T& target) {
+		m_data.halfFlag = ((target & 0x0f) == 0x0f);
+		target = static_cast<u8>(target + 1);
+		m_data.zeroFlag = (target == 0);
+		m_data.negFlag = false;
+	}
+
 	// extended instruction set
 	void CB();
 

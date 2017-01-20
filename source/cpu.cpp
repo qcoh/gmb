@@ -33,6 +33,20 @@ void CPU::exec() {
 		LD(m_data.read16((m_data.op >> 4) & 0x3), m_data.nn);
 		break;
 
+	case 0x04:
+	case 0x0c:
+	case 0x14:
+	case 0x1c:
+	case 0x24:
+	case 0x2c:
+	// case 0x34:
+	case 0x3c:  // INC _
+		INC(m_data.read8((m_data.op >> 3) & 0x7));
+		break;
+	case 0x34:  // INC (HL)
+		INC(mhl);
+		break;
+
 	case 0x06:
 	case 0x0e:
 	case 0x16:

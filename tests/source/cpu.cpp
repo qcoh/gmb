@@ -195,6 +195,49 @@ SCENARIO("Testing instructions", "[CPU]") {
 
 			THEN("a == 0x43") { REQUIRE(data.a == 0x43); }
 		}
+		WHEN("Calling INC B") {
+			data.b = 0x45;
+			data.op = 0x04;
+			cpu.exec();
+
+			THEN(
+			    "b == 0x46, halfFlag == false, zeroFlag == false, "
+			    "negFlag == false") {
+				REQUIRE(data.b == 0x46);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling INC A") {
+			data.a = 0xff;
+			data.op = 0x3c;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, halfFlag == true, zeroFlag == true, "
+			    "negFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling INC (HL)") {
+			data.hl = 0x45;
+			arr[data.hl] = 0x10;
+			data.op = 0x34;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0x11, halfFlag == false, zeroFlag "
+			    "== false, negFlag == false") {
+				REQUIRE(arr[data.hl] == 0x11);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
 	}
 }
 
@@ -213,7 +256,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "data.a == 1, carryFlag == true, zeroFlag == "
+			    "data.a == 1, carryFlag == true, zeroFlag "
+			    "== "
 			    "false") {
 				REQUIRE(data.a == 1);
 				REQUIRE(data.carryFlag == true);
@@ -228,7 +272,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "data.b == 0b10, carryFlag == false, zeroFlag == "
+			    "data.b == 0b10, carryFlag == false, "
+			    "zeroFlag == "
 			    "false") {
 				REQUIRE(data.b == 2);
 				REQUIRE(data.carryFlag == false);
@@ -244,7 +289,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0b11100001, carryFlag == true, "
+			    "arr[data.hl] == 0b11100001, carryFlag == "
+			    "true, "
 			    "zeroFlag == false") {
 				REQUIRE(arr[data.hl] == 0b11100001);
 				REQUIRE(data.carryFlag == true);
@@ -259,7 +305,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0, carryFlag == false, zeroFlag "
+			    "arr[data.hl] == 0, carryFlag == false, "
+			    "zeroFlag "
 			    "== true") {
 				REQUIRE(arr[data.hl] == 0);
 				REQUIRE(data.carryFlag == false);
@@ -274,8 +321,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "h == 0b01010101, carryFlag == false, zeroFlag == "
-			    "false, negFlag == false, halfFlag == false") {
+			    "h == 0b01010101, carryFlag == false, "
+			    "zeroFlag == "
+			    "false, negFlag == false, halfFlag == "
+			    "false") {
 				REQUIRE(data.h == 0b01010101);
 				REQUIRE(data.carryFlag == false);
 				REQUIRE(data.zeroFlag == false);
@@ -291,8 +340,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "e == 0b10101010, carryFlag == true, zeroFlag == "
-			    "false, negFlag == false, halfFlag == false") {
+			    "e == 0b10101010, carryFlag == true, "
+			    "zeroFlag == "
+			    "false, negFlag == false, halfFlag == "
+			    "false") {
 				REQUIRE(data.e == 0b10101010);
 				REQUIRE(data.carryFlag == true);
 				REQUIRE(data.zeroFlag == false);
@@ -309,8 +360,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0, carryFlag == false, zeroFlag "
-			    "== true, negFlag == false, halfFlag == false") {
+			    "arr[data.hl] == 0, carryFlag == false, "
+			    "zeroFlag "
+			    "== true, negFlag == false, halfFlag == "
+			    "false") {
 				REQUIRE(arr[data.hl] == 0);
 				REQUIRE(data.zeroFlag == true);
 				REQUIRE(data.carryFlag == false);
@@ -327,8 +380,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0b10000111, carryFlag == true, "
-			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "arr[data.hl] == 0b10000111, carryFlag == "
+			    "true, "
+			    "zeroFlag == false, negFlag == false, "
+			    "halfFlag == "
 			    "false") {
 				REQUIRE(arr[data.hl] == 0b10000111);
 				REQUIRE(data.carryFlag == true);
@@ -345,7 +400,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "b == 1, carryFlag == false, zeroFlag == false, "
+			    "b == 1, carryFlag == false, zeroFlag == "
+			    "false, "
 			    "negFlag == false, halfFlag == false") {
 				REQUIRE(data.b == 1);
 				REQUIRE(data.carryFlag == false);
@@ -363,7 +419,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 
 			THEN(
 			    "data.a == 0, data.carryFlag == true, "
-			    "data.zeroFlag == true, data.halfFlag == false, "
+			    "data.zeroFlag == true, data.halfFlag == "
+			    "false, "
 			    "data.negFlag == false") {
 				REQUIRE(data.a == 0);
 				REQUIRE(data.carryFlag == true);
@@ -381,8 +438,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0xfe, data.CarryFlag == true, "
-			    "data.zeroFlag == false, data.negFlag == false, "
+			    "arr[data.hl] == 0xfe, data.CarryFlag == "
+			    "true, "
+			    "data.zeroFlag == false, data.negFlag == "
+			    "false, "
 			    "data.halfFlag") {
 				REQUIRE(arr[data.hl] == 0xfe);
 				REQUIRE(data.carryFlag == true);
@@ -399,8 +458,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "b == 0b11111000, carryFlag == false, zeroFlag == "
-			    "false, negFlag == false, halfFlag == false") {
+			    "b == 0b11111000, carryFlag == false, "
+			    "zeroFlag == "
+			    "false, negFlag == false, halfFlag == "
+			    "false") {
 				REQUIRE(data.b == 0b11111000);
 				REQUIRE(data.carryFlag == false);
 				REQUIRE(data.zeroFlag == false);
@@ -415,7 +476,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "a == 0, carryFlag == true, zeroFlag == true, "
+			    "a == 0, carryFlag == true, zeroFlag == "
+			    "true, "
 			    "halfFlag == false, negFlag == false") {
 				REQUIRE(data.a == 0);
 				REQUIRE(data.carryFlag == true);
@@ -434,7 +496,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 
 			THEN(
 			    "arr[data.hl] == 0xff, carryFlag == false, "
-			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "zeroFlag == false, negFlag == false, "
+			    "halfFlag == "
 			    "false") {
 				REQUIRE(arr[data.hl] == 0xff);
 				REQUIRE(data.carryFlag == false);
@@ -450,8 +513,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "b == 0b11111110, carryFlag == true, zeroFlag == "
-			    "false, negFlag == false, halfFlag == false") {
+			    "b == 0b11111110, carryFlag == true, "
+			    "zeroFlag == "
+			    "false, negFlag == false, halfFlag == "
+			    "false") {
 				REQUIRE(data.b == 0b11111110);
 				REQUIRE(data.carryFlag == true);
 				REQUIRE(data.zeroFlag == false);
@@ -466,7 +531,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "a == 0, carryFlag == true, zeroFlag == true, "
+			    "a == 0, carryFlag == true, zeroFlag == "
+			    "true, "
 			    "negFlag == false, halfFlag == false") {
 				REQUIRE(data.a == 0);
 				REQUIRE(data.carryFlag == true);
@@ -483,8 +549,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0b00011110, carryFlag == false, "
-			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "arr[data.hl] == 0b00011110, carryFlag == "
+			    "false, "
+			    "zeroFlag == false, negFlag == false, "
+			    "halfFlag == "
 			    "false") {
 				REQUIRE(arr[data.hl] == 0b00011110);
 				REQUIRE(data.carryFlag == false);
@@ -500,8 +568,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "b == 0b11000000, carryFlag == false, zeroFlag == "
-			    "false, negFlag == false, halfFlag == false") {
+			    "b == 0b11000000, carryFlag == false, "
+			    "zeroFlag == "
+			    "false, negFlag == false, halfFlag == "
+			    "false") {
 				REQUIRE(data.b == 0b11000000);
 				REQUIRE(data.carryFlag == false);
 				REQUIRE(data.zeroFlag == false);
@@ -516,7 +586,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "a == 0, carryFlag == true, zeroFlag == true, "
+			    "a == 0, carryFlag == true, zeroFlag == "
+			    "true, "
 			    "negFlag == false, halfFlag == false") {
 				REQUIRE(data.a == 0);
 				REQUIRE(data.carryFlag == true);
@@ -533,8 +604,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0xff, carryFlag == true, zeroFlag "
-			    "== false, negFlag == false, halfFlag == false") {
+			    "arr[data.hl] == 0xff, carryFlag == true, "
+			    "zeroFlag "
+			    "== false, negFlag == false, halfFlag == "
+			    "false") {
 				REQUIRE(arr[data.hl] == 0xff);
 				REQUIRE(data.carryFlag == true);
 				REQUIRE(data.zeroFlag == false);
@@ -549,7 +622,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "b == 0x0f, carryFlag == false, zeroFlag == false, "
+			    "b == 0x0f, carryFlag == false, zeroFlag "
+			    "== false, "
 			    "negFlag == false, halfFlag == false") {
 				REQUIRE(data.b == 0x0f);
 				REQUIRE(data.carryFlag == false);
@@ -565,7 +639,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "a == 0, zeroFlag == true, carryFlag == false, "
+			    "a == 0, zeroFlag == true, carryFlag == "
+			    "false, "
 			    "negFlag == false, halfFlag == false") {
 				REQUIRE(data.a == 0);
 				REQUIRE(data.zeroFlag == true);
@@ -582,8 +657,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0b00001001, carryFlag == false, "
-			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "arr[data.hl] == 0b00001001, carryFlag == "
+			    "false, "
+			    "zeroFlag == false, negFlag == false, "
+			    "halfFlag == "
 			    "false") {
 				REQUIRE(arr[data.hl] == 0b00001001);
 				REQUIRE(data.carryFlag == false);
@@ -599,7 +676,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "b == 0, carryFlag == true, zeroFlag == true, "
+			    "b == 0, carryFlag == true, zeroFlag == "
+			    "true, "
 			    "negFlag == false, halfFlag == false") {
 				REQUIRE(data.b == 0);
 				REQUIRE(data.carryFlag == true);
@@ -617,8 +695,10 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "arr[data.hl] == 0b01000000, carryFlag == false, "
-			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "arr[data.hl] == 0b01000000, carryFlag == "
+			    "false, "
+			    "zeroFlag == false, negFlag == false, "
+			    "halfFlag == "
 			    "false") {
 				REQUIRE(arr[data.hl] == 0b01000000);
 				REQUIRE(data.carryFlag == false);
@@ -635,7 +715,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "data.zeroFlag == false, data.negFlag == false, "
+			    "data.zeroFlag == false, data.negFlag == "
+			    "false, "
 			    "data.halfFlag == true") {
 				REQUIRE(data.zeroFlag == false);
 				REQUIRE(data.negFlag == false);
@@ -650,7 +731,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "data.zeroFlag == false, data.negFlag == false, "
+			    "data.zeroFlag == false, data.negFlag == "
+			    "false, "
 			    "data.halfFlag == true") {
 				REQUIRE(data.zeroFlag == false);
 				REQUIRE(data.negFlag == false);
@@ -665,7 +747,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 			cpu.exec();
 
 			THEN(
-			    "data.zeroFlag == true, data.negFlag == false, "
+			    "data.zeroFlag == true, data.negFlag == "
+			    "false, "
 			    "data.halfFlag == true") {
 				REQUIRE(data.zeroFlag == true);
 				REQUIRE(data.negFlag == false);
