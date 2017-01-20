@@ -15,6 +15,7 @@ public:
 	void exec();
 
 	static const std::array<Instruction, 256> s_instructions;
+	static const std::array<Instruction, 256> s_extended;
 
 private:
 	ICPU::Data& m_data;
