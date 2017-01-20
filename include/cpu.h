@@ -53,6 +53,15 @@ private:
 	void CB();
 
 	template <typename T>
+	void RLC(T& target) {
+		m_data.carryFlag = ((target & 0b10000000) != 0);
+		target = static_cast<u8>(target << 1 | m_data.carryFlag);
+		m_data.zeroFlag = (target == 0);
+		m_data.halfFlag = false;
+		m_data.negFlag = false;
+	}
+
+	template <typename T>
 	void BIT(const T& source) {
 		m_data.zeroFlag = !source;
 		m_data.negFlag = false;

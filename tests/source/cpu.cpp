@@ -101,6 +101,68 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 		ICPU::Data data;
 		CPU cpu{data, &mmu};
 
+		WHEN("Calling RLC on register (1)") {
+			data.a = 0b10000000;
+			data.carryFlag = false;
+			data.n = 0x7;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "data.a == 1, carryFlag == true, zeroFlag == "
+			    "false") {
+				REQUIRE(data.a == 1);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+			}
+		}
+		WHEN("Calling RLC on register (2)") {
+			data.b = 1;
+			data.carryFlag = true;
+			data.n = 0;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "data.b == 0b10, carryFlag == false, zeroFlag == "
+			    "false") {
+				REQUIRE(data.b == 2);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+			}
+		}
+		WHEN("Calling RLC on (HL) (1)") {
+			data.hl = 0x300;
+			arr[data.hl] = 0xf0;
+			data.carryFlag = false;
+			data.n = 0x6;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0b11100001, carryFlag == true, "
+			    "zeroFlag == false") {
+				REQUIRE(arr[data.hl] == 0b11100001);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+			}
+		}
+		WHEN("Calling RLC on (HL) (2)") {
+			data.hl = 0x10;
+			data.carryFlag = true;
+			data.n = 0x6;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0, carryFlag == false, zeroFlag "
+			    "== true") {
+				REQUIRE(arr[data.hl] == 0);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == true);
+			}
+		}
+
 		WHEN("Calling BIT on registers") {
 			data.b = 0b10000000;
 			data.n = 0x78;
