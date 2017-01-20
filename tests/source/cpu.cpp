@@ -488,6 +488,41 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 				REQUIRE(data.halfFlag == false);
 			}
 		}
+		WHEN("Calling SRL on register") {
+			data.b = 1;
+			data.n = 0x38;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "b == 0, carryFlag == true, zeroFlag == true, "
+			    "negFlag == false, halfFlag == false") {
+				REQUIRE(data.b == 0);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling SRL on (HL)") {
+			data.hl = 0xbcf0;
+			arr[data.hl] = 0b10000000;
+			data.carryFlag = true;
+			data.n = 0x3e;
+			data.op = 0xcb;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0b01000000, carryFlag == false, "
+			    "zeroFlag == false, negFlag == false, halfFlag == "
+			    "false") {
+				REQUIRE(arr[data.hl] == 0b01000000);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
 
 		WHEN("Calling BIT on registers") {
 			data.b = 0b10000000;
