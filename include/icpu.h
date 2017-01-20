@@ -36,6 +36,8 @@ public:
 
 		u8 op = 0;
 
+		u16 cycles = 0;
+
 		u8& read8(u8);
 		u16& read16(u8);
 	};

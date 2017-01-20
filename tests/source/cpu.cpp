@@ -91,6 +91,68 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.hl == 0x101);
 			}
 		}
+		WHEN("Calling JR n (1)") {
+			data.pc = 0x1234;
+			data.n = static_cast<u8>(-17);
+			data.op = 0x18;
+			cpu.exec();
+
+			THEN("data.pc == 0x1234 -17") {
+				REQUIRE(data.pc == 0x1234 - 17);
+			}
+		}
+		WHEN("Calling JR n (2)") {
+			data.pc = 0xbbbb;
+			data.n = static_cast<u8>(127);
+			data.op = 0x18;
+			cpu.exec();
+
+			THEN("data.pc == 0xbbbb + 127") {
+				REQUIRE(data.pc == 0xbbbb + 127);
+			}
+		}
+		WHEN("Calling JR C, n") {
+			data.pc = 0xaaaa;
+			data.n = static_cast<u8>(-128);
+			data.carryFlag = true;
+			data.op = 0x38;
+			cpu.exec();
+
+			THEN("data.pc == 0xaaaa - 128") {
+				REQUIRE(data.pc == 0xaaaa - 128);
+			}
+		}
+		WHEN("Calling JR Z, n") {
+			data.pc = 0x1111;
+			data.n = 113;
+			data.zeroFlag = false;
+			data.op = 0x28;
+			cpu.exec();
+
+			THEN("data.pc == 0x1111") {
+				REQUIRE(data.pc == 0x1111);
+			}
+		}
+		WHEN("Calling JR NC, n") {
+			data.pc = 0xffff;
+			data.n = static_cast<u8>(-85);
+			data.carryFlag = false;
+			data.op = 0x30;
+			cpu.exec();
+
+			THEN("data.pc == 0xffff - 85") {
+				REQUIRE(data.pc == 0xffff - 85);
+			}
+		}
+		WHEN("Calling JR NZ, n") {
+			data.pc = 0;
+			data.n = 12;
+			data.zeroFlag = false;
+			data.op = 0x20;
+			cpu.exec();
+
+			THEN("data.pc == 12") { REQUIRE(data.pc == 12); }
+		}
 	}
 }
 

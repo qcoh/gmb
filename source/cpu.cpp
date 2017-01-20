@@ -17,6 +17,7 @@ void CPU::fetch() {
 	m_data.op = m_mmu->read8(m_data.pc);
 	m_data.nn = m_mmu->read16(m_data.pc + 1);
 	m_data.pc += s_instructions[m_data.op].offset;
+	m_data.cycles += s_instructions[m_data.op].cycles;
 }
 
 void CPU::exec() {
@@ -29,14 +30,30 @@ void CPU::exec() {
 	case 0x31:  // LD __, nn
 		LD(m_data.read16((m_data.op >> 4) & 0x3), m_data.nn);
 		break;
+
+	case 0x18:  // JR n
+		JR(true);
+		break;
+	case 0x20:  // JR NZ, n
+		JRn(m_data.zeroFlag);
+		break;
 	case 0x22:  // LDI (HL+), A
 		LDI(MemRef{m_data.hl, m_mmu}, m_data.a);
+		break;
+	case 0x28:  // JR Z, n
+		JR(m_data.zeroFlag);
 		break;
 	case 0x2a:  // LDI A, (HL+)
 		LDI(m_data.a, MemRef{m_data.hl, m_mmu});
 		break;
+	case 0x30:  // JR NC, n
+		JRn(m_data.carryFlag);
+		break;
 	case 0x32:  // LDD (HL-), A
 		LDD(MemRef{m_data.hl, m_mmu}, m_data.a);
+		break;
+	case 0x38:  // JR C, n
+		JR(m_data.carryFlag);
 		break;
 	case 0x3a:  // LDD A, (HL-)
 		LDD(m_data.a, MemRef{m_data.hl, m_mmu});
@@ -69,6 +86,7 @@ extern "C" std::unique_ptr<ICPU> loadCPU(CPU::Data& data, IMMU* mmu) {
 }
 
 void CPU::CB() {
+	m_data.cycles += CPU::s_extended[m_data.n].cycles;
 	MemRef mhl{m_data.hl, m_mmu};
 
 	switch (m_data.n) {
@@ -467,7 +485,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0x17, "RLA", 4, 1},
 
-    {0x18, "JR n", 12, 2},
+    {0x18, "JR n", 0, 2},
 
     {0x19, "ADD HL, DE", 8, 1},
 
@@ -515,7 +533,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0x2f, "CPL", 4, 1},
 
-    {0x30, "JR NC, n", 0, 1},
+    {0x30, "JR NC, n", 0, 2},
 
     {0x31, "LD SP, nn", 12, 3},
 

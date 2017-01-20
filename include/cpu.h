@@ -21,6 +21,21 @@ private:
 	ICPU::Data& m_data;
 	IMMU* m_mmu;
 
+	// controlflow
+	template <typename T>
+	void JR(const T& cond) {
+		if (cond) {
+			m_data.pc += static_cast<int8_t>(m_data.n);
+			m_data.cycles += 4;
+		}
+		m_data.cycles += 8;
+	}
+
+	template <typename T>
+	void JRn(const T& cond) {
+		JR(!cond);
+	}
+
 	// LD
 	template <typename T>
 	void LD(T& target, const T& source) {
