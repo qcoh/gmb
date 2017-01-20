@@ -238,6 +238,38 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.negFlag == false);
 			}
 		}
+		WHEN("Calling LD register, register (1)") {
+			data.c = 0x25;
+			data.op = 0x69;  // LD L, C
+			cpu.exec();
+
+			THEN("l == 0x25") { REQUIRE(data.l == 0x25); }
+		}
+		WHEN("Calling LD register, register (2)") {
+			data.h = 0x11;
+			data.op = 0x54;  // LD D, H
+			cpu.exec();
+
+			THEN("d == 0x11") { REQUIRE(data.d == 0x11); }
+		}
+		WHEN("Calling LD register, (HL)") {
+			data.hl = 0x100;
+			arr[data.hl] = 0xee;
+			data.op = 0x7e;  // LD A, (HL)
+			cpu.exec();
+
+			THEN("a == 0xee") { REQUIRE(data.a == 0xee); }
+		}
+		WHEN("Calling LD (HL), register") {
+			data.b = 0x77;
+			data.hl = 0x99;
+			data.op = 0x70;
+			cpu.exec();
+
+			THEN("arr[data.hl] == 0x77") {
+				REQUIRE(arr[data.hl] == 0x77);
+			}
+		}
 	}
 }
 
