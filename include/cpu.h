@@ -21,6 +21,9 @@ private:
 	ICPU::Data& m_data;
 	IMMU* m_mmu;
 
+	// misc
+	void CB();
+
 	// LD
 	template <typename T>
 	void LD(T& target, const T& source) {
