@@ -13,6 +13,7 @@ public:
 protected:
 	// cpu, mapper, mmu, display, ...
 	std::unique_ptr<ICartridge> m_cart;
+	BIOS m_bios;
 
 	IGPU::Data m_gpuData;
 	std::unique_ptr<IGPU> m_gpu;

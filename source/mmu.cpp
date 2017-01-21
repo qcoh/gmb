@@ -16,7 +16,7 @@ u8 MMU::read8(u16 addr) {
 	case 0x6000:
 	case 0x7000:
 		if (m_data.biosMode && addr < 0x100) {
-			return m_data.bios.read8(addr);
+			return m_data.bios->read8(addr);
 		} else {
 			return m_data.cart->read8(addr);
 		}

@@ -13,14 +13,14 @@ class IMMU {
 public:
 	struct Data {
 		bool biosMode = true;
-		BIOS bios;
-		ICartridge* cart;
-		IGPU* gpu;
+		BIOS* bios = nullptr;
+		ICartridge* cart = nullptr;
+		IGPU* gpu = nullptr;
 		std::array<u8, 127> hram = {{0}};
 		std::array<u8, 4096> wram0 = {{0}};
 		std::array<u8, 4096> wram1 = {{0}};
 
-		Data(const std::string&, ICartridge*, IGPU*);
+		Data(BIOS*, ICartridge*, IGPU*);
 		Data() = default;
 	};
 	IMMU() = default;
