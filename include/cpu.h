@@ -36,6 +36,8 @@ private:
 		JR(!cond);
 	}
 
+	void CALL(const bool&);
+
 	// LD
 	template <typename T, typename S>
 	void LD(T& target, const S& source) {

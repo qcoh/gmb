@@ -324,6 +324,40 @@ SCENARIO("Testing instructions", "[CPU]") {
 
 			THEN("a == 0x89") { REQUIRE(data.a == 0x89); }
 		}
+		WHEN("Calling CALL nn (1)") {
+			data.sp = 0xffff;
+			data.pc = 0x1234;
+			data.nn = 0x150;
+			data.op = 0xcd;
+			cpu.exec();
+
+			THEN(
+			    "data.sp == 0xfffd, data.pc == 0x150, arr[0xfffe] "
+			    "== 0x12, arr[0xfffd] == 0x34, cycles == 24") {
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(data.pc == 0x150);
+				REQUIRE(arr[0xfffe] == 0x12);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(data.cycles == 24);
+			}
+		}
+		WHEN("Calling CALL nn (2)") {
+			data.sp = 0x1000;
+			data.pc = 0x96;
+			data.nn = 0x7799;
+			data.op = 0xcd;
+			cpu.exec();
+
+			THEN(
+			    "sp == 0xffe, pc == 0x7799, arr[0xfff] == 0 "
+			    "arr[0xffe] == 0x96, cycles == 24") {
+				REQUIRE(data.sp == 0xffe);
+				REQUIRE(data.pc == 0x7799);
+				REQUIRE(arr[0xfff] == 0);
+				REQUIRE(arr[0xffe] == 0x96);
+				REQUIRE(data.cycles == 24);
+			}
+		}
 	}
 }
 

@@ -13,6 +13,16 @@ void CPU::Step() {
 	exec();
 }
 
+void CPU::CALL(const bool& cond) {
+	if (cond) {
+		m_data.sp -= 2;
+		m_mmu->write16(m_data.sp, m_data.pc);
+		m_data.pc = m_data.nn;
+		m_data.cycles += 12;
+	}
+	m_data.cycles += 12;
+}
+
 void CPU::fetch() {
 	m_data.op = m_mmu->read8(m_data.pc);
 	m_data.nn = m_mmu->read16(m_data.pc + 1);
@@ -208,6 +218,9 @@ void CPU::exec() {
 	case 0xcb:
 		// CB
 		CB();
+		break;
+	case 0xcd:  // CALL nn
+		CALL(true);
 		break;
 	case 0xe0:  // LD (n + 0xff00), A
 	{
@@ -1010,7 +1023,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {},  // 0xcc
 
-    {0xcd, "CALL nn", 24, 3},  // !!!
+    {0xcd, "CALL nn", 0, 3},  // !!!
 
     {0xce, "ADC A, n", 8, 2},
 
