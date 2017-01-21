@@ -56,6 +56,10 @@ void CPU::exec() {
 	case 0x06:  // LD B, n
 		LD(m_data.b, m_data.n);
 		break;
+	case 0x07:  // RLCA
+		RLC(m_data.a);
+		m_data.zeroFlag = false;
+		break;
 	case 0x0a:  // LD A, (BC)
 	{
 		MemRef mbc{m_data.bc, m_mmu};
