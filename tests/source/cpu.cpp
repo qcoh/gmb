@@ -626,6 +626,120 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.sp == 0xffff);
 			}
 		}
+		WHEN("Calling DEC B") {
+			data.b = 0x45;
+			data.op = 0x05;
+			cpu.exec();
+
+			THEN(
+			    "b == 0x44, zeroFlag == false, halFflag == false, "
+			    "negFlag == true") {
+				REQUIRE(data.b == 0x44);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling DEC C") {
+			data.c = 0x40;
+			data.op = 0x0d;
+			cpu.exec();
+
+			THEN(
+			    "b == 0x3f, zeroFlag == false, halFflag == true, "
+			    "negFlag == true") {
+				REQUIRE(data.c == 0x3f);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling DEC D") {
+			data.d = 0x1;
+			data.op = 0x15;
+			cpu.exec();
+
+			THEN(
+			    "b == 0, zeroFlag == true, halFflag == false, "
+			    "negFlag == true") {
+				REQUIRE(data.d == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling DEC E") {
+			data.e = 0;
+			data.op = 0x1d;
+			cpu.exec();
+
+			THEN(
+			    "e == 0xff, halfFlag == true, zeroFlag == false, "
+			    "negFlag == true") {
+				REQUIRE(data.e == 0xff);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+
+		WHEN("Calling DEC H") {
+			data.h = 0x1;
+			data.op = 0x25;
+			cpu.exec();
+
+			THEN(
+			    "h == 0, zeroFlag == true, halFflag == false, "
+			    "negFlag == true") {
+				REQUIRE(data.h == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling DEC L") {
+			data.l = 0;
+			data.op = 0x2d;
+			cpu.exec();
+
+			THEN(
+			    "l == 0xff, halfFlag == true, zeroFlag == false, "
+			    "negFlag == true") {
+				REQUIRE(data.l == 0xff);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling DEC (HL)") {
+			data.hl = 0x1234;
+			arr[data.hl] = 0x78;
+			data.op = 0x35;
+			cpu.exec();
+
+			THEN(
+			    "arr[data.hl] == 0x77, halfFlag == false, zeroFlag "
+			    "== false, negFlag == true") {
+				REQUIRE(arr[data.hl] == 0x77);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling DEC A") {
+			data.a = 0xf0;
+			data.op = 0x3d;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xef, halfFlag == true, zeroFlag == false, "
+			    "negFlag == true") {
+				REQUIRE(data.a == 0xef);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
 	}
 }
 

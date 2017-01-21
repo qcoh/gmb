@@ -58,6 +58,9 @@ void CPU::exec() {
 	case 0x04:  // INC B
 		INC(m_data.b);
 		break;
+	case 0x05:  // DEC B
+		DEC(m_data.b);
+		break;
 	case 0x06:  // LD B, n
 		LD(m_data.b, m_data.n);
 		break;
@@ -73,6 +76,9 @@ void CPU::exec() {
 	}
 	case 0x0c:  // INC C
 		INC(m_data.c);
+		break;
+	case 0x0d:  // DEC C
+		DEC(m_data.c);
 		break;
 	case 0x0e:  // LD C, n
 		LD(m_data.c, m_data.n);
@@ -93,6 +99,9 @@ void CPU::exec() {
 	case 0x14:  // INC D
 		INC(m_data.d);
 		break;
+	case 0x15:  // DEC D
+		DEC(m_data.d);
+		break;
 	case 0x16:  // LD D, n
 		LD(m_data.d, m_data.n);
 		break;
@@ -111,6 +120,9 @@ void CPU::exec() {
 	}
 	case 0x1c:  // INC E
 		INC(m_data.e);
+		break;
+	case 0x1d:  // DEC E
+		DEC(m_data.e);
 		break;
 	case 0x1e:  // LD E, n
 		LD(m_data.e, m_data.n);
@@ -132,6 +144,9 @@ void CPU::exec() {
 	case 0x24:  // INC H
 		INC(m_data.h);
 		break;
+	case 0x25:  // DEC H
+		DEC(m_data.h);
+		break;
 	case 0x26:  // LD H, n
 		LD(m_data.h, m_data.n);
 		break;
@@ -144,6 +159,9 @@ void CPU::exec() {
 		break;
 	case 0x2c:  // INC L
 		INC(m_data.l);
+		break;
+	case 0x2d:  // DEC L
+		DEC(m_data.l);
 		break;
 	case 0x2e:  // LD L, n
 		LD(m_data.l, m_data.n);
@@ -161,6 +179,9 @@ void CPU::exec() {
 	case 0x34:  // INC (HL)
 		INC(mhl);
 		break;
+	case 0x35:  // DEC (HL)
+		DEC(mhl);
+		break;
 	case 0x36:  // LD (HL), n
 		LD(mhl, m_data.n);
 		break;
@@ -173,6 +194,9 @@ void CPU::exec() {
 		break;
 	case 0x3c:  // INC A
 		INC(m_data.a);
+		break;
+	case 0x3d:  // DEC A
+		DEC(m_data.a);
 		break;
 	case 0x3e:  // LD A, n
 		LD(m_data.a, m_data.n);

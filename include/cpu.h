@@ -65,6 +65,14 @@ private:
 		m_data.negFlag = false;
 	}
 
+	template <typename T>
+	void DEC(T& target) {
+		m_data.halfFlag = ((target & 0xf) == 0);
+		target = static_cast<u8>(target - 1);
+		m_data.zeroFlag = (target == 0);
+		m_data.negFlag = true;
+	}
+
 	// extended instruction set
 	void CB();
 
