@@ -795,6 +795,141 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.sp == 0x1fff);
 			}
 		}
+		WHEN("Calling CP B") {
+			data.b = 0x25;
+			data.a = 0x24;
+			data.op = 0xb8;
+			cpu.exec();
+
+			THEN(
+			    "halfFlag == true, carryFlag == true, negFlag == "
+			    "true, zeroFlag == false") {
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.negFlag == true);
+				REQUIRE(data.zeroFlag == false);
+			}
+		}
+		WHEN("Calling CP C") {
+			data.c = 0x50;
+			data.a = 0x50;
+			data.op = 0xb9;
+			cpu.exec();
+
+			THEN(
+			    "halfFlag == false, carryFlag == false, zeroFlag "
+			    "== true, negFlag == true") {
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling CP D") {
+			data.d = 0xf0;
+			data.a = 0;
+			data.op = 0xba;
+			cpu.exec();
+
+			THEN(
+			    "halfFlag == false, carryFlag == true, zeroFlag == "
+			    "false, negFlag == true") {
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling CP E") {
+			data.e = 0;
+			data.a = 0;
+			data.op = 0xbb;
+			cpu.exec();
+
+			THEN(
+			    "halfFlag == false, carryFlag == false, zeroFlag "
+			    "== true, negFlag == true") {
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.negFlag == true);
+				REQUIRE(data.zeroFlag == true);
+			}
+		}
+		WHEN("Calling CP H") {
+			data.h = 0;
+			data.a = 1;
+			data.op = 0xbc;
+			cpu.exec();
+
+			THEN(
+			    "halfflag == false, carryFlag == false, zeroFlag "
+			    "== false, negFlag == true") {
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling CP L") {
+			data.l = 0;
+			data.a = 1;
+			data.op = 0xbd;
+			cpu.exec();
+
+			THEN(
+			    "halfflag == false, carryFlag == false, zeroFlag "
+			    "== false, negFlag == true") {
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling CP (HL)") {
+			data.hl = 0x1000;
+			arr[data.hl] = 0xff;
+			data.a = 0;
+			data.op = 0xbe;
+			cpu.exec();
+
+			THEN(
+			    "halfFlag == true, carryFlag == true, negFlag == "
+			    "true, zeroFlag == false") {
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.negFlag == true);
+				REQUIRE(data.zeroFlag == false);
+			}
+		}
+		WHEN("Calling CP A") {
+			data.a = 0x77;
+			data.op = 0xbf;
+			cpu.exec();
+
+			THEN(
+			    "halfflag == false, carryFlag == false, zeroFlag "
+			    "== true, negFlag == true") {
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling CP n") {
+			data.a = 0x35;
+			data.n = 0x24;
+			data.op = 0xfe;
+			cpu.exec();
+
+			THEN(
+			    "halfFlag == false, carryFlag == false, zeroFlag "
+			    "== false, negFlag == true") {
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
 	}
 }
 

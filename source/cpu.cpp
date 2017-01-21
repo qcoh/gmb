@@ -324,6 +324,32 @@ void CPU::exec() {
 	case 0xae:  // XOR A, (HL)
 		XOR(mhl);
 		break;
+
+	case 0xb8:  // CP B
+		CP(m_data.b);
+		break;
+	case 0xb9:  // CP C
+		CP(m_data.c);
+		break;
+	case 0xba:  // CP D
+		CP(m_data.d);
+		break;
+	case 0xbb:  // CP E
+		CP(m_data.e);
+		break;
+	case 0xbc:  // CP H
+		CP(m_data.h);
+		break;
+	case 0xbd:  // CP L
+		CP(m_data.l);
+		break;
+	case 0xbe:  // CP (HL)
+		CP(mhl);
+		break;
+	case 0xbf:  // CP A
+		CP(m_data.a);
+		break;
+
 	case 0xc1:  // POP BC
 		POP(m_data.bc);
 		break;
@@ -381,6 +407,9 @@ void CPU::exec() {
 	}
 	case 0xf5:  // PUSH AF
 		PUSH(m_data.af);
+		break;
+	case 0xfe:  // CP n
+		CP(m_data.n);
 		break;
 
 	default:
