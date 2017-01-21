@@ -90,6 +90,8 @@ void DebugBoy::parseCommands(std::string& input) {
 		std::copy(std::begin(m_breakPoints), std::end(m_breakPoints),
 			  std::ostream_iterator<int>(std::cout, ", "));
 		std::cout << '\n';
+	} else if (cmd == "clear") {
+		m_breakPoints.clear();
 	} else if (cmd == "trace") {
 		// set tracepoints
 	}
