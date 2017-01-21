@@ -44,18 +44,6 @@ private:
 		target = source;
 	}
 
-	template <typename T, typename S>
-	void LDD(T&& target, const S& source) {
-		target = source;
-		m_data.hl--;
-	}
-
-	template <typename T, typename S>
-	void LDI(T&& target, const S& source) {
-		target = source;
-		m_data.hl++;
-	}
-
 	void PUSH(const u16&);
 
 	// 8bit arithmetic and logic

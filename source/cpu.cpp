@@ -41,83 +41,120 @@ void CPU::exec() {
 	switch (m_data.op) {
 	case 0x0:  // NOP
 		break;
-	case 0x01:
-	case 0x11:
-	case 0x21:
-	case 0x31:  // LD __, nn
-		LD(m_data.read16((m_data.op >> 4) & 0x3), m_data.nn);
+	case 0x01:  // LD BC, nn
+		LD(m_data.bc, m_data.nn);
 		break;
-
-	case 0x02:
-	case 0x12:  // LD (__), A
+	case 0x02:  // LD (BC), A
 	{
-		MemRef m{m_data.read16(m_data.op >> 4), m_mmu};
-		LD(m, m_data.a);
+		MemRef mbc{m_data.bc, m_mmu};
+		LD(mbc, m_data.a);
 		break;
 	}
-
-	case 0x0a:
-	case 0x1a:  // LD A, (__)
+	case 0x04:  // INC B
+		INC(m_data.b);
+		break;
+	case 0x06:  // LD B, n
+		LD(m_data.b, m_data.n);
+		break;
+	case 0x0a:  // LD A, (BC)
 	{
-		MemRef m{m_data.read16(m_data.op >> 4), m_mmu};
-		LD(m_data.a, m);
+		MemRef mbc{m_data.bc, m_mmu};
+		LD(m_data.a, mbc);
 		break;
 	}
-
-	case 0x04:
-	case 0x0c:
-	case 0x14:
-	case 0x1c:
-	case 0x24:
-	case 0x2c:
-	// case 0x34:
-	case 0x3c:  // INC _
-		INC(m_data.read8((m_data.op >> 3) & 0x7));
+	case 0x0c:  // INC C
+		INC(m_data.c);
 		break;
-	case 0x34:  // INC (HL)
-		INC(mhl);
+	case 0x0e:  // LD C, n
+		LD(m_data.c, m_data.n);
 		break;
-
-	case 0x06:
-	case 0x0e:
-	case 0x16:
-	case 0x1e:
-	case 0x26:
-	case 0x2e:
-	// case 0x36:
-	case 0x3e:  // LD _, n
-		LD(m_data.read8((m_data.op >> 3) & 0x7), m_data.n);
+	case 0x11:  // LD DE, nn
+		LD(m_data.de, m_data.nn);
 		break;
-	case 0x36:  // LD (HL), n
-		LD(mhl, m_data.n);
+	case 0x12:  // LD (DE), A
+	{
+		MemRef mde{m_data.de, m_mmu};
+		LD(mde, m_data.a);
 		break;
-
+	}
+	case 0x14:  // INC D
+		INC(m_data.d);
+		break;
+	case 0x16:  // LD D, n
+		LD(m_data.d, m_data.n);
+		break;
 	case 0x18:  // JR n
 		JR(true);
+		break;
+	case 0x1a:  // LD A, (DE)
+	{
+		MemRef mde{m_data.de, m_mmu};
+		LD(m_data.a, mde);
+		break;
+	}
+	case 0x1c:  // INC E
+		INC(m_data.e);
+		break;
+	case 0x1e:  // LD E, n
+		LD(m_data.e, m_data.n);
 		break;
 	case 0x20:  // JR NZ, n
 		JRn(m_data.zeroFlag);
 		break;
-	case 0x22:  // LDI (HL+), A
-		LDI(MemRef{m_data.hl, m_mmu}, m_data.a);
+	case 0x21:  // LD HL, nn
+		LD(m_data.hl, m_data.nn);
+		break;
+	case 0x22:  // LD (HL+), A
+		LD(mhl, m_data.a);
+		m_data.hl++;
+		break;
+	case 0x24:  // INC H
+		INC(m_data.h);
+		break;
+	case 0x26:  // LD H, n
+		LD(m_data.h, m_data.n);
 		break;
 	case 0x28:  // JR Z, n
 		JR(m_data.zeroFlag);
 		break;
-	case 0x2a:  // LDI A, (HL+)
-		LDI(m_data.a, MemRef{m_data.hl, m_mmu});
+	case 0x2a:  // LD A, (HL+)
+		LD(m_data.a, mhl);
+		m_data.hl++;
+		break;
+	case 0x2c:  // INC L
+		INC(m_data.l);
+		break;
+	case 0x2e:  // LD L, n
+		LD(m_data.l, m_data.n);
 		break;
 	case 0x30:  // JR NC, n
 		JRn(m_data.carryFlag);
 		break;
-	case 0x32:  // LDD (HL-), A
-		LDD(MemRef{m_data.hl, m_mmu}, m_data.a);
+	case 0x31:  // LD SP, nn
+		LD(m_data.sp, m_data.nn);
+		break;
+	case 0x32:  // LD (HL-), A
+		LD(mhl, m_data.a);
+		m_data.hl--;
+		break;
+	case 0x34:  // INC (HL)
+		INC(mhl);
+		break;
+	case 0x36:  // LD (HL), n
+		LD(mhl, m_data.n);
 		break;
 	case 0x38:  // JR C, n
 		JR(m_data.carryFlag);
 		break;
-	case 0x3a:  // LDD A, (HL-)
-		LDD(m_data.a, MemRef{m_data.hl, m_mmu});
+	case 0x3a:  // LD A, (HL-)
+		LD(m_data.a, mhl);
+		m_data.hl--;
+		break;
+	case 0x3c:  // INC A
+		INC(m_data.a);
+		break;
+	case 0x3e:  // LD A, n
+		LD(m_data.a, m_data.n);
 		break;
 
 	case 0x40:
@@ -215,26 +252,25 @@ void CPU::exec() {
 	case 0xab:
 	case 0xac:
 	case 0xad:
-	case 0xae:
+	// case 0xae:
 	case 0xaf:
 		// XOR A, _
 		XOR(m_data.read8(m_data.op & 0x7));
 		break;
-
-	case 0xc5:
-	case 0xd5:
-	case 0xe5:  // PUSH __
-		PUSH(m_data.read16((m_data.op >> 4) & 0x3));
+	case 0xae:  // XOR A, (HL)
+		XOR(mhl);
 		break;
-	case 0xf5:  // PUSH AF
-		PUSH(m_data.af);
-
-	case 0xcb:
-		// CB
+	case 0xc5:  // PUSH BC
+		PUSH(m_data.bc);
+		break;
+	case 0xcb:  // CB
 		CB();
 		break;
 	case 0xcd:  // CALL nn
 		CALL(true);
+		break;
+	case 0xd5:  // PUSH DE
+		PUSH(m_data.de);
 		break;
 	case 0xe0:  // LD (n + 0xff00), A
 	{
@@ -248,6 +284,9 @@ void CPU::exec() {
 		LD(mc, m_data.a);
 		break;
 	}
+	case 0xe5:  // PUSH HL
+		PUSH(m_data.hl);
+		break;
 	case 0xf0:  // LD A, (n + 0xff00)
 	{
 		MemRef mn{m_data.n + 0xff00, m_mmu};
@@ -260,6 +299,9 @@ void CPU::exec() {
 		LD(m_data.a, mc);
 		break;
 	}
+	case 0xf5:  // PUSH AF
+		PUSH(m_data.af);
+		break;
 
 	default:
 		// causes segfault if dynamically loaded
