@@ -110,6 +110,10 @@ void CPU::exec() {
 	case 0x1e:  // LD E, n
 		LD(m_data.e, m_data.n);
 		break;
+	case 0x1f:  // RRA
+		RR(m_data.a);
+		m_data.zeroFlag = false;
+		break;
 	case 0x20:  // JR NZ, n
 		JRn(m_data.zeroFlag);
 		break;
