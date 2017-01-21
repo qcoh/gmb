@@ -56,6 +56,8 @@ private:
 		m_data.hl++;
 	}
 
+	void PUSH(const u16&);
+
 	// 8bit arithmetic and logic
 	template <typename T>
 	void XOR(const T& source) {

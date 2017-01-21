@@ -23,6 +23,11 @@ void CPU::CALL(const bool& cond) {
 	m_data.cycles += 12;
 }
 
+void CPU::PUSH(const u16& reg) {
+	m_data.sp -= 2;
+	m_mmu->write16(m_data.sp, reg);
+}
+
 void CPU::fetch() {
 	m_data.op = m_mmu->read8(m_data.pc);
 	m_data.nn = m_mmu->read16(m_data.pc + 1);
@@ -215,6 +220,15 @@ void CPU::exec() {
 		// XOR A, _
 		XOR(m_data.read8(m_data.op & 0x7));
 		break;
+
+	case 0xc5:
+	case 0xd5:
+	case 0xe5:  // PUSH __
+		PUSH(m_data.read16((m_data.op >> 4) & 0x3));
+		break;
+	case 0xf5:  // PUSH AF
+		PUSH(m_data.af);
+
 	case 0xcb:
 		// CB
 		CB();

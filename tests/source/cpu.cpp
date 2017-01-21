@@ -358,6 +358,62 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.cycles == 24);
 			}
 		}
+		WHEN("Calling PUSH BC") {
+			data.sp = 0xffff;
+			data.bc = 0x1234;
+			data.op = 0xc5;
+			cpu.exec();
+
+			THEN(
+			    "arr[0xfffe] == 0x12, arr[0xfffd] == 0x34, sp == "
+			    "0xfffd") {
+				REQUIRE(arr[0xfffe] == 0x12);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(data.sp == 0xfffd);
+			}
+		}
+		WHEN("Calling PUSH DE") {
+			data.sp = 0xffff;
+			data.de = 0x1234;
+			data.op = 0xd5;
+			cpu.exec();
+
+			THEN(
+			    "arr[0xfffe] == 0x12, arr[0xfffd] == 0x34, sp == "
+			    "0xfffd") {
+				REQUIRE(arr[0xfffe] == 0x12);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(data.sp == 0xfffd);
+			}
+		}
+		WHEN("Calling PUSH HL") {
+			data.sp = 0xffff;
+			data.hl = 0x1234;
+			data.op = 0xe5;
+			cpu.exec();
+
+			THEN(
+			    "arr[0xfffe] == 0x12, arr[0xfffd] == 0x34, sp == "
+			    "0xfffd") {
+				REQUIRE(arr[0xfffe] == 0x12);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(data.sp == 0xfffd);
+			}
+		}
+		WHEN("Calling PUSH AF") {
+			data.sp = 0xffff;
+			data.af = 0x1234;
+			data.op = 0xf5;
+			cpu.exec();
+
+			THEN(
+			    "arr[0xfffe] == 0x12, arr[0xfffd] == 0x34, sp == "
+			    "0xfffd") {
+				REQUIRE(arr[0xfffe] == 0x12);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(data.sp == 0xfffd);
+			}
+		}
 	}
 }
 
