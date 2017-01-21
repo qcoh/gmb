@@ -816,7 +816,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0x0c, "INC C", 4, 1},
 
-    {0x0d, "DEC", 4, 1},
+    {0x0d, "DEC C", 4, 1},
 
     {0x0e, "LD C, n", 8, 2},
 
