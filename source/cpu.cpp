@@ -33,6 +33,22 @@ void CPU::exec() {
 		LD(m_data.read16((m_data.op >> 4) & 0x3), m_data.nn);
 		break;
 
+	case 0x02:
+	case 0x12:  // LD (__), A
+	{
+		MemRef m{m_data.read16(m_data.op >> 4), m_mmu};
+		LD(m, m_data.a);
+		break;
+	}
+
+	case 0x0a:
+	case 0x1a:  // LD A, (__)
+	{
+		MemRef m{m_data.read16(m_data.op >> 4), m_mmu};
+		LD(m_data.a, m);
+		break;
+	}
+
 	case 0x04:
 	case 0x0c:
 	case 0x14:

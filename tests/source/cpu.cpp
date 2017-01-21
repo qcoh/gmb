@@ -288,6 +288,42 @@ SCENARIO("Testing instructions", "[CPU]") {
 
 			THEN("a == 0x99") { REQUIRE(data.a == 0x99); }
 		}
+		WHEN("Calling LD (BC), A") {
+			data.bc = 0x25;
+			data.a = 0x12;
+			data.op = 0x02;
+			cpu.exec();
+
+			THEN("arr[data.bc] == 0x12") {
+				REQUIRE(arr[data.bc] == 0x12);
+			}
+		}
+		WHEN("Calling LD (DE), A") {
+			data.de = 0x100;
+			data.a = 0x88;
+			data.op = 0x12;
+			cpu.exec();
+
+			THEN("arr[data.de] == 0x88") {
+				REQUIRE(arr[data.de] == 0x88);
+			}
+		}
+		WHEN("Calling LD A, (BC)") {
+			data.bc = 0x600;
+			arr[data.bc] = 0x06;
+			data.op = 0x0a;
+			cpu.exec();
+
+			THEN("a == 0x06") { REQUIRE(data.a == 0x06); }
+		}
+		WHEN("Calling LD A, (DE)") {
+			data.de = 0x55;
+			arr[data.de] = 0x89;
+			data.op = 0x1a;
+			cpu.exec();
+
+			THEN("a == 0x89") { REQUIRE(data.a == 0x89); }
+		}
 	}
 }
 
