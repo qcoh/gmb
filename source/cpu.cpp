@@ -28,6 +28,11 @@ void CPU::PUSH(const u16& reg) {
 	m_mmu->write16(m_data.sp, reg);
 }
 
+void CPU::POP(u16& reg) {
+	reg = m_mmu->read16(m_data.sp);
+	m_data.sp += 2;
+}
+
 void CPU::fetch() {
 	m_data.op = m_mmu->read8(m_data.pc);
 	m_data.nn = m_mmu->read16(m_data.pc + 1);
@@ -276,6 +281,9 @@ void CPU::exec() {
 	case 0xae:  // XOR A, (HL)
 		XOR(mhl);
 		break;
+	case 0xc1:  // POP BC
+		POP(m_data.bc);
+		break;
 	case 0xc5:  // PUSH BC
 		PUSH(m_data.bc);
 		break;
@@ -285,6 +293,10 @@ void CPU::exec() {
 	case 0xcd:  // CALL nn
 		CALL(true);
 		break;
+	case 0xd1:  // POP DE
+		POP(m_data.de);
+		break;
+
 	case 0xd5:  // PUSH DE
 		PUSH(m_data.de);
 		break;
@@ -294,6 +306,9 @@ void CPU::exec() {
 		LD(mn, m_data.a);
 		break;
 	}
+	case 0xe1:  // POP HL
+		POP(m_data.hl);
+		break;
 	case 0xe2:  // LD (C + 0xff00), A
 	{
 		MemRef mc{m_data.c + 0xff00, m_mmu};
@@ -309,6 +324,9 @@ void CPU::exec() {
 		LD(m_data.a, mn);
 		break;
 	}
+	case 0xf1:  // POP AF
+		POP(m_data.af);
+		break;
 	case 0xf2:  // LD A, (C + 0xff00)
 	{
 		MemRef mc{m_data.c + 0xff00, m_mmu};

@@ -554,6 +554,78 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.halfFlag == false);
 			}
 		}
+		WHEN("Calling POP BC") {
+			data.sp = 0x100;
+			arr[data.sp + 1] = 0x12;
+			arr[data.sp] = 0x34;
+			data.op = 0xc1;
+			cpu.exec();
+
+			THEN("data.bc == 0x1234") {
+				REQUIRE(data.bc == 0x1234);
+			}
+		}
+		WHEN("Calling POP DE") {
+			data.sp = 0x100;
+			arr[data.sp + 1] = 0x12;
+			arr[data.sp] = 0x34;
+			data.op = 0xd1;
+			cpu.exec();
+
+			THEN("data.de == 0x1234") {
+				REQUIRE(data.de == 0x1234);
+			}
+		}
+		WHEN("Calling POP HL") {
+			data.sp = 0x100;
+			arr[data.sp + 1] = 0x12;
+			arr[data.sp] = 0x34;
+			data.op = 0xe1;
+			cpu.exec();
+
+			THEN("data.hl == 0x1234") {
+				REQUIRE(data.hl == 0x1234);
+			}
+		}
+		WHEN("Calling POP AF") {
+			data.sp = 0x100;
+			arr[data.sp + 1] = 0x12;
+			arr[data.sp] = 0x34;
+			data.op = 0xf1;
+			cpu.exec();
+
+			THEN("data.af == 0x1234") {
+				REQUIRE(data.af == 0x1234);
+			}
+		}
+		WHEN("PUSH POP compatibility") {
+			data.sp = 0x4567;
+			data.bc = 0x1234;
+			data.op = 0xc5;
+			cpu.exec();
+
+			data.op = 0xe1;
+			cpu.exec();
+
+			THEN("hl == 0x1234, sp == 0x4567") {
+				REQUIRE(data.hl == 0x1234);
+				REQUIRE(data.sp == 0x4567);
+			}
+		}
+		WHEN("POP PUSH compatibility") {
+			data.sp = 0xffff;
+			data.de = 0x1234;
+			data.op = 0xd5;
+			cpu.exec();
+
+			data.op = 0xf1;
+			cpu.exec();
+
+			THEN("af == 0x1234, sp == 0xffff") {
+				REQUIRE(data.af == 0x1234);
+				REQUIRE(data.sp == 0xffff);
+			}
+		}
 	}
 }
 

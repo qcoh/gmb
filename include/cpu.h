@@ -45,6 +45,7 @@ private:
 	}
 
 	void PUSH(const u16&);
+	void POP(u16&);
 
 	// 8bit arithmetic and logic
 	template <typename T>
