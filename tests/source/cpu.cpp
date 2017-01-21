@@ -270,6 +270,24 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(arr[data.hl] == 0x77);
 			}
 		}
+		WHEN("Calling LD (n+0xff00), A") {
+			data.n = 0x47;
+			data.a = 0x66;
+			data.op = 0xe0;
+			cpu.exec();
+
+			THEN("arr[data.n + 0xff00] == 0x66") {
+				REQUIRE(arr[data.n + 0xff00] == 0x66);
+			}
+		}
+		WHEN("Calling LD A, (n + 0xff00)") {
+			data.n = 0x26;
+			arr[data.n + 0xff00] = 0x99;
+			data.op = 0xf0;
+			cpu.exec();
+
+			THEN("a == 0x99") { REQUIRE(data.a == 0x99); }
+		}
 	}
 }
 

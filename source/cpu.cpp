@@ -193,10 +193,22 @@ void CPU::exec() {
 		// CB
 		CB();
 		break;
+	case 0xe0:  // LD (n + 0xff00), A
+	{
+		MemRef mn{m_data.n + 0xff00, m_mmu};
+		LD(mn, m_data.a);
+		break;
+	}
 	case 0xe2:  // LD (C + 0xff00), A
 	{
 		MemRef mc{m_data.c + 0xff00, m_mmu};
 		LD(mc, m_data.a);
+		break;
+	}
+	case 0xf0:  // LD A, (n + 0xff00)
+	{
+		MemRef mn{m_data.n + 0xff00, m_mmu};
+		LD(m_data.a, mn);
 		break;
 	}
 	case 0xf2:  // LD A, (C + 0xff00)
