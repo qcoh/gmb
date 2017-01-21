@@ -930,6 +930,24 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.negFlag == true);
 			}
 		}
+		WHEN("Calling LD (nn), A") {
+			data.nn = 0x1000;
+			data.a = 0x56;
+			data.op = 0xea;
+			cpu.exec();
+
+			THEN("arr[data.nn] == 0x56") {
+				REQUIRE(arr[data.nn] == 0x56);
+			}
+		}
+		WHEN("Calling LD A, (nn)") {
+			data.nn = 0x1234;
+			arr[data.nn] = 0x89;
+			data.op = 0xfa;
+			cpu.exec();
+
+			THEN("a == 0x89") { REQUIRE(data.a == 0x89); }
+		}
 	}
 }
 

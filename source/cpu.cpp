@@ -390,6 +390,12 @@ void CPU::exec() {
 	case 0xe5:  // PUSH HL
 		PUSH(m_data.hl);
 		break;
+	case 0xea:  // LD (nn), A
+	{
+		MemRef mnn{m_data.nn, m_mmu};
+		LD(mnn, m_data.a);
+		break;
+	}
 	case 0xf0:  // LD A, (n + 0xff00)
 	{
 		MemRef mn{m_data.n + 0xff00, m_mmu};
@@ -408,6 +414,12 @@ void CPU::exec() {
 	case 0xf5:  // PUSH AF
 		PUSH(m_data.af);
 		break;
+	case 0xfa:  // LD A, (nn)
+	{
+		MemRef mnn{m_data.nn, m_mmu};
+		LD(m_data.a, mnn);
+		break;
+	}
 	case 0xfe:  // CP n
 		CP(m_data.n);
 		break;
