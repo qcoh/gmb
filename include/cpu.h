@@ -73,6 +73,11 @@ private:
 		m_data.negFlag = true;
 	}
 
+	// 16bit arithmetic
+
+	// annoying: can't specialize in class scope
+	void INC16(u16&);
+
 	// extended instruction set
 	void CB();
 

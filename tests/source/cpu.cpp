@@ -740,6 +740,34 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.negFlag == true);
 			}
 		}
+		WHEN("Calling INC BC") {
+			data.bc = 0x11;
+			data.op = 0x03;
+			cpu.exec();
+
+			THEN("bc == 0x12") { REQUIRE(data.bc == 0x12); }
+		}
+		WHEN("Calling INC DE") {
+			data.de = 0x33;
+			data.op = 0x13;
+			cpu.exec();
+
+			THEN("de == 0x34") { REQUIRE(data.de == 0x34); }
+		}
+		WHEN("Calling INC HL") {
+			data.hl = 0x1234;
+			data.op = 0x23;
+			cpu.exec();
+
+			THEN("hl == 0x1235") { REQUIRE(data.hl == 0x1235); }
+		}
+		WHEN("Calling INC SP") {
+			data.sp = 0xffff;
+			data.op = 0x33;
+			cpu.exec();
+
+			THEN("sp == 0") { REQUIRE(data.sp == 0); }
+		}
 	}
 }
 
