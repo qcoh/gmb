@@ -21,6 +21,7 @@ public:
 		std::array<u8, 4096> wram1 = {{0}};
 
 		Data(const std::string&, ICartridge*, IGPU*);
+		Data() = default;
 	};
 	IMMU() = default;
 	IMMU(const IMMU&) = delete;

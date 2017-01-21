@@ -46,7 +46,7 @@ u8 MMU::read8(u16 addr) {
 		}
 		if (addr < 0xffff) {
 			// hram
-			break;
+			return m_data.hram[addr & 0x007f];
 		}
 		if (addr == 0xffff) {
 			// interrupt enable
@@ -101,7 +101,8 @@ void MMU::write8(u16 addr, u8 v) {
 		}
 		if (addr < 0xffff) {
 			// hram
-			break;
+			m_data.hram[addr & 0x007f] = v;
+			return;
 		}
 		if (addr == 0xffff) {
 			// interrupt enable
