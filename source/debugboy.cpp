@@ -6,6 +6,7 @@
 
 #include "cpu.h"
 #include "debugboy.h"
+#include "mmu.h"
 
 void sigHandle(int signal) { DebugBoy::signaled = signal; }
 
@@ -110,15 +111,25 @@ void DebugBoy::reloadCPU() {
 		throw std::runtime_error{dlerror()};
 	}
 
-	using Fn = std::unique_ptr<CPU> (*)(ICPU::Data&, IMMU*);
-
+	// load MMU
+	using MMUFn = std::unique_ptr<MMU> (*)(IMMU::Data&);
 	dlerror();
-	Fn f = reinterpret_cast<Fn>(dlsym(m_handle, "loadCPU"));
+	MMUFn g = reinterpret_cast<MMUFn>(dlsym(m_handle, "loadMMU"));
 	const char* dlsym_err = dlerror();
 	if (dlsym_err != nullptr) {
 		dlclose(m_handle);
 		throw std::runtime_error{dlsym_err};
 	}
+	m_mmu = g(m_mmuData);
 
+	// load CPU
+	using CPUFn = std::unique_ptr<CPU> (*)(ICPU::Data&, IMMU*);
+	dlerror();
+	CPUFn f = reinterpret_cast<CPUFn>(dlsym(m_handle, "loadCPU"));
+	dlsym_err = dlerror();
+	if (dlsym_err != nullptr) {
+		dlclose(m_handle);
+		throw std::runtime_error{dlsym_err};
+	}
 	m_cpu = f(m_cpuData, m_mmu.get());
 }

@@ -16,7 +16,7 @@ LFLAGS = -lSDL2 -ldl
 : $(SOURCE_DIR)/gmb/gmb.cpp |> $(CC) -c $(CFLAGS) %f -o %o |> %B.o {gmbo}
 : {nongmbo} {gmbo} |> $(CC) $(LFLAGS) %f -o %o |> gmb
 
-: $(SOURCE_DIR)/*cpu.cpp $(SOURCE_DIR)/*mmu.cpp |> $(CC) -shared -fPIC $(CFLAGS) %f -o %o |> cpu.so
+: $(SOURCE_DIR)/*cpu.cpp $(SOURCE_DIR)/*mmu.cpp $(SOURCE_DIR)/bios.cpp |> $(CC) -shared -fPIC $(CFLAGS) %f -o %o |> cpu.so
 
 : foreach $(TEST_SOURCES) |> $(CC) -c $(CFLAGS) -I $(TEST_INCLUDE_DIR) %f -o %o |> %B.to {testo}
 : {nongmbo} {testo} |> $(CC) $(LFLAGS) %f -o %o |> test
