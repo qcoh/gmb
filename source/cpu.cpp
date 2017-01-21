@@ -35,6 +35,11 @@ void CPU::POP(u16& reg) {
 
 void CPU::INC16(u16& reg) { reg++; }
 
+void CPU::RET() {
+	m_data.pc = m_mmu->read16(m_data.sp);
+	m_data.sp += 2;
+}
+
 void CPU::fetch() {
 	m_data.op = m_mmu->read8(m_data.pc);
 	m_data.nn = m_mmu->read16(m_data.pc + 1);
@@ -324,6 +329,9 @@ void CPU::exec() {
 		break;
 	case 0xc5:  // PUSH BC
 		PUSH(m_data.bc);
+		break;
+	case 0xc9:  // RET
+		RET();
 		break;
 	case 0xcb:  // CB
 		CB();

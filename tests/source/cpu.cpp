@@ -768,6 +768,33 @@ SCENARIO("Testing instructions", "[CPU]") {
 
 			THEN("sp == 0") { REQUIRE(data.sp == 0); }
 		}
+		WHEN("Calling RET") {
+			data.sp = 0x1000;
+			arr[data.sp] = 0x34;
+			arr[data.sp + 1] = 0x12;
+			data.op = 0xc9;
+			cpu.exec();
+
+			THEN("pc == 0x1234, sp == 0x1002") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0x1002);
+			}
+		}
+		WHEN("CALL RET compatibility") {
+			data.sp = 0x1fff;
+			data.pc = 0x1000;
+			data.nn = 0x1234;
+			data.op = 0xcd;
+			cpu.exec();
+
+			data.op = 0xc9;
+			cpu.exec();
+
+			THEN("pc == 0x1000, sp == 0x1fff") {
+				REQUIRE(data.pc == 0x1000);
+				REQUIRE(data.sp == 0x1fff);
+			}
+		}
 	}
 }
 
