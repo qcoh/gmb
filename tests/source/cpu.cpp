@@ -461,6 +461,38 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.negFlag == false);
 			}
 		}
+		WHEN("Calling RLA (1)") {
+			data.a = 0b10000000;
+			data.carryFlag = true;
+			data.op = 0x17;
+			cpu.exec();
+
+			THEN(
+			    "a == 1, carryFlag == true, zeroFlag == false, "
+			    "negFlag == false, halfFlag == false") {
+				REQUIRE(data.a == 1);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling RLA (2)") {
+			data.a = 0b10000000;
+			data.carryFlag = false;
+			data.op = 0x17;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, carryFlag == true, zeroFlag == false, "
+			    "negFlag == false, halfFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
 	}
 }
 

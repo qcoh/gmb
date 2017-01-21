@@ -87,6 +87,10 @@ void CPU::exec() {
 	case 0x16:  // LD D, n
 		LD(m_data.d, m_data.n);
 		break;
+	case 0x17:  // RLA
+		RL(m_data.a);
+		m_data.zeroFlag = false;
+		break;
 	case 0x18:  // JR n
 		JR(true);
 		break;
