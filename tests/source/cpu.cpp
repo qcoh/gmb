@@ -948,6 +948,150 @@ SCENARIO("Testing instructions", "[CPU]") {
 
 			THEN("a == 0x89") { REQUIRE(data.a == 0x89); }
 		}
+		WHEN("Calling SUB A, B") {
+			data.a = 0xff;
+			data.b = 0xee;
+			data.op = 0x90;
+			cpu.exec();
+
+			THEN(
+			    "data.a == 0x11, zeroFlag == false, halfFlag == "
+			    "false, negFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x11);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, C") {
+			data.a = 0xfe;
+			data.c = 0x0f;
+			data.op = 0x91;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xef, halfFlag == true, carryFlag == false, "
+			    "zeroFlag == False, negFlag == true") {
+				REQUIRE(data.a == 0xef);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, D") {
+			data.a = 0x50;
+			data.d = 0x60;
+			data.op = 0x92;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xf0, carryFlag == true, halfFlag == False, "
+			    "negFlag == true, zeroFlag == false") {
+				REQUIRE(data.a == 0xf0);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, E") {
+			data.a = 0x11;
+			data.e = 0x11;
+			data.op = 0x93;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, carryFlag == false, halfFlag == false, "
+			    "zeroFlag == true, negFlag == true") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, H") {
+			data.a = 0;
+			data.h = 0xff;
+			data.op = 0x94;
+			cpu.exec();
+
+			THEN(
+			    "a == 1, carryFlag == true, halfFLag == true, "
+			    "zeroFlag == false, negFlag == true") {
+				REQUIRE(data.a == 1);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, L") {
+			data.a = 0;
+			data.l = 0;
+			data.op = 0x95;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == true, halfFlag == false, "
+			    "carryFlag == false, negFlag == true") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, (HL)") {
+			data.hl = 0x25;
+			arr[data.hl] = 0x17;
+			data.a = 0x56;
+			data.op = 0x96;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x3f, zeroFlag == false, halfFlag == true, "
+			    "carryFlag == false, negFlag == true") {
+				REQUIRE(data.a == 0x3f);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, A") {
+			data.a = 0x12;
+			data.op = 0x97;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, carryFlag == false, halfFlag == false, "
+			    "zeroFlag == true, negFlag == true") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == true);
+			}
+		}
+		WHEN("Calling SUB A, n") {
+			data.a = 0x25;
+			data.n = 0x05;
+			data.op = 0xd6;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x20, carryFlag == false, halfFlag == false, "
+			    "zeroFlag == false, negFlag == true") {
+				REQUIRE(data.a == 0x20);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == true);
+			}
+		}
 	}
 }
 

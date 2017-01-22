@@ -82,6 +82,15 @@ private:
 		m_data.negFlag = true;
 	}
 
+	template <typename T>
+	void SUB(const T& source) {
+		m_data.halfFlag = ((m_data.a & 0xf) < (source & 0xf));
+		m_data.carryFlag = (m_data.a < source);
+		m_data.a = static_cast<u8>(m_data.a - source);
+		m_data.zeroFlag = (m_data.a == 0);
+		m_data.negFlag = true;
+	}
+
 	// 16bit arithmetic
 
 	// annoying: can't specialize in class scope

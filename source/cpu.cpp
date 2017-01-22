@@ -312,6 +312,31 @@ void CPU::exec() {
 		LD(mhl, m_data.read8(m_data.op & 0x7));
 		break;
 
+	case 0x090:  // SUB A, B
+		SUB(m_data.b);
+		break;
+	case 0x91:  // SUB A, C
+		SUB(m_data.c);
+		break;
+	case 0x92:  // SUB A, D
+		SUB(m_data.d);
+		break;
+	case 0x93:  // SUB A, E
+		SUB(m_data.e);
+		break;
+	case 0x94:  // SUB A, H
+		SUB(m_data.h);
+		break;
+	case 0x95:  // SUB A, L
+		SUB(m_data.l);
+		break;
+	case 0x96:  // SUB A, (HL)
+		SUB(mhl);
+		break;
+	case 0x97:  // SUB A, A
+		SUB(m_data.a);
+		break;
+
 	case 0xa8:
 	case 0xa9:
 	case 0xaa:
@@ -373,6 +398,9 @@ void CPU::exec() {
 
 	case 0xd5:  // PUSH DE
 		PUSH(m_data.de);
+		break;
+	case 0xd6:  // SUB A, n
+		SUB(m_data.n);
 		break;
 	case 0xe0:  // LD (n + 0xff00), A
 	{
