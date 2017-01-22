@@ -48,8 +48,8 @@ u8 MMU::read8(u16 addr) {
 			case 0x0010:
 			case 0x0020:
 			case 0x0030:
-				// audio
-				break;
+				// audio, ignore for now
+				return 0;
 			case 0x0040:
 				// video
 				return m_data.gpu->read8(addr);
@@ -116,8 +116,8 @@ void MMU::write8(u16 addr, u8 v) {
 			case 0x0010:
 			case 0x0020:
 			case 0x0030:
-				// audio
-				break;
+				// audio, ignore for now
+				return;
 			case 0x0040:
 				// video
 				m_data.gpu->write8(addr, v);
