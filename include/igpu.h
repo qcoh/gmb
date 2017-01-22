@@ -11,6 +11,10 @@ public:
 		u16 cycles = 0;
 		std::array<u8, 8192> vram = {{0}};
 
+		using Row = std::array<u8, 2>;
+		using Tile = std::array<Row, 8>;
+		std::array<Tile, 384> tiles;
+
 		// 0xff40 LCD Control
 		u8 lcdControl = 0;
 		// Display Enable (0=Off, 1=On)

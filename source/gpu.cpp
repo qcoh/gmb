@@ -53,6 +53,11 @@ void GPU::write8(u16 addr, u8 v) {
 	case 0x8000:
 	case 0x9000:
 		m_data.vram[addr & 0x1fff] = v;
+		if (addr < 0x9800) {
+			// update tiles
+			m_data.tiles[(addr & 0x1fff) >> 4][(addr >> 1) & 0x7]
+				    [addr & 1] = v;
+		}
 		return;
 	case 0xf000:
 		switch (addr) {
