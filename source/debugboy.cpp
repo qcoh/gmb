@@ -99,8 +99,37 @@ void DebugBoy::parseCommands(std::string& input) {
 				  << std::setw(4) << addr << ") == 0x"
 				  << std::setw(2) << m_mmu->read8(addr) << '\n';
 		}
+	} else if (cmd == "tile") {
+		u16 addr = 0;
+		if (stream >> std::hex >> addr && addr < 384) {
+			printTile(m_gpuData.tiles[addr]);
+		}
 	} else if (cmd == "trace") {
 		// set tracepoints
+	}
+}
+
+void DebugBoy::printTile(const IGPU::Data::Tile& tile) {
+	for (const auto& row : tile) {
+		for (u8 i = 0; i < 8; i++) {
+			u8 color = static_cast<u8>(((row[0] >> i) & 1) << 1 |
+						   ((row[0] >> i) & 1));
+			switch (color) {
+			case 0x0:
+				std::cout << " ";
+				break;
+			case 0x1:
+				std::cout << "░";
+				break;
+			case 0x2:
+				std::cout << "▓";
+				break;
+			default:
+				std::cout << "█";
+				break;
+			}
+		}
+		std::cout << '\n';
 	}
 }
 

@@ -27,4 +27,5 @@ private:
 	void reloadCPU();
 	void parseCommands(std::string&);
 	void printCurrentInstruction();
+	static void printTile(const IGPU::Data::Tile&);
 };
