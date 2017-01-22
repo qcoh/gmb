@@ -92,6 +92,13 @@ void DebugBoy::parseCommands(std::string& input) {
 		std::cout << '\n';
 	} else if (cmd == "clear") {
 		m_breakPoints.clear();
+	} else if (cmd == "print") {
+		u16 addr = 0;
+		if (stream >> std::hex >> addr) {
+			std::cout << "(0x" << std::hex << std::setfill('0')
+				  << std::setw(4) << addr << ") == 0x"
+				  << std::setw(2) << m_mmu->read8(addr) << '\n';
+		}
 	} else if (cmd == "trace") {
 		// set tracepoints
 	}
