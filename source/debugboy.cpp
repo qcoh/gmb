@@ -56,7 +56,7 @@ void DebugBoy::Run() {
 		} else {
 			if (m_breakPoints.find(m_cpuData.pc) ==
 			    m_breakPoints.end()) {
-				m_cpu->Step();
+				m_gpu->step(m_cpu->step());
 			} else {
 				m_mode = Mode::WAIT;
 			}
@@ -69,7 +69,7 @@ void DebugBoy::parseCommands(std::string& input) {
 	std::string cmd{};
 	stream >> cmd;
 	if (cmd == "next" || cmd == "") {
-		m_cpu->Step();
+		m_gpu->step(m_cpu->step());
 	} else if (cmd == "continue") {
 		m_mode = Mode::RUN;
 	} else if (cmd == "print") {

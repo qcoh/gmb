@@ -49,7 +49,7 @@ public:
 	ICPU& operator=(ICPU&&) = delete;
 	virtual ~ICPU() = default;
 
-	virtual void Step() = 0;
+	virtual u16 step() = 0;
 };
 
 std::ostream& operator<<(std::ostream&, const ICPU::Data&);

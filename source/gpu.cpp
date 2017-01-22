@@ -100,3 +100,53 @@ void GPU::write8(u16 addr, u8 v) {
 	}
 	throw std::runtime_error{"GPU Address not implemented"};
 }
+
+void GPU::step(u16 cycles) {
+	// http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-GPU-Timings
+	m_data.cycles += cycles;
+
+	switch (m_data.lcdStat & 0b11) {
+	case ACCESSING_OAM:
+		if (m_data.cycles >= 80) {
+			m_data.cycles = 0;
+			m_data.lcdStat =
+			    (m_data.lcdStat & 0b11111100) | ACCESSING_VRAM;
+		}
+		break;
+	case ACCESSING_VRAM:
+		if (m_data.cycles >= 172) {
+			m_data.cycles = 0;
+			m_data.lcdStat = (m_data.lcdStat & 0b11111100) | HBLANK;
+			// render scanline
+		}
+		break;
+	case HBLANK:
+		if (m_data.cycles >= 204) {
+			m_data.cycles = 0;
+			m_data.lY++;
+
+			if (m_data.lY == 143) {
+				m_data.lcdStat =
+				    (m_data.lcdStat & 0b11111100) | VBLANK;
+				// vblank interrupt
+				// display
+			} else {
+				m_data.lcdStat = (m_data.lcdStat & 0b11111100) |
+						 ACCESSING_OAM;
+			}
+		}
+		break;
+	case VBLANK:
+		if (m_data.cycles >= 456) {
+			m_data.cycles = 0;
+			m_data.lY++;
+
+			if (m_data.lY > 153) {
+				m_data.lcdStat = (m_data.lcdStat & 0b11111100) |
+						 ACCESSING_OAM;
+				m_data.lY = 0;
+			}
+		}
+		break;
+	}
+}

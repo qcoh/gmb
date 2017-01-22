@@ -8,9 +8,11 @@ CPU::CPU(ICPU::Data& data, IMMU* mmu) : ICPU{}, m_data{data}, m_mmu{mmu} {
 	(void)m_mmu;
 }
 
-void CPU::Step() {
+u16 CPU::step() {
 	fetch();
 	exec();
+
+	return m_data.cycles;
 }
 
 void CPU::CALL(const bool& cond) {
@@ -44,7 +46,7 @@ void CPU::fetch() {
 	m_data.op = m_mmu->read8(m_data.pc);
 	m_data.nn = m_mmu->read16(m_data.pc + 1);
 	m_data.pc += s_instructions[m_data.op].offset;
-	m_data.cycles += s_instructions[m_data.op].cycles;
+	m_data.cycles = s_instructions[m_data.op].cycles;
 }
 
 void CPU::exec() {

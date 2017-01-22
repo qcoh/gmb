@@ -8,6 +8,7 @@
 class IGPU {
 public:
 	struct Data {
+		u16 cycles = 0;
 		std::array<u8, 8192> vram = {{0}};
 
 		// 0xff40 LCD Control
@@ -75,4 +76,5 @@ public:
 
 	virtual u8 read8(u16) const = 0;
 	virtual void write8(u16, u8) = 0;
+	virtual void step(u16) = 0;
 };

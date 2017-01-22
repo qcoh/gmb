@@ -9,7 +9,7 @@ public:
 	CPU(ICPU::Data&, IMMU*);
 	virtual ~CPU() = default;
 
-	virtual void Step() override;
+	virtual u16 step() override;
 
 	void fetch();
 	void exec();
