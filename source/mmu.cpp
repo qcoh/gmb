@@ -42,6 +42,20 @@ u8 MMU::read8(u16 addr) {
 		}
 		if (addr < 0xff80) {
 			// io registers
+			switch (addr & 0x00f0) {
+			case 0x0000:
+			// timer, serial
+			case 0x0010:
+			case 0x0020:
+			case 0x0030:
+				// audio
+				break;
+			case 0x0040:
+				// video
+				return m_data.gpu->read8(addr);
+			default:
+				break;
+			}
 			break;
 		}
 		if (addr < 0xffff) {
@@ -96,8 +110,22 @@ void MMU::write8(u16 addr, u8 v) {
 		}
 		if (addr < 0xff80) {
 			// io registers
-			// ignore for now
-			return;
+			switch (addr & 0x00f0) {
+			case 0x0000:
+			// timer, serial
+			case 0x0010:
+			case 0x0020:
+			case 0x0030:
+				// audio
+				break;
+			case 0x0040:
+				// video
+				m_data.gpu->write8(addr, v);
+				return;
+			default:
+				break;
+			}
+			break;
 		}
 		if (addr < 0xffff) {
 			// hram
