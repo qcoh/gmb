@@ -100,6 +100,7 @@ void DebugBoy::parseCommands(std::string& input) {
 void DebugBoy::reloadCPU() {
 	// need to call destructor from shared library before unloading
 	m_cpu = nullptr;
+	m_mmu = nullptr;
 
 	if (m_handle != nullptr) {
 		if (dlclose(m_handle) != 0) {
