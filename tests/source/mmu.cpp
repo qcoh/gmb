@@ -19,5 +19,21 @@ SCENARIO("Verify read and write locations", "[MMU]") {
 				}
 			}
 		}
+		WHEN("Writing to wram*") {
+			mmu.write8(0xc000, 0x12);
+			mmu.write8(0xcfff, 0x34);
+
+			mmu.write8(0xd000, 0x78);
+			mmu.write8(0xdfff, 0x9a);
+
+			THEN(
+			    "wram0[0] == 0x12, wram0[0xfff] == 0x34, wram1[0] "
+			    "== 0x78, wram1[0xfff] == 0x9a") {
+				REQUIRE(data.wram0[0] == 0x12);
+				REQUIRE(data.wram0[0xfff] == 0x34);
+				REQUIRE(data.wram1[0] == 0x78);
+				REQUIRE(data.wram1[0xfff] == 0x9a);
+			}
+		}
 	}
 }
