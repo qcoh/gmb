@@ -20,7 +20,7 @@ void CPU::CALL(const bool& cond) {
 		m_data.sp -= 2;
 		m_mmu->write16(m_data.sp, m_data.pc);
 		m_data.pc = m_data.nn;
-		m_data.cycles += 12;
+		m_data.cycles = 12;
 	}
 	m_data.cycles += 12;
 }
@@ -40,6 +40,14 @@ void CPU::INC16(u16& reg) { reg++; }
 void CPU::RET() {
 	m_data.pc = m_mmu->read16(m_data.sp);
 	m_data.sp += 2;
+}
+
+void CPU::JP(const bool& cond, const u16& addr) {
+	if (cond) {
+		m_data.pc = addr;
+		m_data.cycles = 4;
+	}
+	m_data.cycles += 12;
 }
 
 void CPU::fetch() {
@@ -404,6 +412,12 @@ void CPU::exec() {
 	case 0xc1:  // POP BC
 		POP(m_data.bc);
 		break;
+	case 0xc2:  // JP NZ, nn
+		JP(!m_data.zeroFlag, m_data.nn);
+		break;
+	case 0xc3:  // JP nn
+		JP(true, m_data.nn);
+		break;
 	case 0xc5:  // PUSH BC
 		PUSH(m_data.bc);
 		break;
@@ -412,6 +426,9 @@ void CPU::exec() {
 		break;
 	case 0xc9:  // RET
 		RET();
+		break;
+	case 0xca:  // JP Z, nn
+		JP(m_data.zeroFlag, m_data.nn);
 		break;
 	case 0xcb:  // CB
 		CB();
@@ -422,12 +439,17 @@ void CPU::exec() {
 	case 0xd1:  // POP DE
 		POP(m_data.de);
 		break;
-
+	case 0xd2:  // JP NC, nn
+		JP(!m_data.carryFlag, m_data.nn);
+		break;
 	case 0xd5:  // PUSH DE
 		PUSH(m_data.de);
 		break;
 	case 0xd6:  // SUB A, n
 		SUB(m_data.n);
+		break;
+	case 0xda:  // JP C, nn
+		JP(m_data.carryFlag, m_data.nn);
 		break;
 	case 0xe0:  // LD (n + 0xff00), A
 	{
@@ -446,6 +468,10 @@ void CPU::exec() {
 	}
 	case 0xe5:  // PUSH HL
 		PUSH(m_data.hl);
+		break;
+	case 0xe9:  // JP HL (error in docs!!!)
+		JP(true, m_data.hl);
+		m_data.cycles = 4;
 		break;
 	case 0xea:  // LD (nn), A
 	{

@@ -26,7 +26,7 @@ private:
 	void JR(const T& cond) {
 		if (cond) {
 			m_data.pc += static_cast<int8_t>(m_data.n);
-			m_data.cycles += 4;
+			m_data.cycles = 4;
 		}
 		m_data.cycles += 8;
 	}
@@ -38,6 +38,8 @@ private:
 
 	void CALL(const bool&);
 	void RET();
+
+	void JP(const bool&, const u16&);
 
 	// LD
 	template <typename T, typename S>

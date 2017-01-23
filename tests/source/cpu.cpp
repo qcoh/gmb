@@ -1236,6 +1236,75 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.negFlag == false);
 			}
 		}
+		WHEN("Calling JP NZ, nn") {
+			data.zeroFlag = false;
+			data.nn = 0x1234;
+			data.pc = 0x100;
+			data.op = 0xc2;
+			cpu.exec();
+
+			THEN("pc == 0x1234, cycles == 16") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.cycles == 16);
+			}
+		}
+		WHEN("Calling JP Z, nn") {
+			data.zeroFlag = false;
+			data.nn = 0x1234;
+			data.pc = 0x100;
+			data.op = 0xca;
+			cpu.exec();
+
+			THEN("pc == 0x100, cycles == 12") {
+				REQUIRE(data.pc == 0x100);
+				REQUIRE(data.cycles == 12);
+			}
+		}
+		WHEN("Calling JP NC, nn") {
+			data.carryFlag = true;
+			data.nn = 0x1234;
+			data.pc = 0x100;
+			data.op = 0xd2;
+			cpu.exec();
+
+			THEN("pc == 0x100, cylces == 12") {
+				REQUIRE(data.pc == 0x100);
+				REQUIRE(data.cycles == 12);
+			}
+		}
+		WHEN("Calling JP C, nn") {
+			data.carryFlag = true;
+			data.nn = 0x1234;
+			data.pc = 0x100;
+			data.op = 0xda;
+			cpu.exec();
+
+			THEN("pc == 0x1234, cycles == 16") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.cycles == 16);
+			}
+		}
+		WHEN("Calling JP nn") {
+			data.nn = 0x789a;
+			data.pc = 0x100;
+			data.op = 0xc3;
+			cpu.exec();
+
+			THEN("pc == 0x789a, cycles == 16") {
+				REQUIRE(data.pc == 0x789a);
+				REQUIRE(data.cycles == 16);
+			}
+		}
+		WHEN("Calling JP HL") {
+			data.hl = 0x1234;
+			data.op = 0xe9;
+			cpu.exec();
+
+			THEN("pc == 0x1234, cycles == 4") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.cycles == 4);
+			}
+		}
 	}
 }
 
