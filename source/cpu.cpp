@@ -41,6 +41,8 @@ void CPU::POP(u16& reg) {
 
 void CPU::INC16(u16& reg) { reg++; }
 
+void CPU::DEC16(u16& reg) { reg--; }
+
 void CPU::RET() {
 	m_data.pc = m_mmu->read16(m_data.sp);
 	m_data.sp += 2;
@@ -98,6 +100,9 @@ void CPU::exec() {
 		LD(m_data.a, mbc);
 		break;
 	}
+	case 0x0b:  // DEC BC
+		DEC16(m_data.bc);
+		break;
 	case 0x0c:  // INC C
 		INC(m_data.c);
 		break;
@@ -145,6 +150,9 @@ void CPU::exec() {
 		LD(m_data.a, mde);
 		break;
 	}
+	case 0x1b:  // DEC DE
+		DEC16(m_data.de);
+		break;
 	case 0x1c:  // INC E
 		INC(m_data.e);
 		break;
@@ -187,6 +195,9 @@ void CPU::exec() {
 		LD(m_data.a, mhl);
 		m_data.hl++;
 		break;
+	case 0x2b:  // DEC HL
+		DEC16(m_data.hl);
+		break;
 	case 0x2c:  // INC L
 		INC(m_data.l);
 		break;
@@ -224,6 +235,9 @@ void CPU::exec() {
 	case 0x3a:  // LD A, (HL-)
 		LD(m_data.a, mhl);
 		m_data.hl--;
+		break;
+	case 0x3b:  // DEC SP
+		DEC16(m_data.sp);
 		break;
 	case 0x3c:  // INC A
 		INC(m_data.a);

@@ -1305,6 +1305,34 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.cycles == 4);
 			}
 		}
+		WHEN("DEC BC") {
+			data.bc = 0x12;
+			data.op = 0x0b;
+			cpu.exec();
+
+			THEN("bc == 0x11") { REQUIRE(data.bc == 0x11); }
+		}
+		WHEN("DEC DE") {
+			data.de = 0;
+			data.op = 0x1b;
+			cpu.exec();
+
+			THEN("de == 0xffff") { REQUIRE(data.de == 0xffff); }
+		}
+		WHEN("DEC HL") {
+			data.hl = 0x1234;
+			data.op = 0x2b;
+			cpu.exec();
+
+			THEN("hl == 0x1233") { REQUIRE(data.hl == 0x1233); }
+		}
+		WHEN("DEC SP") {
+			data.sp = 0x1234;
+			data.op = 0x3b;
+			cpu.exec();
+
+			THEN("sp == 0x1233") { REQUIRE(data.sp == 0x1233); }
+		}
 	}
 }
 

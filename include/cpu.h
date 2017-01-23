@@ -110,6 +110,7 @@ private:
 
 	// annoying: can't specialize in class scope
 	void INC16(u16&);
+	void DEC16(u16&);
 
 	// extended instruction set
 	void CB();
