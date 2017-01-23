@@ -4,6 +4,7 @@
 
 #include "bitref.h"
 #include "display.h"
+#include "interruptdata.h"
 #include "types.h"
 
 class IGPU {
@@ -74,6 +75,8 @@ public:
 		u8 wY = 0;
 		// 0xff4b Window X position
 		u8 wX = 0;
+
+		InterruptData* intData = nullptr;
 	};
 	IGPU() = default;
 	IGPU(const IGPU&) = delete;

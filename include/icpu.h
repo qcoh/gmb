@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "bitref.h"
+#include "interruptdata.h"
 #include "types.h"
 
 class ICPU {
@@ -37,6 +38,8 @@ public:
 		u8 op = 0;
 
 		u16 cycles = 0;
+
+		InterruptData* intData = nullptr;
 
 		u8& read8(u8);
 		u16& read16(u8);

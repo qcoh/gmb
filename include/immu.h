@@ -7,6 +7,7 @@
 #include "bios.h"
 #include "icartridge.h"
 #include "igpu.h"
+#include "interruptdata.h"
 #include "types.h"
 
 class IMMU {
@@ -19,9 +20,7 @@ public:
 		std::array<u8, 127> hram = {{0}};
 		std::array<u8, 4096> wram0 = {{0}};
 		std::array<u8, 4096> wram1 = {{0}};
-
-		Data(BIOS*, ICartridge*, IGPU*);
-		Data() = default;
+		InterruptData* intData = nullptr;
 	};
 	IMMU() = default;
 	IMMU(const IMMU&) = delete;

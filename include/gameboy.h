@@ -4,6 +4,7 @@
 #include "icpu.h"
 #include "igpu.h"
 #include "immu.h"
+#include "interruptdata.h"
 
 class GameBoy {
 public:
@@ -13,6 +14,10 @@ public:
 
 protected:
 	// cpu, mapper, mmu, display, ...
+	Display m_display{};
+
+	InterruptData m_intData;
+
 	std::unique_ptr<ICartridge> m_cart;
 	BIOS m_bios;
 
@@ -25,6 +30,5 @@ protected:
 	ICPU::Data m_cpuData;
 	std::unique_ptr<ICPU> m_cpu;
 
-	Display m_display{};
 	bool quit = false;
 };
