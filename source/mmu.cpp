@@ -122,6 +122,12 @@ void MMU::write8(u16 addr, u8 v) {
 				// video
 				m_data.gpu->write8(addr, v);
 				return;
+			case 0x0050:
+				if (addr == 0xff50) {
+					m_data.biosMode = false;
+					return;
+				}
+				break;
 			default:
 				break;
 			}
