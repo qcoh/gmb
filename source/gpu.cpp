@@ -144,7 +144,7 @@ void GPU::step(u16 cycles) {
 			m_data.cycles = 0;
 			m_data.lY++;
 
-			if (m_data.lY == 143) {
+			if (m_data.lY == 144) {
 				m_data.lcdStat =
 				    (m_data.lcdStat & 0b11111100) | VBLANK;
 				// vblank interrupt
