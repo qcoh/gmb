@@ -39,7 +39,8 @@ u8 MMU::read8(u16 addr) {
 		}
 		if (addr < 0xff00) {
 			// unused
-			break;
+			// https://www.reddit.com/r/EmuDev/comments/5nixai/gb_tetris_writing_to_unused_memory/
+			return 0xff;
 		}
 		if (addr < 0xff80) {
 			// io registers
@@ -64,8 +65,7 @@ u8 MMU::read8(u16 addr) {
 			return m_data.hram[addr & 0x007f];
 		}
 		if (addr == 0xffff) {
-			// interrupt enable
-			break;
+			return m_data.intData->interruptEnable;
 		}
 	default:
 		break;
@@ -109,7 +109,8 @@ void MMU::write8(u16 addr, u8 v) {
 		}
 		if (addr < 0xff00) {
 			// unused
-			break;
+			// https://www.reddit.com/r/EmuDev/comments/5nixai/gb_tetris_writing_to_unused_memory/
+			return;
 		}
 		if (addr < 0xff80) {
 			// io registers
@@ -142,8 +143,8 @@ void MMU::write8(u16 addr, u8 v) {
 			return;
 		}
 		if (addr == 0xffff) {
-			// interrupt enable
-			break;
+			m_data.intData->interruptEnable = v;
+			return;
 		}
 	default:
 		break;
