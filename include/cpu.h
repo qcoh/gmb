@@ -106,6 +106,15 @@ private:
 		m_data.negFlag = false;
 	}
 
+	template <typename T>
+	void OR(const T& source) {
+		m_data.a |= source;
+		m_data.zeroFlag = (m_data.a == 0);
+		m_data.carryFlag = false;
+		m_data.halfFlag = false;
+		m_data.negFlag = false;
+	}
+
 	// 16bit arithmetic
 
 	// annoying: can't specialize in class scope

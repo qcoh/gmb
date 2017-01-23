@@ -402,6 +402,31 @@ void CPU::exec() {
 		XOR(mhl);
 		break;
 
+	case 0xb0:  // OR B
+		OR(m_data.b);
+		break;
+	case 0xb1:  // OR C
+		OR(m_data.c);
+		break;
+	case 0xb2:  // OR D
+		OR(m_data.d);
+		break;
+	case 0xb3:  // OR E
+		OR(m_data.e);
+		break;
+	case 0xb4:  // OR H
+		OR(m_data.h);
+		break;
+	case 0xb5:  // OR L
+		OR(m_data.l);
+		break;
+	case 0xb6:  // OR (HL)
+		OR(mhl);
+		break;
+	case 0xb7:  // OR A
+		OR(m_data.a);
+		break;
+
 	case 0xb8:  // CP B
 		CP(m_data.b);
 		break;
@@ -517,6 +542,9 @@ void CPU::exec() {
 		break;
 	case 0xf5:  // PUSH AF
 		PUSH(m_data.af);
+		break;
+	case 0xf6:  // OR n
+		OR(m_data.n);
 		break;
 	case 0xfa:  // LD A, (nn)
 	{

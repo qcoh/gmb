@@ -1333,6 +1333,150 @@ SCENARIO("Testing instructions", "[CPU]") {
 
 			THEN("sp == 0x1233") { REQUIRE(data.sp == 0x1233); }
 		}
+		WHEN("OR B") {
+			data.a = 0b10101010;
+			data.b = 0b01010101;
+			data.op = 0xb0;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xff, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0xff);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR C") {
+			data.a = 0;
+			data.c = 0;
+			data.op = 0xb1;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == true, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR D") {
+			data.a = 0xf0;
+			data.d = 0x0f;
+			data.op = 0xb2;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xff, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0xff);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR E") {
+			data.a = 0xff;
+			data.e = 0xff;
+			data.op = 0xb3;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xff, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0xff);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR H") {
+			data.a = 0xff;
+			data.h = 0;
+			data.op = 0xb4;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xff, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0xff);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR L") {
+			data.a = 0xf0;
+			data.l = 0;
+			data.op = 0xb5;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xf0, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0xf0);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR (HL)") {
+			data.a = 0xf0;
+			data.hl = 0x100;
+			arr[data.hl] = 0x0a;
+			data.op = 0xb6;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xfa, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0xfa);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR A") {
+			data.a = 0;
+			data.op = 0xb7;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("OR n") {
+			data.a = 0;
+			data.n = 0xbb;
+			data.op = 0xf6;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xbb, zeroFlag == false, negFlag == false, "
+			    "halfFlag == false, carryFlag == false") {
+				REQUIRE(data.a == 0xbb);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
 	}
 }
 
