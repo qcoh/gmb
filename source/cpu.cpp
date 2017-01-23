@@ -396,21 +396,55 @@ void CPU::exec() {
 		SUB(m_data.a);
 		break;
 
-	case 0xa8:
-	case 0xa9:
-	case 0xaa:
-	case 0xab:
-	case 0xac:
-	case 0xad:
-	// case 0xae:
-	case 0xaf:
-		// XOR A, _
-		XOR(m_data.read8(m_data.op & 0x7));
+	case 0xa0:  // AND B
+		AND(m_data.b);
 		break;
-	case 0xae:  // XOR A, (HL)
-		XOR(mhl);
+	case 0xa1:  // AND C
+		AND(m_data.c);
+		break;
+	case 0xa2:  // AND D
+		AND(m_data.d);
+		break;
+	case 0xa3:  // AND E
+		AND(m_data.e);
+		break;
+	case 0xa4:  // AND H
+		AND(m_data.h);
+		break;
+	case 0xa5:  // AND L
+		AND(m_data.l);
+		break;
+	case 0xa6:  // AND (HL)
+		AND(mhl);
+		break;
+	case 0xa7:  // AND A
+		AND(m_data.a);
 		break;
 
+	case 0xa8:  // XOR B
+		XOR(m_data.b);
+		break;
+	case 0xa9:  // XOR C
+		XOR(m_data.c);
+		break;
+	case 0xaa:  // XOR D
+		XOR(m_data.d);
+		break;
+	case 0xab:  // XOR E
+		XOR(m_data.e);
+		break;
+	case 0xac:  // XOR H
+		XOR(m_data.h);
+		break;
+	case 0xad:  // XOR L
+		XOR(m_data.l);
+		break;
+	case 0xae:  // XOR (HL)
+		XOR(mhl);
+		break;
+	case 0xaf:  // XOR A
+		XOR(m_data.a);
+		break;
 	case 0xb0:  // OR B
 		OR(m_data.b);
 		break;
@@ -520,6 +554,9 @@ void CPU::exec() {
 	}
 	case 0xe5:  // PUSH HL
 		PUSH(m_data.hl);
+		break;
+	case 0xe6:  // AND n
+		AND(m_data.n);
 		break;
 	case 0xe9:  // JP HL (error in docs!!!)
 		JP(true, m_data.hl);

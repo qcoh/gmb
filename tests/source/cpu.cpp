@@ -1490,6 +1490,151 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.halfFlag == true);
 			}
 		}
+		WHEN("Calling AND B") {
+			data.a = 0x12;
+			data.b = 0xff;
+			data.op = 0xa0;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x12, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x12);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+		WHEN("Calling AND C") {
+			data.a = 0;
+			data.c = 0xff;
+			data.op = 0xa1;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == true, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+		WHEN("Calling AND D") {
+			data.a = 0x67;
+			data.d = 0xff;
+			data.op = 0xa2;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x67, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x67);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+		WHEN("Calling AND E") {
+			data.a = 0x67;
+			data.e = 0xff;
+			data.op = 0xa3;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x67, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x67);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+		WHEN("Calling AND H") {
+			data.a = 0x67;
+			data.h = 0xff;
+			data.op = 0xa4;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x67, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x67);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+		WHEN("Calling AND L") {
+			data.a = 0x67;
+			data.l = 0xff;
+			data.op = 0xa5;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x67, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x67);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+
+		WHEN("Calling AND (HL)") {
+			data.a = 0x67;
+			data.hl = 0x100;
+			arr[data.hl] = 0xf0;
+			data.op = 0xa6;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x60, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x60);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+		WHEN("Calling AND A") {
+			data.a = 0x67;
+			data.op = 0xa7;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x67, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x67);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
+		WHEN("Calling AND n") {
+			data.a = 0x67;
+			data.n = 0x0f;
+			data.op = 0xe6;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x07, zeroFlag == false, negFlag == false, "
+			    "halfFlag == true, carryFlag == false") {
+				REQUIRE(data.a == 0x07);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
 	}
 }
 
