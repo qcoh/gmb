@@ -17,6 +17,11 @@ public:
 		using Tile = std::array<Row, 8>;
 		std::array<Tile, 384> tiles;
 
+		std::array<u8, 160> oam = {{0}};
+
+		using Attribute = std::array<u8, 4>;
+		std::array<Attribute, 40> attributes;
+
 		Display* display = nullptr;
 		Display::PixelArray pixelArray = {{0}};
 

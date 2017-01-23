@@ -34,5 +34,18 @@ SCENARIO("Verify read and write locations (GPU)", "[GPU]") {
 				REQUIRE(data.lcdStat == 0b11111000);
 			}
 		}
+		WHEN("Writing to OAM") {
+			gpu.write8(0xfe00, 0x12);
+			gpu.write8(0xfe50, 0x34);
+			gpu.write8(0xfe9f, 0x56);
+
+			THEN(
+			    "oam[0] == 0x12, oam[0x50] == 0x34, oam[0x9f] == "
+			    "0x56") {
+				REQUIRE(data.oam[0] == 0x12);
+				REQUIRE(data.oam[0x50] == 0x34);
+				REQUIRE(data.oam[0x9f] == 0x56);
+			}
+		}
 	}
 }

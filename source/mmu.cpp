@@ -35,7 +35,7 @@ u8 MMU::read8(u16 addr) {
 		}
 		if (addr < 0xfea0) {
 			// oam
-			break;
+			return m_data.gpu->read8(addr);
 		}
 		if (addr < 0xff00) {
 			// unused
@@ -105,7 +105,8 @@ void MMU::write8(u16 addr, u8 v) {
 		}
 		if (addr < 0xfea0) {
 			// oam
-			break;
+			m_data.gpu->write8(addr, v);
+			return;
 		}
 		if (addr < 0xff00) {
 			// unused
