@@ -23,6 +23,20 @@ DebugBoy::~DebugBoy() {
 	}
 }
 
+void DebugBoy::step() {
+	u16 cycles = m_cpu->step();
+	m_gpu->step(cycles);
+
+	SDL_Event ev = {0};
+	SDL_PollEvent(&ev);
+	switch (ev.type) {
+	case SDL_QUIT:
+		quit = true;
+	default:
+		break;
+	}
+}
+
 void DebugBoy::printCurrentInstruction() {
 	u8 op = m_mmu->read8(m_cpuData.pc);
 
@@ -39,7 +53,7 @@ void DebugBoy::printCurrentInstruction() {
 }
 
 void DebugBoy::Run() {
-	for (;;) {
+	while (!quit) {
 		if (m_mode == Mode::WAIT) {
 			m_cpuData.nn = m_mmu->read16(m_cpuData.pc + 1);
 			std::cout << m_cpuData << '\n';
@@ -56,7 +70,7 @@ void DebugBoy::Run() {
 		} else {
 			if (m_breakPoints.find(m_cpuData.pc) ==
 			    m_breakPoints.end()) {
-				m_gpu->step(m_cpu->step());
+				step();
 			} else {
 				m_mode = Mode::WAIT;
 			}
@@ -69,7 +83,7 @@ void DebugBoy::parseCommands(std::string& input) {
 	std::string cmd{};
 	stream >> cmd;
 	if (cmd == "next" || cmd == "") {
-		m_gpu->step(m_cpu->step());
+		step();
 	} else if (cmd == "continue") {
 		m_mode = Mode::RUN;
 	} else if (cmd == "print") {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "display.h"
 #include "icpu.h"
 #include "igpu.h"
 #include "immu.h"
@@ -23,4 +24,7 @@ protected:
 
 	ICPU::Data m_cpuData;
 	std::unique_ptr<ICPU> m_cpu;
+
+	Display m_display{};
+	bool quit = false;
 };

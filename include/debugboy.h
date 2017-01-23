@@ -28,4 +28,6 @@ private:
 	void parseCommands(std::string&);
 	void printCurrentInstruction();
 	static void printTile(const IGPU::Data::Tile&);
+
+	void step();
 };
