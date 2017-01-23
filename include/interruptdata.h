@@ -30,5 +30,6 @@ struct InterruptData {
 	// Joypad interrupt
 	BitRef<u8> joypadFlag{interruptFlag, 4};
 
-	bool interruptMasterEnable = false;
+	// Interrupt Master Enable
+	bool ime = false;
 };

@@ -21,6 +21,10 @@ private:
 	ICPU::Data& m_data;
 	IMMU* m_mmu;
 
+	// misc
+	void DI();
+	void EI();
+
 	// controlflow
 	template <typename T>
 	void JR(const T& cond) {

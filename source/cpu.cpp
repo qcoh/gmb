@@ -15,6 +15,10 @@ u16 CPU::step() {
 	return m_data.cycles;
 }
 
+void CPU::DI() { m_data.intData->ime = false; }
+
+void CPU::EI() { m_data.intData->ime = true; }
+
 void CPU::CALL(const bool& cond) {
 	if (cond) {
 		m_data.sp -= 2;
@@ -494,6 +498,9 @@ void CPU::exec() {
 		LD(m_data.a, mc);
 		break;
 	}
+	case 0xf3:  // DI
+		DI();
+		break;
 	case 0xf5:  // PUSH AF
 		PUSH(m_data.af);
 		break;
@@ -503,6 +510,9 @@ void CPU::exec() {
 		LD(m_data.a, mnn);
 		break;
 	}
+	case 0xfb:  // EI
+		EI();
+		break;
 	case 0xfe:  // CP n
 		CP(m_data.n);
 		break;
