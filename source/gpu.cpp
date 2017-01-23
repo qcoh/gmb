@@ -122,7 +122,7 @@ void GPU::step(u16 cycles) {
 		if (m_data.cycles >= 172) {
 			m_data.cycles = 0;
 			m_data.lcdStat = (m_data.lcdStat & 0b11111100) | HBLANK;
-			// render scanline
+			renderScanline();
 		}
 		break;
 	case HBLANK:
@@ -134,7 +134,7 @@ void GPU::step(u16 cycles) {
 				m_data.lcdStat =
 				    (m_data.lcdStat & 0b11111100) | VBLANK;
 				// vblank interrupt
-				// display
+				m_data.display->render(m_data.pixelArray);
 			} else {
 				m_data.lcdStat = (m_data.lcdStat & 0b11111100) |
 						 ACCESSING_OAM;
@@ -153,5 +153,121 @@ void GPU::step(u16 cycles) {
 			}
 		}
 		break;
+	}
+}
+
+void GPU::renderScanline() {
+	if (m_data.bgDisplay) {
+		renderTiles();
+	}
+}
+
+void GPU::renderTiles() {
+	// TODO: window
+
+	for (u8 i = 0; i < 160; i++) {
+		// The GameBoy renders a 160*144 slice of the 256*256
+		// background, which consists of 32 * 32 tiles.
+		//
+		//	+---------------------------------------+
+		//	|					|
+		//	|					|
+		//	|	+---------------+		|
+		//	|	|		|		|
+		//	|	|		|		|
+		//	|	|		|		|
+		//	|	+---------------+		|
+		//	|					|
+		//	|					|
+		//	+---------------------------------------+
+		//
+		// The upper left corner of the inner rectangle is at
+		// (m_data.scrollX, m_data.scrollY), the current row is at
+		// m_data.scrollY + m_data.lY and the current pixel is
+		// P = (m_data.scrollX + i, m_data.scrollY + m_data.lY).
+		//
+		// Since we only render a line at a time, we need to find the
+		// leftmost tile at P:
+		// (Note: We divide by 16 since a tile is 16 bytes)
+
+		u8 tileX = static_cast<u8>(m_data.scrollX + i) >> 3;
+		u8 tileY = static_cast<u8>(m_data.scrollY + m_data.lY) >> 3;
+
+		// The GameBoy has two tile maps: 0x9800 - 0x9bff and 0x9c00 -
+		// 0x9fff, which are selected by
+
+		u16 tileMapAddr =
+		    m_data.bgTileMapDisplaySelect ? 0x9c00 : 0x9800;
+
+		// The leftmost visible tile on the current scanline is then
+		// indexed by
+
+		u16 currentTileIndex = read8(tileMapAddr + tileX + tileY * 32);
+
+		// Similarly, the tiles themselves also consist of two
+		// (intersecting!) blocks: 0x8000 - 0x0x8fff and 0x8800 -
+		// 0x97ff, which are selected by m_data.tileDataSelect. If the
+		// latter is is true, the current tile is vram[16 *
+		// currentTileIndex .. 16 * currentTileIndex + 15], respectively
+
+		IGPU::Data::Tile currentTile = m_data.tiles[currentTileIndex];
+
+		// If m_data.tileDataSelect is false, the indexing starts at
+		// 0x9000 BUT currentTileIndex is a SIGNED byte:
+
+		if (m_data.tileDataSelect == false) {
+			currentTileIndex = static_cast<u16>(
+			    256 + static_cast<int8_t>(currentTileIndex));
+			currentTile = m_data.tiles[currentTileIndex];
+		}
+
+		// Before we render the scanline, we need to find the row inside
+		// the tiles to render and the starting column:
+
+		u8 pixelOffsetX = static_cast<u8>(m_data.scrollX + i) & 0x7;
+		u8 pixelOffsetY =
+		    static_cast<u8>((m_data.scrollY + m_data.lY) & 0x7);
+
+		IGPU::Data::Row currentRow = currentTile[pixelOffsetY];
+
+		// A Row consists of two bytes l and h, where the j-th pixel
+		// color index (for j in 0, ..., 7) is determined by the
+		// (7-j)-th bit of l and h:
+
+		int mask = (7 - (pixelOffsetX & 0x7));
+		u8 colorIndex =
+		    static_cast<u8>(((currentRow[0] >> mask) & 0x1) |
+				    (((currentRow[1] >> mask) & 0x1) << 1));
+
+		// The actual color is determined using the palette m_data.bgp.
+		// The eight bits of m_data.bgp are grouped into four two-bit
+		// values, which give the colors:
+		//
+		// 	0b00 == 0xffffffff (white)
+		// 	0b01 == 0xffc0c0c0 (light gray)
+		// 	0b10 == 0xff606060 (dark gray)
+		// 	0b11 == 0xff000000 (black)
+		//
+		// Since colorIndex is 0, 1, 2 or 3, we select the
+		// corresponding color via:
+
+		u32 color = 0;
+		switch ((m_data.bgp >> (colorIndex << 1)) & 0x3) {
+		case 0b00:
+			color = 0xffffffff;
+			break;
+		case 0b01:
+			color = 0xffc0c0c0;
+			break;
+		case 0b10:
+			color = 0xff606060;
+			break;
+		default:
+			color = 0xff000000;
+			break;
+		}
+
+		// Finally, we draw the pixel.
+		m_data.pixelArray[i + 160 * m_data.lY] = color;
 	}
 }

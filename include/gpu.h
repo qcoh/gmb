@@ -18,4 +18,7 @@ private:
 	static const u8 VBLANK = 0b01;
 
 	IGPU::Data& m_data;
+
+	void renderScanline();
+	void renderTiles();
 };

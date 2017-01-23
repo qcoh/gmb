@@ -3,6 +3,7 @@
 #include <array>
 
 #include "bitref.h"
+#include "display.h"
 #include "types.h"
 
 class IGPU {
@@ -14,6 +15,9 @@ public:
 		using Row = std::array<u8, 2>;
 		using Tile = std::array<Row, 8>;
 		std::array<Tile, 384> tiles;
+
+		Display* display = nullptr;
+		Display::PixelArray pixelArray = {{0}};
 
 		// 0xff40 LCD Control
 		u8 lcdControl = 0;
