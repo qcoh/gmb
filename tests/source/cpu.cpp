@@ -1477,6 +1477,19 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.negFlag == false);
 			}
 		}
+		WHEN("Calling CPL") {
+			data.a = 0b10101010;
+			data.op = 0x2f;
+			cpu.exec();
+
+			THEN(
+			    "a == 0b01010101, negFlag == true, halfFlag == "
+			    "true") {
+				REQUIRE(data.a == 0b01010101);
+				REQUIRE(data.negFlag == true);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
 	}
 }
 

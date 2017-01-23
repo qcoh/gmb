@@ -15,6 +15,12 @@ u16 CPU::step() {
 	return m_data.cycles;
 }
 
+void CPU::CPL() {
+	m_data.a ^= 0xff;
+	m_data.negFlag = true;
+	m_data.halfFlag = true;
+}
+
 void CPU::DI() { m_data.intData->ime = false; }
 
 void CPU::EI() { m_data.intData->ime = true; }
@@ -206,6 +212,9 @@ void CPU::exec() {
 		break;
 	case 0x2e:  // LD L, n
 		LD(m_data.l, m_data.n);
+		break;
+	case 0x2f:  // CPL
+		CPL();
 		break;
 	case 0x30:  // JR NC, n
 		JRn(m_data.carryFlag);

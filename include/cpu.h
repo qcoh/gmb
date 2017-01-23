@@ -55,6 +55,8 @@ private:
 	void POP(u16&);
 
 	// 8bit arithmetic and logic
+	void CPL();
+
 	template <typename T>
 	void XOR(const T& source) {
 		m_data.a ^= source;
