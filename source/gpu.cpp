@@ -163,6 +163,11 @@ void GPU::renderScanline() {
 }
 
 void GPU::renderTiles() {
+	// References:
+	// http://www.codeslinger.co.uk/pages/projects/gameboy/graphics.html
+	// http://bgb.bircd.org/pandocs.htm
+	// http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Graphics
+
 	// TODO: window
 
 	for (u8 i = 0; i < 160; i++) {
