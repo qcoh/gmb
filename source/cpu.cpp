@@ -67,6 +67,14 @@ void CPU::RET() {
 	m_data.sp += 2;
 }
 
+void CPU::RET(const bool& cond) {
+	m_data.cycles = 8;
+	if (cond) {
+		RET();
+		m_data.cycles += 12;
+	}
+}
+
 void CPU::JP(const bool& cond, const u16& addr) {
 	if (cond) {
 		m_data.pc = addr;
@@ -519,7 +527,9 @@ void CPU::exec() {
 	case 0xbf:  // CP A
 		CP(m_data.a);
 		break;
-
+	case 0xc0:  // RET NZ
+		RET(!m_data.zeroFlag);
+		break;
 	case 0xc1:  // POP BC
 		POP(m_data.bc);
 		break;
@@ -538,6 +548,9 @@ void CPU::exec() {
 	case 0xc7:  // RST 0x00
 		RST(0);
 		break;
+	case 0xc8:  // RET Z
+		RET(m_data.zeroFlag);
+		break;
 	case 0xc9:  // RET
 		RET();
 		break;
@@ -553,6 +566,9 @@ void CPU::exec() {
 	case 0xcf:  // RST 0x08
 		RST(0x08);
 		break;
+	case 0xd0:  // RET NC
+		RET(!m_data.carryFlag);
+		break;
 	case 0xd1:  // POP DE
 		POP(m_data.de);
 		break;
@@ -567,6 +583,9 @@ void CPU::exec() {
 		break;
 	case 0xd7:  // RST 0x10
 		RST(0x10);
+		break;
+	case 0xd8:  // RET C
+		RET(m_data.carryFlag);
 		break;
 	case 0xda:  // JP C, nn
 		JP(m_data.carryFlag, m_data.nn);

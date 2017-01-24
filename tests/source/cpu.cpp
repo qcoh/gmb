@@ -1830,6 +1830,81 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.negFlag == false);
 			}
 		}
+		WHEN("Calling RET NZ") {
+			data.sp = 0xffe;
+			arr[data.sp] = 0x34;
+			arr[data.sp + 1] = 0x12;
+			data.pc = 0x100;
+			data.op = 0xc0;
+			cpu.exec();
+
+			THEN("pc == 0x1234, sp == 0x1000, cycles == 20") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0x1000);
+				REQUIRE(data.cycles == 20);
+			}
+		}
+		WHEN("Calling RET NC") {
+			data.sp = 0xffe;
+			arr[data.sp] = 0x34;
+			arr[data.sp + 1] = 0x12;
+			data.pc = 0x100;
+			data.op = 0xd0;
+			data.carryFlag = true;
+			cpu.exec();
+
+			THEN("pc == 0x100, sp == 0xffe, cycles == 8") {
+				REQUIRE(data.pc == 0x100);
+				REQUIRE(data.sp == 0xffe);
+				REQUIRE(data.cycles == 8);
+			}
+		}
+		WHEN("Calling RET Z") {
+			data.sp = 0xffe;
+			arr[data.sp] = 0x34;
+			arr[data.sp + 1] = 0x12;
+			data.pc = 0x100;
+			data.op = 0xc8;
+			data.zeroFlag = true;
+			cpu.exec();
+
+			THEN("pc == 0x1234, sp == 0x1000, cycles == 20") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0x1000);
+				REQUIRE(data.cycles == 20);
+			}
+		}
+		WHEN("Calling RET C") {
+			data.sp = 0xffe;
+			arr[data.sp] = 0x34;
+			arr[data.sp + 1] = 0x12;
+			data.pc = 0x100;
+			data.op = 0xd8;
+			data.carryFlag = true;
+			cpu.exec();
+
+			THEN("pc == 0x1234, sp == 0x1000, cycles == 20") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0x1000);
+				REQUIRE(data.cycles == 20);
+			}
+		}
+		WHEN("CALL RET NZ compatibility") {
+			data.pc = 0x1234;
+			data.sp = 0x5678;
+			data.nn = 0x9abc;
+			data.op = 0xcd;
+			cpu.exec();
+
+			data.op = 0xc0;
+			cpu.exec();
+
+			THEN("pc == 0x1234, sp == 0x5678, cycles == 20") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0x5678);
+				REQUIRE(data.cycles == 20);
+			}
+		}
 	}
 }
 
