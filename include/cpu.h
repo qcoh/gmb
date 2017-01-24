@@ -45,6 +45,8 @@ private:
 
 	void JP(const bool&, const u16&);
 
+	void RST(const u16&);
+
 	// LD
 	template <typename T, typename S>
 	void LD(T& target, const S& source) {

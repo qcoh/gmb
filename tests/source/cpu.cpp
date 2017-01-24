@@ -1635,6 +1635,127 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.carryFlag == false);
 			}
 		}
+		WHEN("Calling RST 0x00") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xc7;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x00, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x00);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
+		WHEN("Calling RST 0x10") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xd7;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x10, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x10);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
+		WHEN("Calling RST 0x20") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xe7;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x20, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x20);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
+		WHEN("Calling RST 0x30") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xf7;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x30, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x30);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
+
+		WHEN("Calling RST 0x08") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xcf;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x08, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x08);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
+		WHEN("Calling RST 0x18") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xdf;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x18, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x18);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
+		WHEN("Calling RST 0x28") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xef;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x28, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x28);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
+		WHEN("Calling RST 0x38") {
+			data.pc = 0x1234;
+			data.sp = 0xffff;
+			data.op = 0xff;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x38, sp == 0xfffd, arr[0xfffd] == 0x34, "
+			    "arr[0xfffe] == 0x12") {
+				REQUIRE(data.pc == 0x38);
+				REQUIRE(data.sp == 0xfffd);
+				REQUIRE(arr[0xfffd] == 0x34);
+				REQUIRE(arr[0xfffe] == 0x12);
+			}
+		}
 	}
 }
 

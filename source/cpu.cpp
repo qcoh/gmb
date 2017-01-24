@@ -15,6 +15,12 @@ u16 CPU::step() {
 	return m_data.cycles;
 }
 
+void CPU::RST(const u16& addr) {
+	m_data.sp -= 2;
+	m_mmu->write16(m_data.sp, m_data.pc);
+	m_data.pc = addr;
+}
+
 void CPU::CPL() {
 	m_data.a ^= 0xff;
 	m_data.negFlag = true;
@@ -510,6 +516,9 @@ void CPU::exec() {
 	case 0xc6:  // ADD A, n
 		ADD(m_data.n);
 		break;
+	case 0xc7:  // RST 0x00
+		RST(0);
+		break;
 	case 0xc9:  // RET
 		RET();
 		break;
@@ -521,6 +530,9 @@ void CPU::exec() {
 		break;
 	case 0xcd:  // CALL nn
 		CALL(true);
+		break;
+	case 0xcf:  // RST 0x08
+		RST(0x08);
 		break;
 	case 0xd1:  // POP DE
 		POP(m_data.de);
@@ -534,8 +546,14 @@ void CPU::exec() {
 	case 0xd6:  // SUB A, n
 		SUB(m_data.n);
 		break;
+	case 0xd7:  // RST 0x10
+		RST(0x10);
+		break;
 	case 0xda:  // JP C, nn
 		JP(m_data.carryFlag, m_data.nn);
+		break;
+	case 0xdf:  // RST 0x18
+		RST(0x18);
 		break;
 	case 0xe0:  // LD (n + 0xff00), A
 	{
@@ -558,6 +576,9 @@ void CPU::exec() {
 	case 0xe6:  // AND n
 		AND(m_data.n);
 		break;
+	case 0xe7:  // RST 0x20
+		RST(0x20);
+		break;
 	case 0xe9:  // JP HL (error in docs!!!)
 		JP(true, m_data.hl);
 		m_data.cycles = 4;
@@ -568,6 +589,9 @@ void CPU::exec() {
 		LD(mnn, m_data.a);
 		break;
 	}
+	case 0xef:  // RST 0x28
+		RST(0x28);
+		break;
 	case 0xf0:  // LD A, (n + 0xff00)
 	{
 		MemRef mn{m_data.n + 0xff00, m_mmu};
@@ -592,6 +616,9 @@ void CPU::exec() {
 	case 0xf6:  // OR n
 		OR(m_data.n);
 		break;
+	case 0xf7:  // RST 0x30
+		RST(0x30);
+		break;
 	case 0xfa:  // LD A, (nn)
 	{
 		MemRef mnn{m_data.nn, m_mmu};
@@ -604,7 +631,9 @@ void CPU::exec() {
 	case 0xfe:  // CP n
 		CP(m_data.n);
 		break;
-
+	case 0xff:  // RST 0x38
+		RST(0x38);
+		break;
 	default:
 		// causes segfault if dynamically loaded
 		// (I want to crash anyway)
@@ -1369,7 +1398,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xc6, "ADD A, n", 8, 2},
 
-    {},  // 0xc7
+    {0xc7, "RST 0x00", 16, 1},
 
     {0xc8, "RET Z", 0, 1},
 
@@ -1385,7 +1414,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xce, "ADC A, n", 8, 2},
 
-    {0xcf, "RST 0x0008", 16, 1},  // !!!
+    {0xcf, "RST 0x08", 16, 1},
 
     {0xd0, "RET NC", 0, 1},
 
@@ -1401,7 +1430,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xd6, "SUB A, n", 8, 2},
 
-    {},  // 0xd7
+    {0xd7, "RST 0x10", 16, 1},
 
     {0xd8, "RET C", 0, 1},
 
@@ -1417,7 +1446,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xde, "SBC A, n", 8, 2},
 
-    {0xdf, "RST 0x0018", 16, 1},  // !!!
+    {0xdf, "RST 0x18", 16, 1},
 
     {0xe0, "LD (N+0xff00), A", 12, 2},
 
@@ -1433,7 +1462,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xe6, "AND A, n", 8, 2},
 
-    {},  // 0xe7
+    {0xe7, "RST 0x20", 16, 1},
 
     {0xe8, "ADD SP, n", 16, 2},
 
@@ -1450,7 +1479,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xee, "XOR A, n", 8, 2},
 
-    {0xef, "RST 0x0028", 16, 1},  // !!!
+    {0xef, "RST 0x28", 16, 1},
 
     {0xf0, "LD A, (N+0xff00)", 12, 2},
 
@@ -1466,7 +1495,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xf6, "OR A, n", 8, 2},
 
-    {},  // 0xf7
+    {0xf7, "RST 0x30", 16, 1},
 
     {0xf8, "LD HL, SP+n", 12, 2},
 
@@ -1482,7 +1511,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xfe, "CP A, n", 8, 2},
 
-    {0xff, "RST 0x0038", 16, 1},  // !!!
+    {0xff, "RST 0x38", 16, 1},
 }};
 
 const std::array<Instruction, 256> CPU::s_extended = {{
