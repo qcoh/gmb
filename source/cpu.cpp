@@ -39,13 +39,13 @@ void CPU::DI() { m_data.intData->ime = false; }
 void CPU::EI() { m_data.intData->ime = true; }
 
 void CPU::CALL(const bool& cond) {
+	m_data.cycles = 12;
 	if (cond) {
 		m_data.sp -= 2;
 		m_mmu->write16(m_data.sp, m_data.pc);
 		m_data.pc = m_data.nn;
-		m_data.cycles = 12;
+		m_data.cycles += 12;
 	}
-	m_data.cycles += 12;
 }
 
 void CPU::PUSH(const u16& reg) {
@@ -76,11 +76,11 @@ void CPU::RET(const bool& cond) {
 }
 
 void CPU::JP(const bool& cond, const u16& addr) {
+	m_data.cycles = 12;
 	if (cond) {
 		m_data.pc = addr;
-		m_data.cycles = 4;
+		m_data.cycles += 4;
 	}
-	m_data.cycles += 12;
 }
 
 void CPU::fetch() {

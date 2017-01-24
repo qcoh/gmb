@@ -28,11 +28,11 @@ private:
 	// controlflow
 	template <typename T>
 	void JR(const T& cond) {
+		m_data.cycles = 8;
 		if (cond) {
 			m_data.pc += static_cast<int8_t>(m_data.n);
-			m_data.cycles = 4;
+			m_data.cycles += 4;
 		}
-		m_data.cycles += 8;
 	}
 
 	template <typename T>
