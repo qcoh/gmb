@@ -1756,6 +1756,80 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(arr[0xfffe] == 0x12);
 			}
 		}
+		WHEN("Calling ADD HL, BC") {
+			data.hl = 0x000f;
+			data.bc = 0x0001;
+			data.op = 0x09;
+			cpu.exec();
+
+			THEN(
+			    "hl == 0x0010, carryFlag == false, halfFlag == "
+			    "False, negFlag == false") {
+				REQUIRE(data.hl == 0x0010);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling ADD HL, DE") {
+			data.hl = 0x00ff;
+			data.de = 0x0001;
+			data.op = 0x19;
+			cpu.exec();
+
+			THEN(
+			    "hl == 0x0100, carryFlag == false, halfFlag == "
+			    "false, negFlag == false") {
+				REQUIRE(data.hl == 0x0100);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling ADD HL, HL") {
+			data.hl = 0xffff;
+			data.op = 0x29;
+			cpu.exec();
+
+			THEN(
+			    "hl == 0xfffe, carryFlag == true, halfFlag == "
+			    "true, negFlag == false") {
+				REQUIRE(data.hl == 0xfffe);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling ADD HL, SP (1)") {
+			data.hl = 0x0fff;
+			data.sp = 0x0001;
+			data.op = 0x39;
+			cpu.exec();
+
+			THEN(
+			    "hl == 0x1000, carryFlag == false, halfFlag == "
+			    "true, negFlag == false") {
+				REQUIRE(data.hl == 0x1000);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == true);
+				REQUIRE(data.negFlag == false);
+			}
+		}
+		WHEN("Calling ADD HL, SP (2)") {
+			data.hl = 0xf000;
+			data.sp = 0x1000;
+			data.op = 0x39;
+			cpu.exec();
+
+			THEN(
+			    "hl == 0x0000, carryFlag == true, halfFlag == "
+			    "false, negFlag == false") {
+				REQUIRE(data.hl == 0x0000);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+			}
+		}
 	}
 }
 

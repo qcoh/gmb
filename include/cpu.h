@@ -134,6 +134,8 @@ private:
 	void INC16(u16&);
 	void DEC16(u16&);
 
+	void ADD16(const u16&);
+
 	// extended instruction set
 	void CB();
 

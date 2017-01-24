@@ -15,6 +15,13 @@ u16 CPU::step() {
 	return m_data.cycles;
 }
 
+void CPU::ADD16(const u16& source) {
+	m_data.carryFlag = (m_data.hl + source) > 0xffff;
+	m_data.halfFlag = ((m_data.hl & 0x0fff) + (source & 0x0fff)) > 0x0fff;
+	m_data.hl = static_cast<u16>(m_data.hl + source);
+	m_data.negFlag = false;
+}
+
 void CPU::RST(const u16& addr) {
 	m_data.sp -= 2;
 	m_mmu->write16(m_data.sp, m_data.pc);
@@ -106,6 +113,9 @@ void CPU::exec() {
 		RLC(m_data.a);
 		m_data.zeroFlag = false;
 		break;
+	case 0x09:  // ADD HL, BC
+		ADD16(m_data.bc);
+		break;
 	case 0x0a:  // LD A, (BC)
 	{
 		MemRef mbc{m_data.bc, m_mmu};
@@ -156,6 +166,9 @@ void CPU::exec() {
 	case 0x18:  // JR n
 		JR(true);
 		break;
+	case 0x19:  // ADD HL, DE
+		ADD16(m_data.de);
+		break;
 	case 0x1a:  // LD A, (DE)
 	{
 		MemRef mde{m_data.de, m_mmu};
@@ -203,6 +216,9 @@ void CPU::exec() {
 	case 0x28:  // JR Z, n
 		JR(m_data.zeroFlag);
 		break;
+	case 0x29:  // ADD HL, HL
+		ADD16(m_data.hl);
+		break;
 	case 0x2a:  // LD A, (HL+)
 		LD(m_data.a, mhl);
 		m_data.hl++;
@@ -246,6 +262,9 @@ void CPU::exec() {
 		break;
 	case 0x38:  // JR C, n
 		JR(m_data.carryFlag);
+		break;
+	case 0x39:  // ADD HL, SP
+		ADD16(m_data.sp);
 		break;
 	case 0x3a:  // LD A, (HL-)
 		LD(m_data.a, mhl);
