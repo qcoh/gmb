@@ -20,7 +20,7 @@ A heavily WIP GameBoy emulator written in C++14.
 
   * SDL2
   * libdl (\*nix only for now)
-  * [tup](http://gittup.org) for building
+  * [tup](http://gittup.org/tup/) for building
   * A BIOS and a ROM if you actually want to use it
 
 ### Building
@@ -36,6 +36,7 @@ The currently implemented commands (subject to change):
  - `break 0xnnnn`: Set breakpoint at `0xnnnn`.
  - `breakpoints`: Show all breakpoints.
  - `clear`: Clear all breakpoints.
+ - `continue`: Execute commands until a breakpoint is encountered.
  - `tile 0xnnn`: Dump tile `0xnnn` to terminal.
 
 ### License
