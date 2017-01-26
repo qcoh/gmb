@@ -3,10 +3,7 @@
 #include "cpu.h"
 #include "memref.h"
 
-CPU::CPU(ICPU::Data& data, IMMU* mmu) : ICPU{}, m_data{data}, m_mmu{mmu} {
-	(void)m_data;
-	(void)m_mmu;
-}
+CPU::CPU(ICPU::Data& data) : ICPU{}, m_data{data} {}
 
 u16 CPU::step() {
 	fetch();
@@ -24,7 +21,7 @@ void CPU::ADD16(const u16& source) {
 
 void CPU::RST(const u16& addr) {
 	m_data.sp -= 2;
-	m_mmu->write16(m_data.sp, m_data.pc);
+	m_data.mmu->write16(m_data.sp, m_data.pc);
 	m_data.pc = addr;
 }
 
@@ -42,7 +39,7 @@ void CPU::CALL(const bool& cond) {
 	m_data.cycles = 12;
 	if (cond) {
 		m_data.sp -= 2;
-		m_mmu->write16(m_data.sp, m_data.pc);
+		m_data.mmu->write16(m_data.sp, m_data.pc);
 		m_data.pc = m_data.nn;
 		m_data.cycles += 12;
 	}
@@ -50,11 +47,11 @@ void CPU::CALL(const bool& cond) {
 
 void CPU::PUSH(const u16& reg) {
 	m_data.sp -= 2;
-	m_mmu->write16(m_data.sp, reg);
+	m_data.mmu->write16(m_data.sp, reg);
 }
 
 void CPU::POP(u16& reg) {
-	reg = m_mmu->read16(m_data.sp);
+	reg = m_data.mmu->read16(m_data.sp);
 	m_data.sp += 2;
 }
 
@@ -63,7 +60,7 @@ void CPU::INC16(u16& reg) { reg++; }
 void CPU::DEC16(u16& reg) { reg--; }
 
 void CPU::RET() {
-	m_data.pc = m_mmu->read16(m_data.sp);
+	m_data.pc = m_data.mmu->read16(m_data.sp);
 	m_data.sp += 2;
 }
 
@@ -84,14 +81,14 @@ void CPU::JP(const bool& cond, const u16& addr) {
 }
 
 void CPU::fetch() {
-	m_data.op = m_mmu->read8(m_data.pc);
-	m_data.nn = m_mmu->read16(m_data.pc + 1);
+	m_data.op = m_data.mmu->read8(m_data.pc);
+	m_data.nn = m_data.mmu->read16(m_data.pc + 1);
 	m_data.pc += s_instructions[m_data.op].offset;
 	m_data.cycles = s_instructions[m_data.op].cycles;
 }
 
 void CPU::exec() {
-	MemRef mhl{m_data.hl, m_mmu};
+	MemRef mhl{m_data.hl, m_data.mmu};
 
 	switch (m_data.op) {
 	case 0x0:  // NOP
@@ -101,7 +98,7 @@ void CPU::exec() {
 		break;
 	case 0x02:  // LD (BC), A
 	{
-		MemRef mbc{m_data.bc, m_mmu};
+		MemRef mbc{m_data.bc, m_data.mmu};
 		LD(mbc, m_data.a);
 		break;
 	}
@@ -126,7 +123,7 @@ void CPU::exec() {
 		break;
 	case 0x0a:  // LD A, (BC)
 	{
-		MemRef mbc{m_data.bc, m_mmu};
+		MemRef mbc{m_data.bc, m_data.mmu};
 		LD(m_data.a, mbc);
 		break;
 	}
@@ -151,7 +148,7 @@ void CPU::exec() {
 		break;
 	case 0x12:  // LD (DE), A
 	{
-		MemRef mde{m_data.de, m_mmu};
+		MemRef mde{m_data.de, m_data.mmu};
 		LD(mde, m_data.a);
 		break;
 	}
@@ -179,7 +176,7 @@ void CPU::exec() {
 		break;
 	case 0x1a:  // LD A, (DE)
 	{
-		MemRef mde{m_data.de, m_mmu};
+		MemRef mde{m_data.de, m_data.mmu};
 		LD(m_data.a, mde);
 		break;
 	}
@@ -595,7 +592,7 @@ void CPU::exec() {
 		break;
 	case 0xe0:  // LD (n + 0xff00), A
 	{
-		MemRef mn{m_data.n + 0xff00, m_mmu};
+		MemRef mn{m_data.n + 0xff00, m_data.mmu};
 		LD(mn, m_data.a);
 		break;
 	}
@@ -604,7 +601,7 @@ void CPU::exec() {
 		break;
 	case 0xe2:  // LD (C + 0xff00), A
 	{
-		MemRef mc{m_data.c + 0xff00, m_mmu};
+		MemRef mc{m_data.c + 0xff00, m_data.mmu};
 		LD(mc, m_data.a);
 		break;
 	}
@@ -623,7 +620,7 @@ void CPU::exec() {
 		break;
 	case 0xea:  // LD (nn), A
 	{
-		MemRef mnn{m_data.nn, m_mmu};
+		MemRef mnn{m_data.nn, m_data.mmu};
 		LD(mnn, m_data.a);
 		break;
 	}
@@ -632,7 +629,7 @@ void CPU::exec() {
 		break;
 	case 0xf0:  // LD A, (n + 0xff00)
 	{
-		MemRef mn{m_data.n + 0xff00, m_mmu};
+		MemRef mn{m_data.n + 0xff00, m_data.mmu};
 		LD(m_data.a, mn);
 		break;
 	}
@@ -641,7 +638,7 @@ void CPU::exec() {
 		break;
 	case 0xf2:  // LD A, (C + 0xff00)
 	{
-		MemRef mc{m_data.c + 0xff00, m_mmu};
+		MemRef mc{m_data.c + 0xff00, m_data.mmu};
 		LD(m_data.a, mc);
 		break;
 	}
@@ -659,7 +656,7 @@ void CPU::exec() {
 		break;
 	case 0xfa:  // LD A, (nn)
 	{
-		MemRef mnn{m_data.nn, m_mmu};
+		MemRef mnn{m_data.nn, m_data.mmu};
 		LD(m_data.a, mnn);
 		break;
 	}
@@ -681,14 +678,14 @@ void CPU::exec() {
 	}
 }
 
-extern "C" std::unique_ptr<ICPU> loadCPU(CPU::Data& data, IMMU* mmu) {
+extern "C" std::unique_ptr<ICPU> loadCPU(CPU::Data& data) {
 	std::cout << "Reloading CPU...\n";
-	return std::make_unique<CPU>(data, mmu);
+	return std::make_unique<CPU>(data);
 }
 
 void CPU::CB() {
 	m_data.cycles += CPU::s_extended[m_data.n].cycles;
-	MemRef mhl{m_data.hl, m_mmu};
+	MemRef mhl{m_data.hl, m_data.mmu};
 
 	switch (m_data.n) {
 	case 0x00:

@@ -6,7 +6,7 @@
 
 class CPU : public ICPU {
 public:
-	CPU(ICPU::Data&, IMMU*);
+	CPU(ICPU::Data&);
 	virtual ~CPU() = default;
 
 	virtual u16 step() override;
@@ -19,7 +19,6 @@ public:
 
 private:
 	ICPU::Data& m_data;
-	IMMU* m_mmu;
 
 	// misc
 	void DI();
@@ -232,4 +231,4 @@ private:
 	}
 };
 
-extern "C" std::unique_ptr<ICPU> loadCPU(ICPU::Data&, IMMU*);
+extern "C" std::unique_ptr<ICPU> loadCPU(ICPU::Data&);

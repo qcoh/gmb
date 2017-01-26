@@ -7,7 +7,8 @@ SCENARIO("Testing instructions", "[CPU]") {
 		std::array<u8, 0x10000> arr = {{0}};
 		TestMMU mmu{arr};
 		ICPU::Data data;
-		CPU cpu{data, &mmu};
+		data.mmu = &mmu;
+		CPU cpu{data};
 
 		WHEN("LD __, nn") {
 			data.nn = 0x1234;
@@ -1913,7 +1914,8 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 		std::array<u8, 0x10000> arr = {{0}};
 		TestMMU mmu{arr};
 		ICPU::Data data;
-		CPU cpu{data, &mmu};
+		data.mmu = &mmu;
+		CPU cpu{data};
 
 		WHEN("Calling RLC on register (1)") {
 			data.a = 0b10000000;
