@@ -3,6 +3,22 @@
 
 #include "icpu.h"
 
+ICPU::Data& ICPU::Data::operator=(const ICPU::Data& rhs) {
+	af = rhs.af;
+	bc = rhs.bc;
+	de = rhs.de;
+	hl = rhs.hl;
+	pc = rhs.pc;
+	sp = rhs.sp;
+	nn = rhs.nn;
+	op = rhs.op;
+	cycles = rhs.cycles;
+	intData = rhs.intData;
+	mmu = rhs.mmu;
+
+	return *this;
+}
+
 std::ostream& operator<<(std::ostream& os, const ICPU::Data& data) {
 	os << "af = 0x" << std::hex << std::setfill('0') << std::setw(4)
 	   << +data.af << " [a = 0b" << std::bitset<8>{data.a} << "][f = 0b"

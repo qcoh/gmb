@@ -24,6 +24,8 @@ private:
 
 	std::unordered_set<u16> m_breakPoints{};
 
+	ICPU::Data m_cpuOldData = {};
+
 	void reloadCPU();
 	void parseCommands(std::string&);
 	void printCurrentInstruction();

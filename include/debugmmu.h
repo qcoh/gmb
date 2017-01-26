@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include <unordered_set>
 
 #include "mmu.h"
 
@@ -9,21 +9,20 @@ public:
 	DebugMMU(IMMU::Data&);
 	virtual ~DebugMMU() = default;
 
-	virtual u8 read8(u16) override;
 	virtual void write8(u16, u8) override;
-	virtual void write16(u16, u16) override;
 
-	void undo();
+	void watch(u16);
+	void clear();
+	bool& watchMode();
 
-private:
-	enum class Type {
-		READ,
-		WRITE8,
-		WRITE16,
+	struct WatchEvent {
+		u16 addr;
+		u8 oldVal;
+		u8 newVal;
 	};
 
-	Type m_type = Type::READ;
-	u16 m_addr = 0;
-	u8 m_val8 = 0;
-	u16 m_val16 = 0;
+private:
+	std::unordered_set<u16> m_watchPoints{};
+
+	bool m_watchMode = false;
 };

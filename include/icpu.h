@@ -44,6 +44,8 @@ public:
 
 		IMMU* mmu = nullptr;
 
+		Data& operator=(const Data&);
+
 		u8& read8(u8);
 		u16& read16(u8);
 	};

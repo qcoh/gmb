@@ -29,8 +29,15 @@ DebugBoy::~DebugBoy() {
 }
 
 void DebugBoy::step() {
-	u16 cycles = m_cpu->step();
-	m_gpu->step(cycles);
+	try {
+		u16 cycles = m_cpu->step();
+		m_gpu->step(cycles);
+		m_cpuOldData = m_cpuData;
+	} catch (...) {
+		m_cpuData = m_cpuOldData;
+		std::cout << "Write to 0xff40\n";
+		m_mode = Mode::WAIT;
+	}
 
 	SDL_Event ev = {0};
 	SDL_PollEvent(&ev);
@@ -90,6 +97,8 @@ void DebugBoy::parseCommands(std::string& input) {
 	if (cmd == "next" || cmd == "") {
 		step();
 	} else if (cmd == "continue") {
+		// TODO: this is ugly
+		dynamic_cast<DebugMMU*>(m_mmu.get())->watchMode() = true;
 		m_mode = Mode::RUN;
 	} else if (cmd == "print") {
 		u16 addr = 0;
@@ -122,6 +131,12 @@ void DebugBoy::parseCommands(std::string& input) {
 		u16 addr = 0;
 		if (stream >> std::hex >> addr && addr < 384) {
 			printTile(m_gpuData.tiles[addr]);
+		}
+	} else if (cmd == "watch") {
+		u16 addr = 0;
+		DebugMMU* debugMMU = dynamic_cast<DebugMMU*>(m_mmu.get());
+		if (stream >> std::hex >> addr) {
+			debugMMU->watch(addr);
 		}
 	} else if (cmd == "trace") {
 		// set tracepoints
