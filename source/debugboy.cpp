@@ -7,15 +7,25 @@
 #include "cpu.h"
 #include "debugboy.h"
 #include "debugmmu.h"
+#include "romonly.h"
 
 void sigHandle(int signal) { DebugBoy::signaled = signal; }
 
 volatile sig_atomic_t DebugBoy::signaled = 0;
 
 DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
-    : GameBoy{romPath, biosPath} {
-	m_mmu = std::make_unique<DebugMMU>(m_mmuData);
-	m_cpuData.mmu = m_mmu.get();
+    : m_cart{std::make_unique<RomOnly>(romPath)},
+      m_bios{biosPath},
+      m_cpu{std::make_unique<CPU>(m_cpuData)} {
+	m_gpuData.display = &m_display;
+
+	m_mmuData.bios = &m_bios;
+	m_mmuData.cart = m_cart.get();
+	m_mmuData.gpu = &m_gpu;
+	m_mmuData.intData = &m_intData;
+
+	m_cpuData.intData = &m_intData;
+	m_cpuData.mmu = &m_mmu;
 
 	std::signal(SIGUSR1, sigHandle);
 }
@@ -31,7 +41,7 @@ DebugBoy::~DebugBoy() {
 void DebugBoy::step() {
 	try {
 		u16 cycles = m_cpu->step();
-		m_gpu->step(cycles);
+		m_gpu.step(cycles);
 		m_cpuOldData = m_cpuData;
 	} catch (DebugMMU::WatchEvent& ev) {
 		std::cout << ev << '\n';
@@ -50,24 +60,24 @@ void DebugBoy::step() {
 }
 
 void DebugBoy::printInstruction(u16 addr) {
-	u8 op = m_mmu->read8(addr);
+	u8 op = m_mmu.read8(addr);
 	std::cout << "[0x" << std::hex << std::setw(4) << std::setfill('0')
 		  << +m_cpuData.pc << "] == 0x" << std::setw(2) << +op
 		  << " == " << CPU::s_instructions[op].mnemonic;
 	if (op == 0xcb) {
-		u8 n = m_mmu->read8(addr + 1);
+		u8 n = m_mmu.read8(addr + 1);
 		std::cout << " " << CPU::s_extended[n].mnemonic;
 	} else if (CPU::s_instructions[op].offset == 2) {
-		u8 n = m_mmu->read8(m_cpuData.pc + 1);
+		u8 n = m_mmu.read8(m_cpuData.pc + 1);
 		std::cout << " (n == 0x" << +n << ')';
 	} else if (CPU::s_instructions[op].offset == 3) {
-		u16 nn = m_mmu->read16(m_cpuData.pc + 1);
+		u16 nn = m_mmu.read16(m_cpuData.pc + 1);
 		std::cout << " (n == 0x" << +nn << ')';
 	}
 	std::cout << '\n';
 }
 
-void DebugBoy::Run() {
+void DebugBoy::run() {
 	while (!quit) {
 		if (m_mode == Mode::WAIT) {
 			std::string input{};
@@ -119,7 +129,7 @@ void DebugBoy::eval(std::string& input) {
 	} else if (cmd == "pm") {
 		// print memory
 		if (stream >> std::hex >> addr) {
-			u8 v = m_mmu->read8(addr);
+			u8 v = m_mmu.read8(addr);
 			std::cout << "[0x" << std::hex << std::setw(4)
 				  << std::setfill('0') << +addr << "] == 0x"
 				  << std::setw(2) << +v << '\n';

@@ -5,26 +5,46 @@
 #include <string>
 #include <unordered_set>
 
-#include "gameboy.h"
+#include "cpu.h"
+#include "debugmmu.h"
+#include "display.h"
+#include "gpu.h"
+#include "icartridge.h"
 
-class DebugBoy : public GameBoy {
+class DebugBoy {
 public:
 	DebugBoy(const std::string&, const std::string&);
-	virtual void Run() override;
+	void run();
 	virtual ~DebugBoy();
 
 	friend void sigHandle(int);
 
 private:
-	enum class Mode { WAIT, RUN };
-	Mode m_mode = Mode::WAIT;
-
 	static volatile sig_atomic_t signaled;
 	void* m_handle = nullptr;
 
-	std::unordered_set<u16> m_breakPoints{};
+	bool quit = false;
 
-	ICPU::Data m_cpuOldData = {};
+	Display m_display{};
+	InterruptData m_intData{};
+
+	std::unique_ptr<ICartridge> m_cart;
+	BIOS m_bios;
+
+	IGPU::Data m_gpuData{};
+	GPU m_gpu{m_gpuData};
+
+	IMMU::Data m_mmuData{};
+	DebugMMU m_mmu{m_mmuData};
+
+	ICPU::Data m_cpuData{};
+	ICPU::Data m_cpuOldData{};
+	std::unique_ptr<ICPU> m_cpu;
+
+	enum class Mode { WAIT, RUN };
+	Mode m_mode = Mode::WAIT;
+
+	std::unordered_set<u16> m_breakPoints{};
 
 	void reloadCPU();
 	void eval(std::string&);
