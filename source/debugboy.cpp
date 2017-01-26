@@ -22,6 +22,8 @@ DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
 
 DebugBoy::~DebugBoy() {
 	if (m_handle != nullptr) {
+		// need to call destructor first
+		m_cpu = nullptr;
 		dlclose(m_handle);
 	}
 }
