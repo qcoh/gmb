@@ -150,7 +150,6 @@ void DebugBoy::printTile(const IGPU::Data::Tile& tile) {
 void DebugBoy::reloadCPU() {
 	// need to call destructor from shared library before unloading
 	m_cpu = nullptr;
-	m_mmu = nullptr;
 
 	if (m_handle != nullptr) {
 		if (dlclose(m_handle) != 0) {
@@ -164,22 +163,11 @@ void DebugBoy::reloadCPU() {
 		throw std::runtime_error{dlerror()};
 	}
 
-	// load MMU
-	using MMUFn = std::unique_ptr<MMU> (*)(IMMU::Data&);
-	dlerror();
-	MMUFn g = reinterpret_cast<MMUFn>(dlsym(m_handle, "loadMMU"));
-	const char* dlsym_err = dlerror();
-	if (dlsym_err != nullptr) {
-		dlclose(m_handle);
-		throw std::runtime_error{dlsym_err};
-	}
-	m_mmu = g(m_mmuData);
-
 	// load CPU
 	using CPUFn = std::unique_ptr<CPU> (*)(ICPU::Data&, IMMU*);
 	dlerror();
 	CPUFn f = reinterpret_cast<CPUFn>(dlsym(m_handle, "loadCPU"));
-	dlsym_err = dlerror();
+	const char* dlsym_err = dlerror();
 	if (dlsym_err != nullptr) {
 		dlclose(m_handle);
 		throw std::runtime_error{dlsym_err};

@@ -159,7 +159,3 @@ void MMU::write8(u16 addr, u8 v) {
 	std::cout << "Address: 0x" << std::hex << +addr << '\n';
 	throw std::runtime_error{"Write to unknown address"};
 }
-
-extern "C" std::unique_ptr<IMMU> loadMMU(IMMU::Data& data) {
-	return std::make_unique<MMU>(data);
-}
