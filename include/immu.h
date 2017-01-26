@@ -32,6 +32,6 @@ public:
 	virtual u8 read8(u16) = 0;
 	virtual void write8(u16, u8) = 0;
 
-	u16 read16(u16);
-	void write16(u16, u16);
+	virtual u16 read16(u16);
+	virtual void write16(u16, u16);
 };

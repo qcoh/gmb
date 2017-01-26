@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "bitref.h"
+#include "immu.h"
 #include "interruptdata.h"
 #include "types.h"
 
@@ -40,6 +41,10 @@ public:
 		u16 cycles = 0;
 
 		InterruptData* intData = nullptr;
+
+		IMMU* mmu = nullptr;
+
+		Data& operator=(const Data&);
 
 		u8& read8(u8);
 		u16& read16(u8);

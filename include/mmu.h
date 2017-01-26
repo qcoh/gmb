@@ -17,5 +17,3 @@ public:
 private:
 	IMMU::Data& m_data;
 };
-
-extern "C" std::unique_ptr<IMMU> loadMMU(IMMU::Data&);

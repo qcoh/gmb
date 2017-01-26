@@ -18,7 +18,7 @@ int main() {
 		RomOnly ro{"tetris.gb"};
 		(void)ro;
 		DebugBoy db{rom, bios};
-		db.Run();
+		db.run();
 	} catch (std::exception& e) {
 		std::cout << e.what() << '\n';
 	}
