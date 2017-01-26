@@ -6,7 +6,7 @@
 
 #include "cpu.h"
 #include "debugboy.h"
-#include "mmu.h"
+#include "debugmmu.h"
 
 void sigHandle(int signal) { DebugBoy::signaled = signal; }
 
@@ -14,6 +14,9 @@ volatile sig_atomic_t DebugBoy::signaled = 0;
 
 DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
     : GameBoy{romPath, biosPath} {
+	m_mmu = std::make_unique<DebugMMU>(m_mmuData);
+	m_cpuData.mmu = m_mmu.get();
+
 	std::signal(SIGUSR1, sigHandle);
 }
 
@@ -164,7 +167,7 @@ void DebugBoy::reloadCPU() {
 	}
 
 	// load CPU
-	using CPUFn = std::unique_ptr<CPU> (*)(ICPU::Data&, IMMU*);
+	using CPUFn = std::unique_ptr<CPU> (*)(ICPU::Data&);
 	dlerror();
 	CPUFn f = reinterpret_cast<CPUFn>(dlsym(m_handle, "loadCPU"));
 	const char* dlsym_err = dlerror();
@@ -172,5 +175,5 @@ void DebugBoy::reloadCPU() {
 		dlclose(m_handle);
 		throw std::runtime_error{dlsym_err};
 	}
-	m_cpu = f(m_cpuData, m_mmu.get());
+	m_cpu = f(m_cpuData);
 }

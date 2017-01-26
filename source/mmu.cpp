@@ -55,6 +55,12 @@ u8 MMU::read8(u16 addr) {
 			case 0x0040:
 				// video
 				return m_data.gpu->read8(addr);
+
+			case 0x0050:
+				if (addr == 0xff50) {
+					return 0xff;
+				}
+				break;
 			case 0x0070:
 				// https://www.reddit.com/r/EmuDev/comments/5nixai/gb_tetris_writing_to_unused_memory/
 				return 0;
