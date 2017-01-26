@@ -3,7 +3,9 @@
 
 #include "debugmmu.h"
 
-DebugMMU::DebugMMU(IMMU::Data& data) : MMU{data} {}
+DebugMMU::DebugMMU(IMMU::Data& data, std::unordered_set<u16>& watchPoints,
+		   bool& watchMode)
+    : MMU{data}, m_watchPoints{watchPoints}, m_watchMode{watchMode} {}
 
 void DebugMMU::write8(u16 addr, u8 v) {
 	if (m_watchMode) {
@@ -15,18 +17,6 @@ void DebugMMU::write8(u16 addr, u8 v) {
 	}
 	MMU::write8(addr, v);
 }
-
-void DebugMMU::clear() {
-	m_watchPoints.clear();
-	m_watchMode = false;
-}
-
-void DebugMMU::watch(u16 addr) {
-	m_watchPoints.insert(addr);
-	m_watchMode = true;
-}
-
-bool& DebugMMU::watchMode() { return m_watchMode; }
 
 std::ostream& operator<<(std::ostream& os, const DebugMMU::WatchEvent& ev) {
 	os << "WatchEvent: [0x" << std::hex << std::setw(4) << std::setfill('0')

@@ -34,8 +34,10 @@ private:
 	IGPU::Data m_gpuData{};
 	GPU m_gpu{m_gpuData};
 
+	std::unordered_set<u16> m_watchPoints{};
+	bool m_watchMode = false;
 	IMMU::Data m_mmuData{};
-	DebugMMU m_mmu{m_mmuData};
+	DebugMMU m_mmu{m_mmuData, m_watchPoints, m_watchMode};
 
 	ICPU::Data m_cpuData{};
 	ICPU::Data m_cpuOldData{};

@@ -116,7 +116,7 @@ void DebugBoy::eval(std::string& input) {
 	} else if (cmd == "co") {
 		// execute until breakpoint or watchpoint
 		step();
-		// enable watch mode
+		m_watchMode = true;
 		m_mode = Mode::RUN;
 	} else if (cmd == "pc") {
 		// print cpu registers
@@ -148,6 +148,11 @@ void DebugBoy::eval(std::string& input) {
 		std::cout << '\n';
 	} else if (cmd == "pw") {
 		// print watchpoints
+		for (const auto& bp : m_watchPoints) {
+			std::cout << "0x" << std::hex << std::setw(2)
+				  << std::setfill('0') << +bp << ", ";
+		}
+		std::cout << '\n';
 	} else if (cmd == "b") {
 		// add breakpoint
 		if (stream >> std::hex >> addr) {
@@ -155,6 +160,9 @@ void DebugBoy::eval(std::string& input) {
 		}
 	} else if (cmd == "w") {
 		// add watchpoint
+		if (stream >> std::hex >> addr) {
+			m_watchPoints.insert(addr);
+		}
 	} else if (cmd == "cb") {
 		// clear breakpoints
 		m_breakPoints.clear();
