@@ -19,6 +19,9 @@ public:
 		u16 addr;
 		u8 oldVal;
 		u8 newVal;
+
+		friend std::ostream& operator<<(std::ostream&,
+						const WatchEvent&);
 	};
 
 private:

@@ -1,3 +1,4 @@
+#include <iomanip>
 #include <stdexcept>
 
 #include "debugmmu.h"
@@ -26,3 +27,9 @@ void DebugMMU::watch(u16 addr) {
 }
 
 bool& DebugMMU::watchMode() { return m_watchMode; }
+
+std::ostream& operator<<(std::ostream& os, const DebugMMU::WatchEvent& ev) {
+	os << "WatchEvent: [0x" << std::hex << std::setw(4) << std::setfill('0')
+	   << +ev.addr << "] == 0x" << std::setw(2) << +ev.oldVal;
+	return os;
+}

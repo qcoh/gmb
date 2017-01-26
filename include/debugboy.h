@@ -27,9 +27,8 @@ private:
 	ICPU::Data m_cpuOldData = {};
 
 	void reloadCPU();
-	void parseCommands(std::string&);
-	void printCurrentInstruction();
+	void eval(std::string&);
+	void printInstruction(u16);
 	static void printTile(const IGPU::Data::Tile&);
-
 	void step();
 };

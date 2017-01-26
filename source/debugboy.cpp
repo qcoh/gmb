@@ -33,9 +33,9 @@ void DebugBoy::step() {
 		u16 cycles = m_cpu->step();
 		m_gpu->step(cycles);
 		m_cpuOldData = m_cpuData;
-	} catch (...) {
+	} catch (DebugMMU::WatchEvent& ev) {
+		std::cout << ev << '\n';
 		m_cpuData = m_cpuOldData;
-		std::cout << "Write to 0xff40\n";
 		m_mode = Mode::WAIT;
 	}
 
@@ -49,36 +49,39 @@ void DebugBoy::step() {
 	}
 }
 
-void DebugBoy::printCurrentInstruction() {
-	u8 op = m_mmu->read8(m_cpuData.pc);
-
-	std::cout << "(0x" << std::hex << std::setfill('0') << std::setw(4)
-		  << +m_cpuData.pc << ") == 0x" << +op
+void DebugBoy::printInstruction(u16 addr) {
+	u8 op = m_mmu->read8(addr);
+	std::cout << "[0x" << std::hex << std::setw(4) << std::setfill('0')
+		  << +m_cpuData.pc << "] == 0x" << std::setw(2) << +op
 		  << " == " << CPU::s_instructions[op].mnemonic;
-
 	if (op == 0xcb) {
-		std::cout << " " << CPU::s_extended[m_cpuData.n].mnemonic
-			  << '\n';
-	} else {
-		std::cout << '\n';
+		u8 n = m_mmu->read8(addr + 1);
+		std::cout << " " << CPU::s_extended[n].mnemonic;
+	} else if (CPU::s_instructions[op].offset == 2) {
+		u8 n = m_mmu->read8(m_cpuData.pc + 1);
+		std::cout << " (n == 0x" << +n << ')';
+	} else if (CPU::s_instructions[op].offset == 3) {
+		u16 nn = m_mmu->read16(m_cpuData.pc + 1);
+		std::cout << " (n == 0x" << +nn << ')';
 	}
+	std::cout << '\n';
 }
 
 void DebugBoy::Run() {
 	while (!quit) {
 		if (m_mode == Mode::WAIT) {
-			m_cpuData.nn = m_mmu->read16(m_cpuData.pc + 1);
-			std::cout << m_cpuData << '\n';
-			printCurrentInstruction();
-
 			std::string input{};
 			std::cout << "> ";
-			std::getline(std::cin, input);
+			if (std::getline(std::cin, input).fail()) {
+				break;
+			}
+
 			if (signaled != 0) {
 				reloadCPU();
 				signaled = 0;
 			}
-			parseCommands(input);
+
+			eval(input);
 		} else {
 			if (m_breakPoints.find(m_cpuData.pc) ==
 			    m_breakPoints.end()) {
@@ -90,56 +93,84 @@ void DebugBoy::Run() {
 	}
 }
 
-void DebugBoy::parseCommands(std::string& input) {
+void DebugBoy::eval(std::string& input) {
+	u16 addr = 0;
 	std::stringstream stream{input};
 	std::string cmd{};
 	stream >> cmd;
-	if (cmd == "next" || cmd == "") {
+
+	if (cmd == "n" || cmd == "") {
+		// execute a single instruction
 		step();
-	} else if (cmd == "continue") {
-		// TODO: this is ugly
-		dynamic_cast<DebugMMU*>(m_mmu.get())->watchMode() = true;
+		printInstruction(m_cpuData.pc);
+	} else if (cmd == "co") {
+		// execute until breakpoint or watchpoint
+		step();
+		// enable watch mode
 		m_mode = Mode::RUN;
-	} else if (cmd == "print") {
-		u16 addr = 0;
+	} else if (cmd == "pc") {
+		// print cpu registers
+		std::cout << m_cpuData << '\n';
+	} else if (cmd == "pd") {
+		// print disassembly
+		if (stream >> std::hex >> addr) {
+			printInstruction(addr);
+		}
+	} else if (cmd == "pm") {
+		// print memory
 		if (stream >> std::hex >> addr) {
 			u8 v = m_mmu->read8(addr);
-			std::cout << "(0x" << std::hex << std::setfill('0')
-				  << std::setw(4) << +addr << ") == 0x"
-				  << std::setw(2) << v << '\n';
+			std::cout << "[0x" << std::hex << std::setw(4)
+				  << std::setfill('0') << +addr << "] == 0x"
+				  << std::setw(2) << +v << '\n';
 		}
-	} else if (cmd == "break") {
-		u16 addr = 0;
-		if (stream >> std::hex >> addr) {
-			m_breakPoints.insert(addr);
-		}
-	} else if (cmd == "breakpoints") {
-		std::cout << "Breakpoints: ";
-		std::copy(std::begin(m_breakPoints), std::end(m_breakPoints),
-			  std::ostream_iterator<int>(std::cout, ", "));
-		std::cout << '\n';
-	} else if (cmd == "clear") {
-		m_breakPoints.clear();
-	} else if (cmd == "print") {
-		u16 addr = 0;
-		if (stream >> std::hex >> addr) {
-			std::cout << "(0x" << std::hex << std::setfill('0')
-				  << std::setw(4) << addr << ") == 0x"
-				  << std::setw(2) << m_mmu->read8(addr) << '\n';
-		}
-	} else if (cmd == "tile") {
-		u16 addr = 0;
+	} else if (cmd == "pt") {
+		// print tile
 		if (stream >> std::hex >> addr && addr < 384) {
 			printTile(m_gpuData.tiles[addr]);
 		}
-	} else if (cmd == "watch") {
-		u16 addr = 0;
-		DebugMMU* debugMMU = dynamic_cast<DebugMMU*>(m_mmu.get());
-		if (stream >> std::hex >> addr) {
-			debugMMU->watch(addr);
+	} else if (cmd == "pb") {
+		// print breakpoints
+		for (const auto& bp : m_breakPoints) {
+			std::cout << "0x" << std::hex << std::setw(2)
+				  << std::setfill('0') << +bp << ", ";
 		}
-	} else if (cmd == "trace") {
-		// set tracepoints
+		std::cout << '\n';
+	} else if (cmd == "pw") {
+		// print watchpoints
+	} else if (cmd == "b") {
+		// add breakpoint
+		if (stream >> std::hex >> addr) {
+			m_breakPoints.insert(addr);
+		}
+	} else if (cmd == "w") {
+		// add watchpoint
+	} else if (cmd == "cb") {
+		// clear breakpoints
+		m_breakPoints.clear();
+	} else if (cmd == "cw") {
+		// clear watchpoints
+	} else if (cmd == "q") {
+		// quit
+		quit = true;
+	} else if (cmd == "h") {
+		// display help
+		std::cout << "n\t\t Execute next instruction\n"
+			     "co\t\t Execute instructions until breakpoint "
+			     "or "
+			     "watchpoint\n"
+			     "pc\t\t Print CPU registers\n"
+			     "pd 0xnnnn\t Print instruction at 0xnnnn\n"
+			     "pm 0xnnnn\t Print memory at 0xnnnn\n"
+			     "pt 0xnnn\t Print tile at 0xnnn (0 - 383)\n"
+			     "pb\t\t Print breakpoints\n"
+			     "pw\t\t Print watchpoints\n"
+			     "b 0xnnnn\t Add breakpoint\n"
+			     "w 0xnnnn\t Add watchpoint\n"
+			     "cb\t\t Clear breakpoints\n"
+			     "cw\t\t Clear watchpoints\n"
+			     "q\t\t Quit\n"
+			     "h\t\t Display this help\n";
 	}
 }
 
