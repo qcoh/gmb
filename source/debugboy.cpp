@@ -1,4 +1,6 @@
 #include <dlfcn.h>
+#include <algorithm>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -169,6 +171,11 @@ void DebugBoy::eval(std::string& input) {
 	} else if (cmd == "cw") {
 		// clear watchpoints
 		m_watchPoints.clear();
+	} else if (cmd == "dt") {
+		// dump tiles
+		std::ofstream f{"tiles.bin", std::ios::binary};
+		std::copy_n(std::begin(m_gpuData.vram), 0x1fff,
+			    std::ostream_iterator<char>{f});
 	} else if (cmd == "q") {
 		// quit
 		quit = true;
@@ -188,6 +195,7 @@ void DebugBoy::eval(std::string& input) {
 			     "w 0xnnnn\t Add watchpoint\n"
 			     "cb\t\t Clear breakpoints\n"
 			     "cw\t\t Clear watchpoints\n"
+			     "dt\t\t Dump tiles (to tiles.bin)\n"
 			     "q\t\t Quit\n"
 			     "h\t\t Display this help\n";
 	}

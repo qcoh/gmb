@@ -43,6 +43,7 @@ The currently implemented commands (subject to change):
  - `pw`: Print watchpoints.
  - `cb`: Clear breakpoints.
  - `cw`: Clear watchpoints.
+ - `dt`: Dump tiles to `tiles.bin`.
  - `q`: Quit.
  - `h`: Help.
 
