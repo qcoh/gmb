@@ -65,6 +65,11 @@ void CPU::RET() {
 	m_data.sp += 2;
 }
 
+void CPU::RETI() {
+	RET();
+	EI();
+}
+
 void CPU::RET(const bool& cond) {
 	m_data.cycles = 8;
 	if (cond) {
@@ -600,6 +605,9 @@ void CPU::exec() {
 		break;
 	case 0xd8:  // RET C
 		RET(m_data.carryFlag);
+		break;
+	case 0xd9:  // RETI
+		RETI();
 		break;
 	case 0xda:  // JP C, nn
 		JP(m_data.carryFlag, m_data.nn);

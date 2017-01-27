@@ -7,7 +7,9 @@ SCENARIO("Testing instructions", "[CPU]") {
 		std::array<u8, 0x10000> arr = {{0}};
 		TestMMU mmu{arr};
 		ICPU::Data data;
+		InterruptData intData{};
 		data.mmu = &mmu;
+		data.intData = &intData;
 		CPU cpu{data};
 
 		WHEN("LD __, nn") {
@@ -1904,6 +1906,22 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.pc == 0x1234);
 				REQUIRE(data.sp == 0x5678);
 				REQUIRE(data.cycles == 20);
+			}
+		}
+		WHEN("CALL RETI compatibility") {
+			data.pc = 0x1234;
+			data.sp = 0x100;
+			data.nn = 0x9000;
+			data.op = 0xcd;
+			cpu.exec();
+
+			data.op = 0xd9;
+			cpu.exec();
+
+			THEN("pc == 0x1234, sp == 0x100, ime == true") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0x100);
+				REQUIRE(data.intData->ime == true);
 			}
 		}
 	}

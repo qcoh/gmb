@@ -43,6 +43,7 @@ private:
 	void CALL(const bool&);
 	void RET();
 	void RET(const bool&);
+	void RETI();
 
 	void JP(const bool&, const u16&);
 
