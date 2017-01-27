@@ -168,6 +168,7 @@ void DebugBoy::eval(std::string& input) {
 		m_breakPoints.clear();
 	} else if (cmd == "cw") {
 		// clear watchpoints
+		m_watchPoints.clear();
 	} else if (cmd == "q") {
 		// quit
 		quit = true;
