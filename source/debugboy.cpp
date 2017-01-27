@@ -20,6 +20,7 @@ DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
       m_bios{biosPath},
       m_cpu{std::make_unique<CPU>(m_cpuData)} {
 	m_gpuData.display = &m_display;
+	m_gpuData.intData = &m_intData;
 
 	m_mmuData.bios = &m_bios;
 	m_mmuData.cart = m_cart.get();

@@ -8,6 +8,7 @@ CPU::CPU(ICPU::Data& data) : ICPU{}, m_data{data} {}
 u16 CPU::step() {
 	fetch();
 	exec();
+	processInterrupts();
 
 	return m_data.cycles;
 }
@@ -78,6 +79,22 @@ void CPU::JP(const bool& cond, const u16& addr) {
 		m_data.pc = addr;
 		m_data.cycles += 4;
 	}
+}
+
+void CPU::processInterrupts() {
+	if (!m_data.intData->ime) {
+		return;
+	}
+	if (m_data.intData->vBlankEnable && m_data.intData->vBlankFlag) {
+		// TODO: investigate cycle count for interrupts
+		m_data.cycles += 12;
+		m_data.intData->ime = false;
+		m_data.intData->vBlankFlag = false;
+		m_data.sp -= 2;
+		m_data.mmu->write16(m_data.sp, m_data.pc);
+		m_data.pc = 0x40;
+	}
+	// TODO: other interrupts
 }
 
 void CPU::fetch() {

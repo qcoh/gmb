@@ -48,6 +48,7 @@ u8 GPU::read8(u16 addr) const {
 	default:
 		break;
 	}
+	std::cout << "Addr: 0x" << std::hex << +addr << '\n';
 	throw std::runtime_error{"GPU Address not implemented"};
 }
 
@@ -117,6 +118,7 @@ void GPU::write8(u16 addr, u8 v) {
 	default:
 		break;
 	}
+	std::cout << "Addr: 0x" << std::hex << +addr << '\n';
 	throw std::runtime_error{"GPU Address not implemented"};
 }
 
@@ -147,7 +149,7 @@ void GPU::step(u16 cycles) {
 			if (m_data.lY == 144) {
 				m_data.lcdStat =
 				    (m_data.lcdStat & 0b11111100) | VBLANK;
-				// vblank interrupt
+				m_data.intData->vBlankFlag = true;
 				m_data.display->render(m_data.pixelArray);
 			} else {
 				m_data.lcdStat = (m_data.lcdStat & 0b11111100) |
