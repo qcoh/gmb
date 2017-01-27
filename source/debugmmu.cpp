@@ -20,6 +20,7 @@ void DebugMMU::write8(u16 addr, u8 v) {
 
 std::ostream& operator<<(std::ostream& os, const DebugMMU::WatchEvent& ev) {
 	os << "WatchEvent: [0x" << std::hex << std::setw(4) << std::setfill('0')
-	   << +ev.addr << "] == 0x" << std::setw(2) << +ev.oldVal;
+	   << +ev.addr << "] == 0x" << std::setw(2) << +ev.oldVal << " <- 0x"
+	   << std::setw(2) << +ev.newVal;
 	return os;
 }
