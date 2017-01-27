@@ -155,6 +155,12 @@ void DebugBoy::eval(std::string& input) {
 				  << std::setfill('0') << +bp << ", ";
 		}
 		std::cout << '\n';
+	} else if (cmd == "s") {
+		// inexplicably, if v is u8 only 0 is read...
+		u16 v = 0;
+		if (stream >> std::hex >> addr >> v) {
+			m_mmu.write8(addr, static_cast<u8>(v));
+		}
 	} else if (cmd == "b") {
 		// add breakpoint
 		if (stream >> std::hex >> addr) {
@@ -189,6 +195,7 @@ void DebugBoy::eval(std::string& input) {
 			     "pd 0xnnnn\t Print instruction at 0xnnnn\n"
 			     "pm 0xnnnn\t Print memory at 0xnnnn\n"
 			     "pt 0xnnn\t Print tile at 0xnnn (0 - 383)\n"
+			     "s 0xnnnn 0xmm\t Set memory at 0xnnnn to 0xmm\n"
 			     "pb\t\t Print breakpoints\n"
 			     "pw\t\t Print watchpoints\n"
 			     "b 0xnnnn\t Add breakpoint\n"
