@@ -31,13 +31,20 @@ A heavily WIP GameBoy emulator written in C++14.
 
 The currently implemented commands (subject to change):
 
- - `next`: Execute the next instruction.
- - `print 0xnnnn`: Print memory at location `0xnnnn`.
- - `break 0xnnnn`: Set breakpoint at `0xnnnn`.
- - `breakpoints`: Show all breakpoints.
- - `clear`: Clear all breakpoints.
- - `continue`: Execute commands until a breakpoint is encountered.
- - `tile 0xnnn`: Dump tile `0xnnn` to terminal.
+ - `n`: Execute the next instruction.
+ - `co`: Execute commands until a breakpoint is encountered.
+ - `pc`: Print CPU registers.
+ - `pd 0xnnnn`: Print instruction mnemonic at `0xnnnn`.
+ - `pm 0xnnnn`: Print memory at `0xnnnn`.
+ - `pt 0xnnn`: Print tile `0xnnn` (0, ..., 383).
+ - `b 0xnnnn`: Add breakpoint.
+ - `w 0xnnnn`: Add watchpoint.
+ - `pb`: Print breakpoints.
+ - `pw`: Print watchpoints.
+ - `cb`: Clear breakpoints.
+ - `cw`: Clear watchpoints.
+ - `q`: Quit.
+ - `h`: Help.
 
 ### License
 
