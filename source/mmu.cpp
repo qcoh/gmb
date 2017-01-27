@@ -134,6 +134,16 @@ void MMU::write8(u16 addr, u8 v) {
 				return;
 			case 0x0040:
 				// video
+				if (addr == 0xff46) {
+					// DMA
+					for (u16 i = 0; i < 0xa0; i++) {
+						write8(static_cast<u16>(0xfe00 +
+									i),
+						       read8(static_cast<u16>(
+							   (v << 8) + i)));
+					}
+					return;
+				}
 				m_data.gpu->write8(addr, v);
 				return;
 			case 0x0050:
