@@ -194,21 +194,21 @@ void DebugBoy::eval(std::string& input) {
 
 void DebugBoy::printTile(const IGPU::Data::Tile& tile) {
 	for (const auto& row : tile) {
-		for (u8 i = 0; i < 8; i++) {
+		for (u8 i = 7; i > 0; i--) {
 			u8 color = static_cast<u8>(((row[0] >> i) & 1) << 1 |
 						   ((row[0] >> i) & 1));
 			switch (color) {
 			case 0x0:
-				std::cout << " ";
+				std::cout << "██";
 				break;
 			case 0x1:
-				std::cout << "░";
+				std::cout << "▓▓";
 				break;
 			case 0x2:
-				std::cout << "▓";
+				std::cout << "░░";
 				break;
 			default:
-				std::cout << "█";
+				std::cout << "  ";
 				break;
 			}
 		}

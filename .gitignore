@@ -36,3 +36,5 @@ test
 *.to
 bios.bin
 exp/
+bios/
+tomorrow
