@@ -63,6 +63,9 @@ u8 MMU::read8(u16 addr) {
 					return 0xff;
 				}
 				break;
+			case 0x0060:
+				// CGB, ignore for now
+				return 0;
 			case 0x0070:
 				// https://www.reddit.com/r/EmuDev/comments/5nixai/gb_tetris_writing_to_unused_memory/
 				return 0;
@@ -158,6 +161,9 @@ void MMU::write8(u16 addr, u8 v) {
 					return;
 				}
 				break;
+			case 0x0060:
+				// CGB, ignore for now
+				return;
 			case 0x0070:
 				// https://www.reddit.com/r/EmuDev/comments/5nixai/gb_tetris_writing_to_unused_memory/
 				return;

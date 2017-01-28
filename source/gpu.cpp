@@ -39,6 +39,9 @@ u8 GPU::read8(u16 addr) const {
 				return m_data.wY;
 			case 0xff4b:
 				return m_data.wX;
+			case 0xff4f:
+				// CGB, ignore for now
+				return 0;
 			default:
 				break;
 			};
@@ -108,6 +111,9 @@ void GPU::write8(u16 addr, u8 v) {
 				return;
 			case 0xff4b:
 				m_data.wX = v;
+				return;
+			case 0xff4f:
+				// CGB, ignore for now
 				return;
 			default:
 				break;
