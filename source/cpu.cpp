@@ -456,7 +456,30 @@ void CPU::exec() {
 	case 0x97:  // SUB A, A
 		SUB(m_data.a);
 		break;
-
+	case 0x98:  // SBC B
+		SBC(m_data.b);
+		break;
+	case 0x99:  // SBC C
+		SBC(m_data.c);
+		break;
+	case 0x9a:  // SBC D
+		SBC(m_data.d);
+		break;
+	case 0x9b:  // SBC E
+		SBC(m_data.e);
+		break;
+	case 0x9c:  // SBC H
+		SBC(m_data.h);
+		break;
+	case 0x9d:  // SBC L
+		SBC(m_data.l);
+		break;
+	case 0x9e:  // SBC (HL)
+		SBC(mhl);
+		break;
+	case 0x9f:  // SBC A
+		SBC(m_data.a);
+		break;
 	case 0xa0:  // AND B
 		AND(m_data.b);
 		break;
@@ -620,6 +643,9 @@ void CPU::exec() {
 		break;
 	case 0xda:  // JP C, nn
 		JP(m_data.carryFlag, m_data.nn);
+		break;
+	case 0xde:  // SBC n
+		SBC(m_data.n);
 		break;
 	case 0xdf:  // RST 0x18
 		RST(0x18);

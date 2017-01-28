@@ -104,6 +104,17 @@ private:
 	}
 
 	template <typename T>
+	void SBC(const T& source) {
+		m_data.halfFlag =
+		    ((m_data.a & 0xf) < ((source & 0xf) + m_data.carryFlag));
+		int temp = m_data.a - source - m_data.carryFlag;
+		m_data.carryFlag = (temp < 0);
+		m_data.a = static_cast<u8>(temp);
+		m_data.zeroFlag = (m_data.a == 0);
+		m_data.negFlag = true;
+	}
+
+	template <typename T>
 	void ADD(const T& source) {
 		m_data.halfFlag = ((m_data.a & 0xf) + (source & 0xf) > 0xf);
 		m_data.carryFlag = (m_data.a + source > 0xff);
