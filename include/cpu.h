@@ -138,6 +138,8 @@ private:
 
 	void ADD16(const u16&);
 
+	void ADDmixed(u16&, u16, u8);
+
 	// extended instruction set
 	void CB();
 

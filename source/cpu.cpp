@@ -13,6 +13,15 @@ u16 CPU::step() {
 	return m_data.cycles;
 }
 
+void CPU::ADDmixed(u16& target, u16 source16, u8 source8) {
+	// http://forums.nesdev.com/viewtopic.php?p=42143#p42143
+	m_data.zeroFlag = false;
+	m_data.negFlag = false;
+	m_data.halfFlag = (((source16 & 0xf) + (source8 & 0xf)) > 0x0f);
+	m_data.carryFlag = (((source16 & 0xff) + source8) > 0xff);
+	target = static_cast<u16>(source16 + source8);
+}
+
 void CPU::ADD16(const u16& source) {
 	m_data.carryFlag = (m_data.hl + source) > 0xffff;
 	m_data.halfFlag = ((m_data.hl & 0x0fff) + (source & 0x0fff)) > 0x0fff;
@@ -639,6 +648,9 @@ void CPU::exec() {
 	case 0xe7:  // RST 0x20
 		RST(0x20);
 		break;
+	case 0xe8:  // ADD SP, n
+		ADDmixed(m_data.sp, m_data.sp, m_data.n);
+		break;
 	case 0xe9:  // JP HL (error in docs!!!)
 		JP(true, m_data.hl);
 		m_data.cycles = 4;
@@ -678,6 +690,9 @@ void CPU::exec() {
 		break;
 	case 0xf7:  // RST 0x30
 		RST(0x30);
+		break;
+	case 0xf8:  // LD HL, SP + n
+		ADDmixed(m_data.hl, m_data.sp, m_data.n);
 		break;
 	case 0xfa:  // LD A, (nn)
 	{
