@@ -1,17 +1,17 @@
 #pragma once
 
-#include <array>
+#include <vector>
 
 #include "icartridge.h"
 
 class RomOnly : public ICartridge {
 public:
-	RomOnly(const std::string&);
+	RomOnly(std::vector<u8>&&);
 	virtual ~RomOnly() = default;
 
 	virtual u8 read8(u16) override;
 	virtual void write8(u16, u8) override;
 
 private:
-	std::array<u8, 0x10000> m_data;
+	std::vector<u8> m_data;
 };

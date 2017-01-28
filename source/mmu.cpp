@@ -23,6 +23,9 @@ u8 MMU::read8(u16 addr) {
 	case 0x8000:
 	case 0x9000:
 		return m_data.gpu->read8(addr);
+	case 0xa000:
+	case 0xb000:  // cartridge ram
+		return m_data.cart->read8(addr);
 	case 0xc000:
 		return m_data.wram0[addr & 0x0fff];
 	case 0xd000:
@@ -104,6 +107,10 @@ void MMU::write8(u16 addr, u8 v) {
 	case 0x8000:
 	case 0x9000:
 		m_data.gpu->write8(addr, v);
+		return;
+	case 0xa000:
+	case 0xb000:  // cartridge ram
+		m_data.cart->write8(addr, v);
 		return;
 	case 0xc000:
 		m_data.wram0[addr & 0x0fff] = v;

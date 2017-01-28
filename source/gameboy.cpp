@@ -2,10 +2,9 @@
 #include "cpu.h"
 #include "gpu.h"
 #include "mmu.h"
-#include "romonly.h"
 
 GameBoy::GameBoy(const std::string& romPath, const std::string& biosPath)
-    : m_cart{std::make_unique<RomOnly>(romPath)},
+    : m_cart{fromFile(romPath)},
       m_bios{biosPath},
       m_gpuData{},
       m_gpu{std::make_unique<GPU>(m_gpuData)},

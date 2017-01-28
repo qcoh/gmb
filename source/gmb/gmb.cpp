@@ -5,7 +5,6 @@
 
 #include "debugboy.h"
 #include "defer.h"
-#include "romonly.h"
 
 int main() {
 	const char* rom = "tetris.gb";
@@ -15,8 +14,6 @@ int main() {
 			throw std::runtime_error{SDL_GetError()};
 		}
 		defer([]() { SDL_Quit(); });
-		RomOnly ro{"tetris.gb"};
-		(void)ro;
 		DebugBoy db{rom, bios};
 		db.run();
 	} catch (std::exception& e) {

@@ -9,14 +9,13 @@
 #include "cpu.h"
 #include "debugboy.h"
 #include "debugmmu.h"
-#include "romonly.h"
 
 void sigHandle(int signal) { DebugBoy::signaled = signal; }
 
 volatile sig_atomic_t DebugBoy::signaled = 0;
 
 DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
-    : m_cart{std::make_unique<RomOnly>(romPath)},
+    : m_cart{fromFile(romPath)},
       m_bios{biosPath},
       m_cpu{std::make_unique<CPU>(m_cpuData)} {
 	m_gpuData.display = &m_display;
