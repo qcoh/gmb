@@ -28,7 +28,8 @@ u8 GPU::read8(u16 addr) const {
 			case 0xff45:
 				return m_data.lYC;
 			case 0xff46:
-				break;
+				// https://github.com/Gekkio/mooneye-gb/blob/master/docs/accuracy.markdown
+				return 0xff;
 			case 0xff47:
 				return m_data.bgp;
 			case 0xff48:
@@ -39,9 +40,12 @@ u8 GPU::read8(u16 addr) const {
 				return m_data.wY;
 			case 0xff4b:
 				return m_data.wX;
+			case 0xff4c:
+			case 0xff4d:
+			case 0xff4e:
 			case 0xff4f:
-				// CGB, ignore for now
-				return 0;
+				// unknown or CGB, ignore for now
+				return 0xff;
 			default:
 				break;
 			};
@@ -51,7 +55,7 @@ u8 GPU::read8(u16 addr) const {
 	default:
 		break;
 	}
-	std::cout << "Addr: 0x" << std::hex << +addr << '\n';
+	std::cout << "Read: 0x" << std::hex << +addr << '\n';
 	throw std::runtime_error{"GPU Address not implemented"};
 }
 
@@ -90,7 +94,8 @@ void GPU::write8(u16 addr, u8 v) {
 				m_data.scrollX = v;
 				return;
 			case 0xff44:
-				break;
+				// read only
+				return;
 			case 0xff45:
 				m_data.lYC = v;
 				return;
@@ -112,8 +117,11 @@ void GPU::write8(u16 addr, u8 v) {
 			case 0xff4b:
 				m_data.wX = v;
 				return;
+			case 0xff4c:
+			case 0xff4d:
+			case 0xff4e:
 			case 0xff4f:
-				// CGB, ignore for now
+				// unknown or CGB, ignore for now
 				return;
 			default:
 				break;
@@ -124,7 +132,7 @@ void GPU::write8(u16 addr, u8 v) {
 	default:
 		break;
 	}
-	std::cout << "Addr: 0x" << std::hex << +addr << '\n';
+	std::cout << "Write: 0x" << std::hex << +addr << '\n';
 	throw std::runtime_error{"GPU Address not implemented"};
 }
 

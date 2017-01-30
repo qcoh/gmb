@@ -62,10 +62,7 @@ u8 MMU::read8(u16 addr) {
 				return m_data.gpu->read8(addr);
 
 			case 0x0050:
-				if (addr == 0xff50) {
-					return 0xff;
-				}
-				break;
+				return 0xff;
 			case 0x0060:
 				// CGB, ignore for now
 				return 0;
@@ -165,9 +162,8 @@ void MMU::write8(u16 addr, u8 v) {
 			case 0x0050:
 				if (addr == 0xff50) {
 					m_data.biosMode = false;
-					return;
 				}
-				break;
+				return;
 			case 0x0060:
 				// CGB, ignore for now
 				return;
