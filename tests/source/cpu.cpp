@@ -2201,6 +2201,142 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.zeroFlag == false);
 			}
 		}
+		WHEN("Calling CALL NZ, nn (1)") {
+			data.zeroFlag = false;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xc4;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0xffe);
+				REQUIRE(arr[0xffe] == 0x9a);
+				REQUIRE(arr[0xfff] == 0x78);
+				REQUIRE(data.cycles == 24);
+			}
+		}
+		WHEN("Calling CALL NZ, nn (2)") {
+			data.zeroFlag = true;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xc4;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x789a);
+				REQUIRE(data.sp == 0x1000);
+				REQUIRE(data.cycles == 12);
+			}
+		}
+		WHEN("Calling CALL Z, nn (1)") {
+			data.zeroFlag = true;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xcc;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0xffe);
+				REQUIRE(arr[0xffe] == 0x9a);
+				REQUIRE(arr[0xfff] == 0x78);
+				REQUIRE(data.cycles == 24);
+			}
+		}
+		WHEN("Calling CALL Z, nn (2)") {
+			data.zeroFlag = false;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xcc;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x789a);
+				REQUIRE(data.sp == 0x1000);
+				REQUIRE(data.cycles == 12);
+			}
+		}
+		WHEN("Calling CALL NC, nn (1)") {
+			data.carryFlag = false;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xd4;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0xffe);
+				REQUIRE(arr[0xffe] == 0x9a);
+				REQUIRE(arr[0xfff] == 0x78);
+				REQUIRE(data.cycles == 24);
+			}
+		}
+		WHEN("Calling CALL NC, nn (2)") {
+			data.carryFlag = true;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xd4;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x789a);
+				REQUIRE(data.sp == 0x1000);
+				REQUIRE(data.cycles == 12);
+			}
+		}
+		WHEN("Calling CALL C, nn (1)") {
+			data.carryFlag = true;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xdc;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x1234);
+				REQUIRE(data.sp == 0xffe);
+				REQUIRE(arr[0xffe] == 0x9a);
+				REQUIRE(arr[0xfff] == 0x78);
+				REQUIRE(data.cycles == 24);
+			}
+		}
+		WHEN("Calling CALL C, nn (2)") {
+			data.carryFlag = false;
+			data.nn = 0x1234;
+			data.pc = 0x789a;
+			data.sp = 0x1000;
+			data.op = 0xdc;
+			cpu.exec();
+
+			THEN(
+			    "pc == 0x1234, sp == 0xffe, arr[0xffe] == 0x9a, "
+			    "arr[0xfff] == 0x78, cycles == 24") {
+				REQUIRE(data.pc == 0x789a);
+				REQUIRE(data.sp == 0x1000);
+				REQUIRE(data.cycles == 12);
+			}
+		}
 	}
 }
 

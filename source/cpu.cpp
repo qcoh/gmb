@@ -591,6 +591,9 @@ void CPU::exec() {
 	case 0xc3:  // JP nn
 		JP(true, m_data.nn);
 		break;
+	case 0xc4:  // CALL NZ, nn
+		CALL(!m_data.zeroFlag);
+		break;
 	case 0xc5:  // PUSH BC
 		PUSH(m_data.bc);
 		break;
@@ -612,6 +615,9 @@ void CPU::exec() {
 	case 0xcb:  // CB
 		CB();
 		break;
+	case 0xcc:  // CALL Z, nn
+		CALL(m_data.zeroFlag);
+		break;
 	case 0xcd:  // CALL nn
 		CALL(true);
 		break;
@@ -626,6 +632,9 @@ void CPU::exec() {
 		break;
 	case 0xd2:  // JP NC, nn
 		JP(!m_data.carryFlag, m_data.nn);
+		break;
+	case 0xd4:  // CALL NC, nn
+		CALL(!m_data.carryFlag);
 		break;
 	case 0xd5:  // PUSH DE
 		PUSH(m_data.de);
@@ -644,6 +653,9 @@ void CPU::exec() {
 		break;
 	case 0xda:  // JP C, nn
 		JP(m_data.carryFlag, m_data.nn);
+		break;
+	case 0xdc:  // CALL C, nn
+		CALL(m_data.carryFlag);
 		break;
 	case 0xde:  // SBC n
 		SBC(m_data.n);
@@ -1494,7 +1506,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xc3, "JP nn", 0, 3},
 
-    {},  // 0xc4
+    {0xc4, "CALL NZ, nn", 0, 3},
 
     {0xc5, "PUSH BC", 16, 1},
 
@@ -1510,7 +1522,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0xcb, "CB", 4, 2},
 
-    {},  // 0xcc
+    {0xcc, "CALL Z, nn", 0, 3},
 
     {0xcd, "CALL nn", 0, 3},  // !!!
 
@@ -1526,7 +1538,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {},  // 0xd3
 
-    {},  // 0xd4
+    {0xd4, "CALL NC, nn", 0, 3},
 
     {0xd5, "PUSH DE", 16, 1},
 
@@ -1542,7 +1554,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {},  // 0xdb
 
-    {},  // 0xdc
+    {0xdc, "CALL C, nn", 0, 3},
 
     {},  // 0xdd
 
