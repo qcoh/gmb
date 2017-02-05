@@ -1,6 +1,7 @@
 # gmb
 ---
 ![boot sequence](docs/logo.png)
+![Dr. Mario](docs/drmario.png)
 
 ---
 A heavily WIP GameBoy emulator written in C++14.

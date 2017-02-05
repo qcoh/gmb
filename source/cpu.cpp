@@ -393,7 +393,7 @@ void CPU::exec() {
 	case 0x5e:
 	case 0x66:
 	case 0x6e:
-	case 0x76:
+	// case 0x76:
 	case 0x7e:  // LD _, (HL)
 		LD(m_data.read8((m_data.op >> 3) & 0x7), mhl);
 		break;
@@ -404,9 +404,11 @@ void CPU::exec() {
 	case 0x73:
 	case 0x74:
 	case 0x75:
-	// case 0x76: HALT
 	case 0x77:  // LD (HL), _
 		LD(mhl, m_data.read8(m_data.op & 0x7));
+		break;
+
+	case 0x76:  // HALT, ignore for now
 		break;
 
 	case 0x80:  // ADD A, B
@@ -1350,7 +1352,7 @@ const std::array<Instruction, 256> CPU::s_instructions = {{
 
     {0x75, "LD (HL), L", 8, 1},
 
-    {},  // 0x76
+    {0x76, "HALT", 4, 1},
 
     {0x77, "LD (HL), A", 8, 1},
 
