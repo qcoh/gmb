@@ -24,6 +24,7 @@ private:
 	// misc
 	void DI();
 	void EI();
+	void DAA();
 
 	// controlflow
 	template <typename T>

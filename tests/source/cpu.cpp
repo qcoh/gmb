@@ -3033,3 +3033,152 @@ SCENARIO("Testing extended instructions", "[CPU]") {
 		}
 	}
 }
+
+u8 bcd(int u) { return static_cast<u8>((u / 10) << 4 | u % 10); }
+
+SCENARIO("Test DAA", "[CPU]") {
+	GIVEN("TestCPU, ICPU::Data, TestMMU") {
+		std::array<u8, 0x10000> arr = {{0}};
+		TestMMU mmu{arr};
+		ICPU::Data data;
+		InterruptData intData{};
+		data.mmu = &mmu;
+		data.intData = &intData;
+		CPU cpu{data};
+
+		WHEN("Adding two BCDs") {
+			for (int u = 0; u < 100; u++) {
+				for (int v = u; v < 100 - u; v++) {
+					data.a = bcd(u);
+					data.b = bcd(v);
+					data.op = 0x80;
+					cpu.exec();
+
+					data.op = 0x27;
+					cpu.exec();
+
+					THEN("a has the correct value") {
+						REQUIRE(data.a == bcd(u + v));
+					}
+				}
+			}
+		}
+		WHEN("Incrementing a BCD") {
+			for (int u = 0; u < 99; u++) {
+				data.a = bcd(u);
+				data.op = 0x3c;
+				cpu.exec();
+
+				data.op = 0x27;
+				cpu.exec();
+
+				THEN("a has the correct value") {
+					REQUIRE(data.a == bcd(u + 1));
+				}
+			}
+		}
+		WHEN("Subtracting two BCDs") {
+			for (int u = 0; u < 99; u++) {
+				for (int v = 0; v <= u; v++) {
+					data.a = bcd(u);
+					data.b = bcd(v);
+					data.op = 0x90;
+					cpu.exec();
+
+					data.op = 0x27;
+					cpu.exec();
+
+					THEN("a has the correct value") {
+						REQUIRE(data.a == bcd(u - v));
+					}
+				}
+			}
+		}
+		WHEN("Decrementing a BCD") {
+			for (int u = 1; u < 99; u++) {
+				data.a = bcd(u);
+				data.op = 0x3d;
+				cpu.exec();
+
+				data.op = 0x27;
+				cpu.exec();
+
+				THEN("a has the correct value") {
+					REQUIRE(data.a == bcd(u - 1));
+				}
+			}
+		}
+		WHEN("Calling ADC on BCD (1)") {
+			for (int u = 0; u < 100; u++) {
+				for (int v = u; v < 100 - u; v++) {
+					data.a = bcd(u);
+					data.b = bcd(v);
+					data.op = 0x88;
+					cpu.exec();
+
+					data.op = 0x27;
+					cpu.exec();
+
+					THEN("a has the correct value") {
+						REQUIRE(data.a == bcd(u + v));
+					}
+				}
+			}
+		}
+		WHEN("Calling ADC on BCD (2)") {
+			for (int u = 0; u < 100; u++) {
+				for (int v = u; v < 99 - u; v++) {
+					data.carryFlag = true;
+					data.a = bcd(u);
+					data.b = bcd(v);
+					data.op = 0x88;
+					cpu.exec();
+
+					data.op = 0x27;
+					cpu.exec();
+
+					THEN("a has the correct value") {
+						REQUIRE(data.a ==
+							bcd(u + v + 1));
+					}
+				}
+			}
+		}
+		WHEN("Calling SBC two BCDs (1)") {
+			for (int u = 0; u < 99; u++) {
+				for (int v = 0; v <= u; v++) {
+					data.a = bcd(u);
+					data.b = bcd(v);
+					data.op = 0x98;
+					cpu.exec();
+
+					data.op = 0x27;
+					cpu.exec();
+
+					THEN("a has the correct value") {
+						REQUIRE(data.a == bcd(u - v));
+					}
+				}
+			}
+		}
+		WHEN("Calling SBC two BCDs (2)") {
+			for (int u = 0; u < 99; u++) {
+				for (int v = 0; v < u; v++) {
+					data.carryFlag = true;
+					data.a = bcd(u);
+					data.b = bcd(v);
+					data.op = 0x98;
+					cpu.exec();
+
+					data.op = 0x27;
+					cpu.exec();
+
+					THEN("a has the correct value") {
+						REQUIRE(data.a ==
+							bcd(u - v - 1));
+					}
+				}
+			}
+		}
+	}
+}

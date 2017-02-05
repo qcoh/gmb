@@ -45,6 +45,57 @@ void CPU::DI() { m_data.intData->ime = false; }
 
 void CPU::EI() { m_data.intData->ime = true; }
 
+void CPU::DAA() {
+	// A binary coded decimal (BCD) is a hexidecimal number 0xuv *thought of
+	// as the decimal number uv*, whence the digits u and v are in {0, 1,
+	// ..., 9}. If we call the GameBoy's arithmetic operations (e.g. ADD,
+	// INC, SUB, DEC, ...) on a BCD, the result need not be a BCD, e.g.
+	// 0x9 + 0x1 == 0xa.
+	//
+	// The purpose of DAA (decimal adjust A?) is to modify the result of an
+	// arithmetic operation such that it is a valid BCD and it is the
+	// expected result of the previous operation, e.g.
+	//
+	// LD A, 0x9
+	// INC A
+	// DAA
+	//
+	// Then A == 0x10.
+	//
+	//
+	// The logic for a single hexadecimal digit is as follows: suppose we
+	// add 0xu + 0xv, where u and v are in {0, 1, ..., 9}, then
+	//
+	// If 0xu + 0xv < 0xa: The sum is correct both as hexadecimal as well
+	// as decimal and we need not do anything.
+	//
+	// If 0x9 < 0xu + 0xv = 0xa + 0xw < 0x13 (note w is in {0, 1, 2, 3, 4,
+	// 5, 7, 8}), then
+	//
+	// 0xu + 0xv + 0x6 = 0xa + 0x6 + 0xw = 0x1w
+	//
+	// which is the correct BCD. For all additions, we can determine whether
+	// we have to perform the adjustment by checking (0xu + 0xv > 0x9) and
+	// halfFlag!
+	//
+	// TODO: two hex digits, subtraction
+	int temp = m_data.a;
+	u8 correction = 0;
+
+	if (m_data.a > 0x99 || m_data.carryFlag) {
+		correction |= 0x60;
+		m_data.carryFlag = true;
+	}
+	if ((m_data.a & 0x0f) > 0x9 || m_data.halfFlag) {
+		correction |= 0x06;
+	}
+
+	temp = (m_data.negFlag) ? (temp - correction) : (temp + correction);
+	m_data.halfFlag = false;
+	m_data.a = static_cast<u8>(temp);
+	m_data.zeroFlag = (m_data.a == 0);
+}
+
 void CPU::CALL(const bool& cond) {
 	m_data.cycles = 12;
 	if (cond) {
@@ -249,6 +300,9 @@ void CPU::exec() {
 		break;
 	case 0x26:  // LD H, n
 		LD(m_data.h, m_data.n);
+		break;
+	case 0x27:  // DAA
+		DAA();
 		break;
 	case 0x28:  // JR Z, n
 		JR(m_data.zeroFlag);

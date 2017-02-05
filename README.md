@@ -2,6 +2,7 @@
 ---
 ![boot sequence](docs/logo.png)
 ![Dr. Mario](docs/drmario.png)
+![Dr. Mario](docs/drmario2.png)
 
 ---
 A heavily WIP GameBoy emulator written in C++14.
