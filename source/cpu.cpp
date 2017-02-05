@@ -104,9 +104,10 @@ void CPU::processInterrupts() {
 		m_data.cycles += 12;
 		m_data.intData->ime = false;
 		m_data.intData->vBlankFlag = false;
-		m_data.sp -= 2;
-		m_data.mmu->write16(m_data.sp, m_data.pc);
-		m_data.pc = 0x40;
+		// m_data.sp -= 2;
+		// m_data.mmu->write16(m_data.sp, m_data.pc);
+		// m_data.pc = 0x40;
+		RST(0x40);
 	}
 	// TODO: other interrupts
 }

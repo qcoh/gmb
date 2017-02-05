@@ -1,5 +1,6 @@
 SOURCE_DIR = source
 INCLUDE_DIR = include
+BUILD_DIR = build
 TEST_SOURCE_DIR = tests/source
 TEST_INCLUDE_DIR = tests/include
 
@@ -12,11 +13,11 @@ CFLAGS = -g -Wall -Wextra -Werror -Wshadow -Wnon-virtual-dtor -Wcast-align -Wunu
 LFLAGS = -lSDL2 -ldl
 
 : foreach $(SOURCES) |> |> {nongmb}
-: foreach {nongmb} |> $(CC) -c $(CFLAGS) %f -o %o |> %B.o {nongmbo}
-: $(SOURCE_DIR)/gmb/gmb.cpp |> $(CC) -c $(CFLAGS) %f -o %o |> %B.o {gmbo}
-: {nongmbo} {gmbo} |> $(CC) $(LFLAGS) %f -o %o |> gmb
+: foreach {nongmb} |> $(CC) -c $(CFLAGS) %f -o %o |> $(BUILD_DIR)/%B.o {nongmbo}
+: $(SOURCE_DIR)/gmb/gmb.cpp |> $(CC) -c $(CFLAGS) %f -o %o |> $(BUILD_DIR)/%B.o {gmbo}
+: {nongmbo} {gmbo} |> $(CC) $(LFLAGS) %f -o %o |> $(BUILD_DIR)/gmb
 
-: $(SOURCE_DIR)/*cpu.cpp $(SOURCE_DIR)/*mmu.cpp $(SOURCE_DIR)/bios.cpp |> $(CC) -shared -fPIC $(CFLAGS) %f -o %o |> cpu.so
+: $(SOURCE_DIR)/*cpu.cpp $(SOURCE_DIR)/*mmu.cpp $(SOURCE_DIR)/bios.cpp |> $(CC) -shared -fPIC $(CFLAGS) %f -o %o |> $(BUILD_DIR)/cpu.so
 
-: foreach $(TEST_SOURCES) |> $(CC) -c $(CFLAGS) -I $(TEST_INCLUDE_DIR) %f -o %o |> %B.to {testo}
-: {nongmbo} {testo} |> $(CC) $(LFLAGS) %f -o %o |> test
+: foreach $(TEST_SOURCES) |> $(CC) -c $(CFLAGS) -I $(TEST_INCLUDE_DIR) %f -o %o |> $(BUILD_DIR)/%B.to {testo}
+: {nongmbo} {testo} |> $(CC) $(LFLAGS) %f -o %o |> $(BUILD_DIR)/test
