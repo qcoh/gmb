@@ -2337,6 +2337,142 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.cycles == 12);
 			}
 		}
+		WHEN("Calling ADC A, B") {
+			data.carryFlag = true;
+			data.a = 0x12;
+			data.b = 0x5;
+			data.op = 0x88;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x16, zeroFlag == false, negFlag == false, "
+			    "carryFlag == false, halfFlag == false") {
+				REQUIRE(data.a == 0x18);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling ADC A, C") {
+			data.carryFlag = true;
+			data.a = 0x1f;
+			data.c = 0;
+			data.op = 0x89;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x20, zeroFlag == false, negFlag == false, "
+			    "carryFlag == false, halfFlag == true") {
+				REQUIRE(data.a == 0x20);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
+		WHEN("Calling ADC A, D") {
+			data.carryFlag = true;
+			data.a = 0x1f;
+			data.d = 1;
+			data.op = 0x8a;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x21, zeroFlag == false, negFlag == false, "
+			    "carryFlag == false, halfFlag == true") {
+				REQUIRE(data.a == 0x21);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
+		WHEN("Calling ADC A, E") {
+			data.carryFlag = true;
+			data.a = 0xff;
+			data.e = 1;
+			data.op = 0x8b;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x1, zeroFlag == false, negFlag == false, "
+			    "carryFlag == true, halfFlag == true") {
+				REQUIRE(data.a == 0x1);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
+		WHEN("Calling ADC A, H") {
+			data.carryFlag = true;
+			data.a = 0xff;
+			data.h = 0;
+			data.op = 0x8c;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == true, negFlag == false, "
+			    "carryFlag == true, halfFlag == true") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
+		WHEN("Calling ADC A, L") {
+			data.carryFlag = false;
+			data.a = 0xf0;
+			data.l = 0x10;
+			data.op = 0x8d;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == true, negFlag == false, "
+			    "carryFlag == true, halfFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling ADC A, (HL)") {
+			data.carryFlag = false;
+			data.a = 0x0;
+			data.hl = 0x1234;
+			arr[data.hl] = 0x0;
+			data.op = 0x8e;
+			cpu.exec();
+
+			THEN(
+			    "a == 0, zeroFlag == true, negFlag == false, "
+			    "carryFlag == false, halfFlag == false") {
+				REQUIRE(data.a == 0);
+				REQUIRE(data.zeroFlag == true);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
+		WHEN("Calling ADC A, A") {
+			data.carryFlag = true;
+			data.a = 0xff;
+			data.op = 0x8f;
+			cpu.exec();
+
+			THEN(
+			    "a == 0xff, zeroFlag == false, negFlag == false, "
+			    "carryFlag == true, halfFlag == true") {
+				REQUIRE(data.a == 0xff);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == true);
+				REQUIRE(data.halfFlag == true);
+			}
+		}
 	}
 }
 

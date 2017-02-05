@@ -124,6 +124,18 @@ private:
 	}
 
 	template <typename T>
+	void ADC(const T& source) {
+		m_data.halfFlag =
+		    ((m_data.a & 0xf) + (source & 0xf) + m_data.carryFlag >
+		     0xf);
+		int temp = m_data.a + source + m_data.carryFlag;
+		m_data.carryFlag = (temp > 0xff);
+		m_data.a = static_cast<u8>(temp);
+		m_data.zeroFlag = (m_data.a == 0);
+		m_data.negFlag = false;
+	}
+
+	template <typename T>
 	void OR(const T& source) {
 		m_data.a |= source;
 		m_data.zeroFlag = (m_data.a == 0);

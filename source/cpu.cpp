@@ -435,6 +435,30 @@ void CPU::exec() {
 	case 0x87:  // ADD A, A
 		ADD(m_data.a);
 		break;
+	case 0x88:  // ADC A, B
+		ADC(m_data.b);
+		break;
+	case 0x89:  // ADC A, C
+		ADC(m_data.c);
+		break;
+	case 0x8a:  // ADC A, D
+		ADC(m_data.d);
+		break;
+	case 0x8b:  // ADC A, E
+		ADC(m_data.e);
+		break;
+	case 0x8c:  // ADC A, H
+		ADC(m_data.h);
+		break;
+	case 0x8d:  // ADC A, L
+		ADC(m_data.l);
+		break;
+	case 0x8e:  // ADC A, (HL)
+		ADC(mhl);
+		break;
+	case 0x8f:  // ADC A, A
+		ADC(m_data.a);
+		break;
 	case 0x090:  // SUB A, B
 		SUB(m_data.b);
 		break;
