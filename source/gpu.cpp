@@ -339,8 +339,8 @@ void GPU::renderSprites() {
 	// Our first objective is to find all visible sprites intersecting the
 	// scanline:
 
-	// TODO: do this without dynamic allocations
 	std::vector<u8> sprites{};
+	sprites.reserve(40);
 	for (u8 i = 0; i < 40; i++) {
 		const IGPU::Data::Attribute& curAttr = m_data.attributes[i];
 
