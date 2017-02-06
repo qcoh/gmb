@@ -67,6 +67,22 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.carryFlag == false);
 			}
 		}
+		WHEN("Calling XOR n") {
+			data.a = 0xf0;
+			data.n = 0xff;
+			data.op = 0xee;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x0f, zeroFlag == false, carryFlag == false, "
+			    "halfFlag == false, negFlag == false") {
+				REQUIRE(data.a == 0x0f);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.halfFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == false);
+			}
+		}
 		WHEN("LDD (HL-), A") {
 			data.a = 0x77;
 			data.hl = 0x100;

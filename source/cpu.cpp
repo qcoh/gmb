@@ -780,6 +780,9 @@ void CPU::exec() {
 		LD(mnn, m_data.a);
 		break;
 	}
+	case 0xee:  // XOR n
+		XOR(m_data.n);
+		break;
 	case 0xef:  // RST 0x28
 		RST(0x28);
 		break;
