@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <stdexcept>
+#include <vector>
 
 #include "gpu.h"
 
@@ -76,7 +78,7 @@ void GPU::write8(u16 addr, u8 v) {
 		switch (addr & 0x0f00) {
 		case 0x0e00:
 			m_data.oam[addr & 0xff] = v;
-			m_data.attributes[addr >> 2][addr & 0x3] = v;
+			m_data.attributes[(addr & 0xff) >> 2][addr & 0x3] = v;
 			return;
 		case 0x0f00:
 			switch (addr) {
@@ -187,8 +189,12 @@ void GPU::step(u16 cycles) {
 }
 
 void GPU::renderScanline() {
-	if (m_data.bgDisplay) {
+	if (m_data.bgDisplayEnable) {
 		renderTiles();
+	}
+
+	if (m_data.objectDisplayEnable) {
+		renderSprites();
 	}
 }
 
@@ -286,23 +292,178 @@ void GPU::renderTiles() {
 		// Since colorIndex is 0, 1, 2 or 3, we select the
 		// corresponding color via:
 
-		u32 color = 0;
-		switch ((m_data.bgp >> (colorIndex << 1)) & 0x3) {
-		case 0b00:
-			color = 0xffffffff;
-			break;
-		case 0b01:
-			color = 0xffc0c0c0;
-			break;
-		case 0b10:
-			color = 0xff606060;
-			break;
-		default:
-			color = 0xff000000;
-			break;
-		}
+		u32 color = colorSelect(m_data.bgp, colorIndex);
 
 		// Finally, we draw the pixel.
 		m_data.pixelArray[i + 160 * m_data.lY] = color;
+	}
+}
+
+void GPU::renderSprites() {
+	// References:
+	// http://bgb.bircd.org/pandocs.htm#videodisplay
+	// http://www.codeslinger.co.uk/pages/projects/gameboy/graphics.html
+	// http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Sprites
+
+	// We now wish to render sprites, which consist of 8*8 pixels. Unlike
+	// tiles, their position is not fixed to the 32*32 background, but they
+	// can exist anywhere on the display (this also means that they are
+	// unaffected by scrollX and scrollY).
+	//
+	// The position of a sprite is given by its attribute data, i.e.
+	//
+	//   u8 Y = y position *minus 16*. Y < 16 or Y >= 160 hides the sprite.
+	//
+	//   u8 X = x position *minus 8*. X < 8 or X >= 168 hides the sprite.
+	//
+	//   u8 n = selects the nth tile (in 0x8000-0x8fff). TODO: 8*16 mode.
+	//
+	//   u8 attributes:
+	//
+	//   	bit 7: Specifies the priority, i.e. if 0, the sprite is always
+	//   	drawn, if 1, it is drawn only if the background color is
+	//   	white.
+	//
+	//   	bit 6: Y Flip (1=vertically mirrored)
+	//
+	//   	bit 5: X Flip (1=horizontally mirrored)
+	//
+	//   	bit 4: Palette number (0=obp0, 1=obp1)
+	//
+	//   	bit 0-3: CGB, ignore
+	//
+	// Each sprite is determined by these four bits and the corresponding
+	// tile. These object attributes are stored in the object attribute
+	// memory (0xfe00 - 0xfe9f), which means there are 40 sprites.
+	//
+	// Our first objective is to find all visible sprites intersecting the
+	// scanline:
+
+	// TODO: do this without dynamic allocations
+	std::vector<u8> sprites{};
+	for (u8 i = 0; i < 40; i++) {
+		const IGPU::Data::Attribute& curAttr = m_data.attributes[i];
+
+		// sprite is not visible
+		if (curAttr[0] < 16 || curAttr[0] >= 160 || curAttr[1] < 8 ||
+		    curAttr[1] >= 168) {
+			continue;
+		}
+
+		u8 ypos = static_cast<u8>(curAttr[0] - 16);
+
+		// sprite is not on scanline
+		if (!(ypos <= m_data.lY && m_data.lY < ypos + 8)) {
+			continue;
+		}
+
+		sprites.push_back(i);
+	}
+
+	// The GameBoy can only render only 10 sprites per scanline, so we sort
+	// `sprites` by the sprites' X positions and resize it.
+	//
+	// http://stackoverflow.com/a/32440415
+	std::sort(
+	    std::begin(sprites), std::end(sprites),
+	    [& attr = static_cast<const std::array<IGPU::Data::Attribute, 40>&>(
+		 m_data.attributes)](u8 a, u8 b) {
+		    return attr[a][1] < attr[b][1];
+	    });
+	sprites.resize(std::min(10ul, sprites.size()));
+
+	// Next, we determine the sprites' priority, i.e. the order of drawing
+	// overlapping sprites, as follows:
+	//
+	// * If their X positions are different, the leftmost has priority.
+	// * If their X positions coincide, the sprite with the smaller index
+	//   has priority.
+	//
+	// We sort by ascending priority:
+	std::sort(
+	    std::begin(sprites), std::end(sprites),
+	    [& attr = static_cast<const std::array<IGPU::Data::Attribute, 40>&>(
+		 m_data.attributes)](u8 a, u8 b) {
+		    if (attr[a][1] != attr[b][1]) {
+			    return attr[a][1] > attr[b][1];
+		    }
+		    return a > b;
+	    });
+
+	// Now let's render some sprites!
+	for (u8 i = 0; i < 160; i++) {
+		for (auto s : sprites) {
+			const IGPU::Data::Attribute& curAttr =
+			    m_data.attributes[s];
+			const IGPU::Data::Tile& curTile =
+			    m_data.tiles[curAttr[2]];
+
+			u8 ypos = curAttr[0] - 16;
+			u8 xpos = curAttr[1] - 8;
+
+			// Current position (i, lY) does not lie on sprite.
+			if (!((xpos <= i) && (i < xpos + 8) &&
+			      (ypos <= m_data.lY) && (m_data.lY < ypos + 8))) {
+				continue;
+			}
+
+			// Next, we must find the pixel inside the sprite which
+			// lies below (i, lY):
+			u8 pixelOffsetX = static_cast<u8>(i - xpos);
+			u8 pixelOffsetY = static_cast<u8>(m_data.lY - ypos);
+
+			// If the respective flags are set, we mirror the pixel
+			// positions:
+			if ((curAttr[3] & (1 << 6)) != 0) {
+				pixelOffsetY =
+				    static_cast<u8>(7 - pixelOffsetY);
+			}
+			if ((curAttr[3] & (1 << 5)) == 0) {
+				pixelOffsetX =
+				    static_cast<u8>(7 - pixelOffsetX);
+			}
+
+			// We obtain the palette:
+			u8 palette =
+			    (curAttr[3] & (1 << 4)) ? m_data.obp0 : m_data.obp1;
+
+			// If the sprite lies behind the background we only draw
+			// if the background color is white:
+			if ((curAttr[3] & (1 << 7)) &&
+			    (m_data.pixelArray[i + 160 * m_data.lY] !=
+			     0xffffffff)) {
+				continue;
+			}
+
+			// Like in `renderTiles` we need to determine the color
+			// index:
+			const IGPU::Data::Row& curRow = curTile[pixelOffsetY];
+			u8 colorIndex = static_cast<u8>(
+			    ((curRow[0] >> pixelOffsetX) & 0x1) |
+			    (((curRow[1] >> pixelOffsetX) & 0x1) << 1));
+
+			// Unlike tiles, if colorIndex == 0b00, the pixel is
+			// transparent:
+			if (colorIndex == 0b00) {
+				continue;
+			}
+
+			m_data.pixelArray[i + 160 * m_data.lY] =
+			    colorSelect(palette, colorIndex);
+		}
+	}
+}
+
+u32 GPU::colorSelect(u8 palette, u8 index) {
+	switch ((palette >> (index << 1)) & 0x3) {
+	case 0b00:
+		return 0xffffffff;
+	case 0b01:
+		return 0xffc0c0c0;
+	case 0b10:
+		return 0xff606060;
+		break;
+	default:
+		return 0xff000000;
 	}
 }

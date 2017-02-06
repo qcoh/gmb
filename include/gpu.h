@@ -21,4 +21,7 @@ private:
 
 	void renderScanline();
 	void renderTiles();
+	void renderSprites();
+
+	static u32 colorSelect(u8, u8);
 };
