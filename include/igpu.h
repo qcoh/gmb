@@ -44,7 +44,7 @@ public:
 		// Object Display Enable (0=Off, 1=On)
 		BitRef<u8> objectDisplayEnable{lcdControl, 1};
 		// BG Display (0=Off, 1=On) -- GBC
-		BitRef<u8> bgDisplay{lcdControl, 0};
+		BitRef<u8> bgDisplayEnable{lcdControl, 0};
 
 		// 0xff41 LCD Stat
 		u8 lcdStat = 0;
