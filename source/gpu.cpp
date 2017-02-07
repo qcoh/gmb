@@ -305,10 +305,14 @@ void GPU::renderSprites() {
 	// http://www.codeslinger.co.uk/pages/projects/gameboy/graphics.html
 	// http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Sprites
 
-	// We now wish to render sprites, which consist of 8*8 pixels. Unlike
-	// tiles, their position is not fixed to the 32*32 background, but they
-	// can exist anywhere on the display (this also means that they are
-	// unaffected by scrollX and scrollY).
+	// We now wish to render sprites, which consist of either 8*8 or
+	// 8*16pixels.
+
+	const u8 spriteHeight = m_data.objectSize ? 16 : 8;
+
+	// Unlike tiles, their position is not fixed to the 32*32
+	// background, but they can exist anywhere on the display (this also
+	// means that they are unaffected by scrollX and scrollY).
 	//
 	// The position of a sprite is given by its attribute data, i.e.
 	//
@@ -316,7 +320,8 @@ void GPU::renderSprites() {
 	//
 	//   u8 X = x position *minus 8*. X < 8 or X >= 168 hides the sprite.
 	//
-	//   u8 n = selects the nth tile (in 0x8000-0x8fff). TODO: 8*16 mode.
+	//   u8 n = selects the nth tile (in 0x8000-0x8fff). In 8*16 mode, n
+	//   selects both the (n & 0xfe)-th and (n | 0x1)-th tile.
 	//
 	//   u8 attributes:
 	//
@@ -332,7 +337,7 @@ void GPU::renderSprites() {
 	//
 	//   	bit 0-3: CGB, ignore
 	//
-	// Each sprite is determined by these four bits and the corresponding
+	// Each sprite is determined by these four bytes and the corresponding
 	// tile. These object attributes are stored in the object attribute
 	// memory (0xfe00 - 0xfe9f), which means there are 40 sprites.
 	//
@@ -353,7 +358,7 @@ void GPU::renderSprites() {
 		u8 ypos = static_cast<u8>(curAttr[0] - 16);
 
 		// sprite is not on scanline
-		if (!(ypos <= m_data.lY && m_data.lY < ypos + 8)) {
+		if (!(ypos <= m_data.lY && m_data.lY < ypos + spriteHeight)) {
 			continue;
 		}
 
@@ -395,15 +400,14 @@ void GPU::renderSprites() {
 		for (auto s : sprites) {
 			const IGPU::Data::Attribute& curAttr =
 			    m_data.attributes[s];
-			const IGPU::Data::Tile& curTile =
-			    m_data.tiles[curAttr[2]];
 
 			u8 ypos = curAttr[0] - 16;
 			u8 xpos = curAttr[1] - 8;
 
 			// Current position (i, lY) does not lie on sprite.
 			if (!((xpos <= i) && (i < xpos + 8) &&
-			      (ypos <= m_data.lY) && (m_data.lY < ypos + 8))) {
+			      (ypos <= m_data.lY) &&
+			      (m_data.lY < ypos + spriteHeight))) {
 				continue;
 			}
 
@@ -415,8 +419,8 @@ void GPU::renderSprites() {
 			// If the respective flags are set, we mirror the pixel
 			// positions:
 			if ((curAttr[3] & (1 << 6)) != 0) {
-				pixelOffsetY =
-				    static_cast<u8>(7 - pixelOffsetY);
+				pixelOffsetY = static_cast<u8>(
+				    spriteHeight - 1 - pixelOffsetY);
 			}
 			if ((curAttr[3] & (1 << 5)) == 0) {
 				pixelOffsetX =
@@ -425,7 +429,7 @@ void GPU::renderSprites() {
 
 			// We obtain the palette:
 			u8 palette =
-			    (curAttr[3] & (1 << 4)) ? m_data.obp0 : m_data.obp1;
+			    (curAttr[3] & (1 << 4)) ? m_data.obp1 : m_data.obp0;
 
 			// If the sprite lies behind the background we only draw
 			// if the background color is white:
@@ -435,9 +439,38 @@ void GPU::renderSprites() {
 				continue;
 			}
 
+			// If we're in the 8*8 sprite mode, we select the tile
+			// pointed at by the tile location attribute:
+			u8 tileIndex = curAttr[2];
+
+			// If we're in the 8*16 sprite mode, the sprite is
+			//
+			// +------------+
+			// |		|
+			// | n & 0xfe	|
+			// |		|
+			// +------------+
+			// |		|
+			// | n | 0x01	|
+			// |		|
+			// +------------+
+			//
+			// So, if pixelOffsetY is larger than 7, we select
+			// sprite n | 0x01, otherwise we select sprite n & 0xfe.
+
+			if (m_data.objectSize) {
+				tileIndex = (pixelOffsetY > 7)
+						? tileIndex | 0x1
+						: tileIndex & 0xfe;
+			}
+
+			const IGPU::Data::Tile& curTile =
+			    m_data.tiles[tileIndex];
+			const IGPU::Data::Row& curRow =
+			    curTile[pixelOffsetY & 0x7];
+
 			// Like in `renderTiles` we need to determine the color
 			// index:
-			const IGPU::Data::Row& curRow = curTile[pixelOffsetY];
 			u8 colorIndex = static_cast<u8>(
 			    ((curRow[0] >> pixelOffsetX) & 0x1) |
 			    (((curRow[1] >> pixelOffsetX) & 0x1) << 1));

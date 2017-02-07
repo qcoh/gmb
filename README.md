@@ -4,6 +4,7 @@
 ![Dr. Mario](docs/drmario.png)
 ![Dr. Mario](docs/drmario2.png)
 ![Tetris](docs/tetris.png)
+![Link's Awakening](docs/zelda.png)
 
 ---
 A heavily WIP GameBoy emulator written in C++14.
