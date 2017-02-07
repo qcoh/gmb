@@ -2489,6 +2489,23 @@ SCENARIO("Testing instructions", "[CPU]") {
 				REQUIRE(data.halfFlag == true);
 			}
 		}
+		WHEN("Calling ADC A, n") {
+			data.carryFlag = true;
+			data.a = 0x1;
+			data.n = 0x1;
+			data.op = 0xce;
+			cpu.exec();
+
+			THEN(
+			    "a == 0x3, zeroFlag == false, negFlag == false, "
+			    "carryFlag == false, halfFlag == false") {
+				REQUIRE(data.a == 0x3);
+				REQUIRE(data.zeroFlag == false);
+				REQUIRE(data.negFlag == false);
+				REQUIRE(data.carryFlag == false);
+				REQUIRE(data.halfFlag == false);
+			}
+		}
 	}
 }
 

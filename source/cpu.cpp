@@ -701,6 +701,9 @@ void CPU::exec() {
 	case 0xcd:  // CALL nn
 		CALL(true);
 		break;
+	case 0xce:  // ADC A, n
+		ADC(m_data.n);
+		break;
 	case 0xcf:  // RST 0x08
 		RST(0x08);
 		break;
