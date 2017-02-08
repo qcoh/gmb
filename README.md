@@ -6,7 +6,8 @@
 ![Tetris](docs/tetris.png)
 ![Link's Awakening](docs/zelda.png)
 ![Link's Awakening](docs/zelda2.png)
-
+![Link's Awakening](docs/zelda3.png)
+![Link's Awakening](docs/zelda4.png)
 ---
 A heavily WIP GameBoy emulator written in C++14.
 

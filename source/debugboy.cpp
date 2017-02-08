@@ -25,6 +25,7 @@ DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
 	m_mmuData.cart = m_cart.get();
 	m_mmuData.gpu = &m_gpu;
 	m_mmuData.intData = &m_intData;
+	m_mmuData.joypad = &m_joypad;
 
 	m_cpuData.intData = &m_intData;
 	m_cpuData.mmu = &m_mmu;

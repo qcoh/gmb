@@ -51,28 +51,18 @@ u8 MMU::read8(u16 addr) {
 			// io registers
 			switch (addr & 0x00f0) {
 			case 0x0000:
-			// timer, serial
+				// timer, serial, joypad
+
+				if (addr == 0xff00) {
+					// This was the most annoying bug so
+					// far.
+					// https://www.reddit.com/r/EmuDev/comments/5aw2dz/gb_tetris_garbage_graphics_tile_map/d9l80l7/
+					return m_data.joypad->read();
+				}
 			case 0x0010:
 			case 0x0020:
 			case 0x0030:
 				// audio, ignore for now
-				if (addr == 0xff00) {
-					// This was the most annoying bug so
-					// far. Tetris reads from 0xff00 to
-					// check whether the serial cable is
-					// attached to the GameBoy. If it reads
-					// 0, it tries to read from non-existent
-					// RAM and causes all kind of visual
-					// artifacts.
-					//
-					// Found out about it here:
-					// https://www.reddit.com/r/EmuDev/comments/5aw2dz/gb_tetris_garbage_graphics_tile_map/d9l80l7/
-					//
-					// This is what it used to look like for
-					// me:
-					// https://gfycat.com/HalfZigzagAnkolewatusi
-					return 0xff;
-				}
 				return 0;
 			case 0x0040:
 				// video
@@ -156,7 +146,11 @@ void MMU::write8(u16 addr, u8 v) {
 			// io registers
 			switch (addr & 0x00f0) {
 			case 0x0000:
-			// timer, serial
+				// timer, serial, joypad
+				if (addr == 0xff00) {
+					m_data.joypad->write(v);
+					return;
+				}
 			case 0x0010:
 			case 0x0020:
 			case 0x0030:

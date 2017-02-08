@@ -10,6 +10,7 @@
 #include "display.h"
 #include "gpu.h"
 #include "icartridge.h"
+#include "joypad.h"
 
 class DebugBoy {
 public:
@@ -30,6 +31,8 @@ private:
 
 	std::unique_ptr<ICartridge> m_cart;
 	BIOS m_bios;
+
+	Joypad m_joypad{};
 
 	IGPU::Data m_gpuData{};
 	GPU m_gpu{m_gpuData};

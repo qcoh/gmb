@@ -8,6 +8,7 @@
 #include "icartridge.h"
 #include "igpu.h"
 #include "interruptdata.h"
+#include "joypad.h"
 #include "types.h"
 
 class IMMU {
@@ -21,6 +22,7 @@ public:
 		std::array<u8, 4096> wram0 = {{0}};
 		std::array<u8, 4096> wram1 = {{0}};
 		InterruptData* intData = nullptr;
+		Joypad* joypad = nullptr;
 	};
 	IMMU() = default;
 	IMMU(const IMMU&) = delete;
