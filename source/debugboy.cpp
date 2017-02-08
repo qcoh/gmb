@@ -52,13 +52,19 @@ void DebugBoy::step() {
 		m_mode = Mode::WAIT;
 	}
 
-	SDL_Event ev = {0};
-	SDL_PollEvent(&ev);
-	switch (ev.type) {
-	case SDL_QUIT:
-		quit = true;
-	default:
-		break;
+	m_inputCycles++;
+
+	// TODO: do this better
+	if (m_inputCycles >= 10000) {
+		m_inputCycles = 0;
+		SDL_Event ev = {0};
+		SDL_PollEvent(&ev);
+		switch (ev.type) {
+		case SDL_QUIT:
+			quit = true;
+		default:
+			break;
+		}
 	}
 }
 

@@ -32,6 +32,7 @@ private:
 	std::unique_ptr<ICartridge> m_cart;
 	BIOS m_bios;
 
+	u32 m_inputCycles = 0;
 	Joypad m_joypad{};
 
 	IGPU::Data m_gpuData{};
