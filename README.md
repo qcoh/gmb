@@ -8,6 +8,9 @@
 ![Link's Awakening](docs/zelda2.png)
 ![Link's Awakening](docs/zelda3.png)
 ![Link's Awakening](docs/zelda4.png)
+![Link's Awakening](docs/zelda5.png)
+![Link's Awakening](docs/zelda6.png)
+
 ---
 A heavily WIP GameBoy emulator written in C++14.
 

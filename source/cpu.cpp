@@ -41,6 +41,17 @@ void CPU::CPL() {
 	m_data.halfFlag = true;
 }
 
+void CPU::SCF() {
+	m_data.carryFlag = true;
+	m_data.halfFlag = false;
+	m_data.negFlag = false;
+}
+void CPU::CCF() {
+	m_data.carryFlag = !m_data.carryFlag;
+	m_data.halfFlag = false;
+	m_data.negFlag = false;
+}
+
 void CPU::DI() { m_data.intData->ime = false; }
 
 void CPU::EI() { m_data.intData->ime = true; }
@@ -351,6 +362,9 @@ void CPU::exec() {
 	case 0x36:  // LD (HL), n
 		LD(mhl, m_data.n);
 		break;
+	case 0x37:  // SCF
+		SCF();
+		break;
 	case 0x38:  // JR C, n
 		JR(m_data.carryFlag);
 		break;
@@ -372,6 +386,9 @@ void CPU::exec() {
 		break;
 	case 0x3e:  // LD A, n
 		LD(m_data.a, m_data.n);
+		break;
+	case 0x3f:  // CCF
+		CCF();
 		break;
 
 	case 0x40:

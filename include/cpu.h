@@ -24,7 +24,11 @@ private:
 	// misc
 	void DI();
 	void EI();
+
 	void DAA();
+	void CPL();
+	void SCF();
+	void CCF();
 
 	// controlflow
 	template <typename T>
@@ -60,7 +64,6 @@ private:
 	void POP(u16&);
 
 	// 8bit arithmetic and logic
-	void CPL();
 
 	template <typename T>
 	void XOR(const T& source) {
