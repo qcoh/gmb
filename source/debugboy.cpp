@@ -62,6 +62,10 @@ void DebugBoy::step() {
 		switch (ev.type) {
 		case SDL_QUIT:
 			quit = true;
+		case SDL_KEYDOWN:
+			if (ev.key.keysym.sym == SDLK_ESCAPE) {
+				m_mode = Mode::WAIT;
+			}
 		default:
 			break;
 		}
