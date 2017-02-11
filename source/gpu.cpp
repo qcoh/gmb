@@ -193,6 +193,10 @@ void GPU::renderScanline() {
 		renderTiles();
 	}
 
+	if (m_data.windowDisplayEnable) {
+		renderWindow();
+	}
+
 	if (m_data.objectDisplayEnable) {
 		renderSprites();
 	}
@@ -204,7 +208,10 @@ void GPU::renderTiles() {
 	// http://bgb.bircd.org/pandocs.htm
 	// http://imrannazar.com/GameBoy-Emulation-in-JavaScript:-Graphics
 
-	// TODO: window
+	// The GameBoy has two tile maps: 0x9800 - 0x9bff and 0x9c00 -
+	// 0x9fff, which are selected by
+
+	u16 tileMapAddr = m_data.bgTileMapDisplaySelect ? 0x9c00 : 0x9800;
 
 	for (u8 i = 0; i < 160; i++) {
 		// The GameBoy renders a 160*144 slice of the 256*256
@@ -234,33 +241,19 @@ void GPU::renderTiles() {
 		u8 tileX = static_cast<u8>(m_data.scrollX + i) >> 3;
 		u8 tileY = static_cast<u8>(m_data.scrollY + m_data.lY) >> 3;
 
-		// The GameBoy has two tile maps: 0x9800 - 0x9bff and 0x9c00 -
-		// 0x9fff, which are selected by
-
-		u16 tileMapAddr =
-		    m_data.bgTileMapDisplaySelect ? 0x9c00 : 0x9800;
-
 		// The leftmost visible tile on the current scanline is then
 		// indexed by
 
 		u16 currentTileIndex = read8(tileMapAddr + tileX + tileY * 32);
 
-		// Similarly, the tiles themselves also consist of two
-		// (intersecting!) blocks: 0x8000 - 0x0x8fff and 0x8800 -
-		// 0x97ff, which are selected by m_data.tileDataSelect. If the
-		// latter is is true, the current tile is vram[16 *
-		// currentTileIndex .. 16 * currentTileIndex + 15], respectively
-
-		IGPU::Data::Tile currentTile = m_data.tiles[currentTileIndex];
-
 		// If m_data.tileDataSelect is false, the indexing starts at
 		// 0x9000 BUT currentTileIndex is a SIGNED byte:
-
 		if (m_data.tileDataSelect == false) {
 			currentTileIndex = static_cast<u16>(
 			    256 + static_cast<int8_t>(currentTileIndex));
-			currentTile = m_data.tiles[currentTileIndex];
 		}
+
+		IGPU::Data::Tile currentTile = m_data.tiles[currentTileIndex];
 
 		// Before we render the scanline, we need to find the row inside
 		// the tiles to render and the starting column:
@@ -295,6 +288,93 @@ void GPU::renderTiles() {
 		u32 color = colorSelect(m_data.bgp, colorIndex);
 
 		// Finally, we draw the pixel.
+		m_data.pixelArray[i + 160 * m_data.lY] = color;
+	}
+}
+
+void GPU::renderWindow() {
+	// References:
+	// http://bgb.bircd.org/pandocs.htm#videodisplay
+
+	// The window is an optional overlay over the background (tiles). It
+	// shares the tile map location(s) and the tile data location(s) with
+	// the ordinary background.
+	//
+	// The tile map for the window is selected via:
+
+	const u16 tileMapAddr =
+	    (m_data.windowTileMapDisplaySelect) ? 0x9c00 : 0x9800;
+
+	// The window's location (top left corner) is given by (wX-7, wY),
+	// so let's check if the window is intersecting the current scanline:
+
+	if (m_data.wY > m_data.lY) {
+		return;
+	}
+	// According to
+	// https://www.reddit.com/r/EmuDev/comments/5qg6ek/gb_wrong_tile_set_displaying_in_games_like_volley/dczddcz/
+	// if wX is less than 7, it is set to 7.
+	if (m_data.wX < 7) {
+		m_data.wX = 7;
+	}
+
+	// No need to draw the window if it is not on the screen.
+	if (/*m_data.wX < 7 ||*/ m_data.wX >= 166) {
+		return;
+	}
+
+	for (u8 i = m_data.wX - 7; i < 160; i++) {
+		// Rendering the window works almost like rendering the
+		// background tiles
+		// except that it is moved by (wX-7, wY) and not affected by
+		// scrolling.
+		//
+		//	+---------------------------------------+
+		//	|					|
+		//	|		+------------------------ - - - +
+		//	|		|				|
+		//	|		|
+		//	|		|				|
+		//	|		|
+		//	|		|				|
+		//	+---------------|
+		//			|				|
+		//			+ - - - - - - - - - - - - - - - +
+		//
+		// As before, we need to find the index of the tile intersecting
+		// the scanline:
+
+		const u8 tileX = static_cast<u8>(i - m_data.wX + 7) >> 3;
+		const u8 tileY = static_cast<u8>(m_data.lY - m_data.wY) >> 3;
+
+		// The tile below (i, lY) is then:
+
+		u16 currentTileIndex = read8(tileMapAddr + tileX + tileY * 32);
+
+		// As before, we may need to adjust currentTileIndex:
+
+		if (m_data.tileDataSelect == false) {
+			currentTileIndex = static_cast<u16>(
+			    256 + static_cast<int8_t>(currentTileIndex));
+		}
+
+		IGPU::Data::Tile currentTile = m_data.tiles[currentTileIndex];
+
+		// The row and column inside the tile:
+		u8 pixelOffsetX = static_cast<u8>(i - m_data.wX + 7) & 0x7;
+		u8 pixelOffsetY =
+		    static_cast<u8>((m_data.lY - m_data.wY) & 0x7);
+
+		IGPU::Data::Row currentRow = currentTile[pixelOffsetY];
+
+		// We compute the color index and color and draw the pixel:
+		int mask = (7 - (pixelOffsetX & 0x7));
+		u8 colorIndex =
+		    static_cast<u8>(((currentRow[0] >> mask) & 0x1) |
+				    (((currentRow[1] >> mask) & 0x1) << 1));
+
+		u32 color = colorSelect(m_data.bgp, colorIndex);
+
 		m_data.pixelArray[i + 160 * m_data.lY] = color;
 	}
 }
