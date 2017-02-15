@@ -155,6 +155,13 @@ void GPU::step(u16 cycles) {
 			m_data.cycles = 0;
 			m_data.lcdStat = (m_data.lcdStat & 0b11111100) | HBLANK;
 			renderScanline();
+
+			// LYC == LY interrupt
+			// http://kemenaran.winosx.com/posts/links-awakening-rendering-the-opening-cutscene/
+			if ((m_data.lY == m_data.lYC) &&
+			    m_data.coincidenceInterrupt) {
+				m_data.intData->lcdStatFlag = true;
+			}
 		}
 		break;
 	case HBLANK:

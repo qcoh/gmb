@@ -170,6 +170,12 @@ void CPU::processInterrupts() {
 		// m_data.mmu->write16(m_data.sp, m_data.pc);
 		// m_data.pc = 0x40;
 		RST(0x40);
+	} else if (m_data.intData->lcdStatEnable &&
+		   m_data.intData->lcdStatFlag) {
+		m_data.cycles += 12;
+		m_data.intData->ime = false;
+		m_data.intData->lcdStatFlag = false;
+		RST(0x48);
 	}
 	// TODO: other interrupts
 }
