@@ -5,8 +5,8 @@
 #include <string>
 
 #include "bios.h"
+#include "gpu.h"
 #include "icartridge.h"
-#include "igpu.h"
 #include "interruptdata.h"
 #include "joypad.h"
 #include "types.h"
@@ -17,7 +17,7 @@ public:
 		bool biosMode = true;
 		BIOS* bios = nullptr;
 		ICartridge* cart = nullptr;
-		IGPU* gpu = nullptr;
+		GPU* gpu = nullptr;
 		std::array<u8, 127> hram = {{0}};
 		std::array<u8, 4096> wram0 = {{0}};
 		std::array<u8, 4096> wram1 = {{0}};

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "display.h"
+#include "gpu.h"
 #include "icpu.h"
-#include "igpu.h"
 #include "immu.h"
 #include "interruptdata.h"
 
@@ -21,8 +21,7 @@ protected:
 	std::unique_ptr<ICartridge> m_cart;
 	BIOS m_bios;
 
-	IGPU::Data m_gpuData;
-	std::unique_ptr<IGPU> m_gpu;
+	GPU m_gpu{&m_display, &m_intData};
 
 	IMMU::Data m_mmuData;
 	std::unique_ptr<IMMU> m_mmu;

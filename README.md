@@ -45,14 +45,12 @@ The currently implemented commands (subject to change):
  - `pc`: Print CPU registers.
  - `pd 0xnnnn`: Print instruction mnemonic at `0xnnnn`.
  - `pm 0xnnnn`: Print memory at `0xnnnn`.
- - `pt 0xnnn`: Print tile `0xnnn` (0, ..., 383).
  - `b 0xnnnn`: Add breakpoint.
  - `w 0xnnnn`: Add watchpoint.
  - `pb`: Print breakpoints.
  - `pw`: Print watchpoints.
  - `cb`: Clear breakpoints.
  - `cw`: Clear watchpoints.
- - `dt`: Dump tiles to `tiles.bin`.
  - `q`: Quit.
  - `h`: Help.
 

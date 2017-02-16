@@ -35,8 +35,7 @@ private:
 	u32 m_inputCycles = 0;
 	Joypad m_joypad{};
 
-	IGPU::Data m_gpuData{};
-	GPU m_gpu{m_gpuData};
+	GPU m_gpu{&m_display, &m_intData};
 
 	std::unordered_set<u16> m_watchPoints{};
 	bool m_watchMode = false;
@@ -55,6 +54,5 @@ private:
 	void reloadCPU();
 	void eval(std::string&);
 	void printInstruction(u16);
-	static void printTile(const IGPU::Data::Tile&);
 	void step();
 };

@@ -18,9 +18,6 @@ DebugBoy::DebugBoy(const std::string& romPath, const std::string& biosPath)
     : m_cart{fromFile(romPath)},
       m_bios{biosPath},
       m_cpu{std::make_unique<CPU>(m_cpuData)} {
-	m_gpuData.display = &m_display;
-	m_gpuData.intData = &m_intData;
-
 	m_mmuData.bios = &m_bios;
 	m_mmuData.cart = m_cart.get();
 	m_mmuData.gpu = &m_gpu;
@@ -147,11 +144,6 @@ void DebugBoy::eval(std::string& input) {
 				  << std::setfill('0') << +addr << "] == 0x"
 				  << std::setw(2) << +v << '\n';
 		}
-	} else if (cmd == "pt") {
-		// print tile
-		if (stream >> std::hex >> addr && addr < 384) {
-			printTile(m_gpuData.tiles[addr]);
-		}
 	} else if (cmd == "pb") {
 		// print breakpoints
 		for (const auto& bp : m_breakPoints) {
@@ -188,11 +180,6 @@ void DebugBoy::eval(std::string& input) {
 	} else if (cmd == "cw") {
 		// clear watchpoints
 		m_watchPoints.clear();
-	} else if (cmd == "dt") {
-		// dump tiles
-		std::ofstream f{"tiles.bin", std::ios::binary};
-		std::copy_n(std::begin(m_gpuData.vram), 0x1fff,
-			    std::ostream_iterator<char>{f});
 	} else if (cmd == "q") {
 		// quit
 		quit = true;
@@ -205,7 +192,6 @@ void DebugBoy::eval(std::string& input) {
 			     "pc\t\t Print CPU registers\n"
 			     "pd 0xnnnn\t Print instruction at 0xnnnn\n"
 			     "pm 0xnnnn\t Print memory at 0xnnnn\n"
-			     "pt 0xnnn\t Print tile at 0xnnn (0 - 383)\n"
 			     "s 0xnnnn 0xmm\t Set memory at 0xnnnn to 0xmm\n"
 			     "pb\t\t Print breakpoints\n"
 			     "pw\t\t Print watchpoints\n"
@@ -213,33 +199,8 @@ void DebugBoy::eval(std::string& input) {
 			     "w 0xnnnn\t Add watchpoint\n"
 			     "cb\t\t Clear breakpoints\n"
 			     "cw\t\t Clear watchpoints\n"
-			     "dt\t\t Dump tiles (to tiles.bin)\n"
 			     "q\t\t Quit\n"
 			     "h\t\t Display this help\n";
-	}
-}
-
-void DebugBoy::printTile(const IGPU::Data::Tile& tile) {
-	for (const auto& row : tile) {
-		for (u8 i = 7; i > 0; i--) {
-			u8 color = static_cast<u8>(((row[0] >> i) & 1) << 1 |
-						   ((row[0] >> i) & 1));
-			switch (color) {
-			case 0x0:
-				std::cout << "██";
-				break;
-			case 0x1:
-				std::cout << "▓▓";
-				break;
-			case 0x2:
-				std::cout << "░░";
-				break;
-			default:
-				std::cout << "  ";
-				break;
-			}
-		}
-		std::cout << '\n';
 	}
 }
 
